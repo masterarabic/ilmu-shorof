@@ -1,3 +1,6 @@
+import { Bab, SubBab } from "@prisma/client";
+import { TypeOf } from "zod";
+
 import {
   Dialog,
   DialogContent,
@@ -5,14 +8,70 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/common/components/ui/dialog";
+import { useToast } from "@/common/components/ui/use-toast";
+import { trpc } from "@/utils/trpc";
 
-import SubBabForm from "./Form";
+import SubBabForm, { FormSchema } from "./Form";
 
 const SubBabFormDialog: React.FC<{
   mode: "create" | "update";
   open: boolean;
+  bab?: Partial<Bab>;
+  subBab?: Partial<SubBab>;
   setOpen: (open: boolean) => void;
-}> = ({ mode, open, setOpen }) => {
+}> = ({ mode, bab, subBab, open, setOpen }) => {
+  const { toast } = useToast();
+  const { mutateAsync: createSubBab } = trpc.subBab.add.useMutation();
+  const { mutateAsync: updateSubBab } = trpc.subBab.update.useMutation();
+  const trpcUtils = trpc.useUtils();
+
+  const handleCreate = async (data: TypeOf<typeof FormSchema>) => {
+    try {
+      if (!bab?.id) throw new Error("Bab ID is missing");
+
+      await createSubBab({
+        babId: bab?.id,
+        ...data,
+      });
+      setOpen(false);
+    } catch (error) {
+      toast({
+        title: "Gagal menambah bab",
+        description: "Terjadi kesalahan saat menambah bab. Silahkan coba lagi.",
+      });
+      console.error(error);
+    }
+  };
+
+  const handleUpdate = async (data: TypeOf<typeof FormSchema>) => {
+    try {
+      if (!subBab?.id) throw new Error("Sub Bab ID is missing");
+
+      await updateSubBab({
+        id: subBab?.id,
+        ...data,
+      });
+      setOpen(false);
+    } catch (error) {
+      toast({
+        title: "Gagal mengubah bab",
+        description: "Terjadi kesalahan saat mengubah bab. Silahkan coba lagi.",
+      });
+      console.error(error);
+    }
+  };
+
+  const handleSubmit = async (data: TypeOf<typeof FormSchema>) => {
+    if (mode === "create") {
+      await handleCreate(data);
+    }
+    if (mode === "update") {
+      await handleUpdate(data);
+    }
+
+    trpcUtils.subBab.invalidate();
+  };
+
   return (
     <Dialog open={open} onOpenChange={(isOpen) => setOpen(isOpen)}>
       <DialogContent className="max-w-[1000px]">
@@ -23,7 +82,17 @@ const SubBabFormDialog: React.FC<{
           <DialogDescription></DialogDescription>
         </DialogHeader>
         <div>
-          <SubBabForm onSubmit={() => {}} />
+          <SubBabForm
+            defaultValues={
+              subBab
+                ? {
+                    name: subBab?.name!,
+                    number: subBab?.number!,
+                  }
+                : undefined
+            }
+            onSubmit={handleSubmit}
+          />
         </div>
       </DialogContent>
     </Dialog>

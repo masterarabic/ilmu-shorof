@@ -3,41 +3,55 @@ import { z } from "zod";
 
 import prisma from "../../../prisma/db";
 import { publicProcedure, router } from "../trpc";
+import { defaultSelectBab } from "./bab";
 
 /**
  * Default selector for Post.
  * It's important to always explicitly say which fields you want to return in order to not leak extra information
  * @link https://github.com/prisma/prisma/issues/9353
  */
-export const defaultSelectBab = {
+const defaultSelect = {
   id: true,
   name: true,
   number: true,
   createdAt: true,
   updatedAt: true,
-} satisfies Prisma.BabSelect;
+} satisfies Prisma.SubBabSelect;
 
-export const babRouter = router({
+const withEnum = z.enum(["bab"]);
+
+export const subBabRouter = router({
   list: publicProcedure
     .input(
       z.object({
-        with: z.string().optional().or(z.array(z.string())).optional(),
+        with: withEnum.optional().or(z.array(withEnum)).optional(),
         id: z.string().uuid().optional(),
+        babId: z.string().uuid().optional(),
       })
     )
     .query(async ({ input }) => {
-      //   const withFields = input.with
-      //     ? Array.isArray(input.with)
-      //       ? input.with
-      //       : [input.with]
-      //     : [];
+      const withFields = input.with
+        ? Array.isArray(input.with)
+          ? input.with
+          : [input.with]
+        : [];
 
-      const whereInput: Prisma.BabWhereInput = {};
+      const includeInput: Prisma.SubBabInclude = {};
+      if (withFields.includes("bab")) includeInput.bab = true;
 
+      const whereInput: Prisma.SubBabWhereInput = {};
       if (input.id) whereInput.id = input.id;
+      if (input.babId) whereInput.babId = input.babId;
 
-      const items = await prisma.bab.findMany({
-        select: defaultSelectBab,
+      const items = await prisma.subBab.findMany({
+        select: {
+          ...defaultSelect,
+          bab: includeInput.bab
+            ? {
+                select: defaultSelectBab,
+              }
+            : undefined,
+        },
         where: whereInput,
         orderBy: {
           number: "asc",
@@ -51,14 +65,23 @@ export const babRouter = router({
   add: publicProcedure
     .input(
       z.object({
+        babId: z.string().uuid(),
         name: z.string().min(1),
         number: z.number().min(1),
       })
     )
     .mutation(async ({ input }) => {
-      const post = await prisma.bab.create({
-        data: input,
-        select: defaultSelectBab,
+      const post = await prisma.subBab.create({
+        data: {
+          name: input.name,
+          number: input.number,
+          bab: {
+            connect: {
+              id: input.babId,
+            },
+          },
+        },
+        select: defaultSelect,
       });
       return post;
     }),
@@ -72,12 +95,12 @@ export const babRouter = router({
     )
     .mutation(async ({ input }) => {
       const { id, ...data } = input;
-      const post = await prisma.bab.update({
+      const post = await prisma.subBab.update({
         where: {
           id,
         },
         data,
-        select: defaultSelectBab,
+        select: defaultSelect,
       });
       return post;
     }),
@@ -89,11 +112,11 @@ export const babRouter = router({
     )
     .mutation(async ({ input }) => {
       const { id } = input;
-      const post = await prisma.bab.delete({
+      const post = await prisma.subBab.delete({
         where: {
           id,
         },
-        select: defaultSelectBab,
+        select: defaultSelect,
       });
       return post;
     }),

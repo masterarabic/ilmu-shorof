@@ -19,7 +19,7 @@ model Bab {
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  SubBab    SubBab[]
+  subBab    SubBab[]
   lesson    Lesson[]
 }
 
@@ -44,7 +44,7 @@ model Lesson {
   subBabId  String
   subBab    SubBab     @relation(fields: [subBabId], references: [id])
   bab       Bab?       @relation(fields: [babId], references: [id])
-  Question  Question[]
+  question  Question[]
 }
 
 model Question {

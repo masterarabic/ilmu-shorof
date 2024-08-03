@@ -8,7 +8,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useRouter } from "next/router";
-import * as React from "react";
+import React from "react";
 
 import { Button } from "@/common/components/ui/button";
 import {
@@ -19,16 +19,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/common/components/ui/table";
-import BabFormDialog from "@/modules/admin/components/bab/FormDialog";
-import AdminMainLayout from "@/modules/admin/layouts/MainLayout";
-import { NextPageWithLayout } from "@/pages/_app";
+import SubBabFormDialog from "@/modules/admin/components/sub-bab/FormDialog";
 import { trpc } from "@/utils/trpc";
 
 export type Data = {
   id: string;
   number: number;
   name: string;
-  totalSubBab: number;
+  totalLesson: number;
 };
 
 const columnHelper = createColumnHelper<Data>();
@@ -40,45 +38,39 @@ export const columns = [
     size: 10,
   }),
   columnHelper.accessor("name", {
-    header: "Nama bab",
+    header: "Nama Sub Bab",
     cell: (info) => info.getValue(),
   }),
-  columnHelper.accessor("totalSubBab", {
-    header: () => <div className="text-center">Total Sub Bab</div>,
-    size: 30,
+  columnHelper.accessor("totalLesson", {
+    header: () => <div className="text-center">Total Pelajaran</div>,
+    size: 40,
     cell: (info) => <div className="text-center">{info.getValue()}</div>,
   }),
-  // {
-  //   id: "actions",
-  //   header: "Aksi",
-  //   size: 10,
-  //   cell: () => {
-  //     return <div>test</div>;
-  //   },
-  // },
 ];
 
-const BabPage: NextPageWithLayout = () => {
-  const [openBabDialog, setBabDialog] = React.useState({
+const SubBabListTable: React.FC<{ id: string }> = ({ id }) => {
+  const [subBabDialog, setSubBabDialog] = React.useState({
     open: false,
     mode: "create" as "create" | "update",
   });
 
-  const { data: babListResponse, isLoading } = trpc.bab.list.useQuery({});
+  const { data: subBabData, isLoading } = trpc.subBab.list.useQuery({
+    babId: id,
+  });
 
-  const babTableData: Data[] = React.useMemo(() => {
-    if (!babListResponse?.items) return [];
-    return babListResponse.items.map((item) => ({
+  const subBabListData: Data[] = React.useMemo(() => {
+    if (!subBabData?.items) return [];
+    return subBabData.items.map((item) => ({
       id: item.id,
       number: item.number,
       name: item.name,
-      totalSubBab: 0,
+      totalLesson: 0,
     }));
-  }, [babListResponse?.items]);
+  }, [subBabData?.items]);
 
   const router = useRouter();
   const table = useReactTable({
-    data: babTableData,
+    data: subBabListData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -87,19 +79,20 @@ const BabPage: NextPageWithLayout = () => {
   });
 
   return (
-    <div className="w-full">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-semibold">Bab</h1>
-        <Button
-          size="sm"
-          onClick={() => {
-            setBabDialog({ mode: "create", open: true });
-          }}
-        >
-          Tambah bab
-        </Button>
+    <>
+      <div className="text-xl mb-4 flex justify-between items-center">
+        <h2>List Sub Bab</h2>
+        <div>
+          <Button
+            size="sm"
+            onClick={() => {
+              setSubBabDialog({ open: true, mode: "create" });
+            }}
+          >
+            Tambah Sub Bab
+          </Button>
+        </div>
       </div>
-
       <div className="rounded-md border">
         <Table className="table-fixed">
           <TableHeader>
@@ -131,8 +124,8 @@ const BabPage: NextPageWithLayout = () => {
                     className="cursor-pointer"
                     onClick={() => {
                       router.push({
-                        pathname: "/admin/bab/[babId]",
-                        query: { babId: row.original.id },
+                        pathname: "/admin/sub-bab/[subBabId]",
+                        query: { subBabId: row.original.id },
                       });
                     }}
                   >
@@ -157,8 +150,8 @@ const BabPage: NextPageWithLayout = () => {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  Belum ada data, silahkan klik tombol &quot;Tambah bab&quot;
-                  untuk menambah data
+                  Belum ada data, silahkan tambah data dengan klik tombol
+                  &quot;Tambah Sub Bab&quot;
                 </TableCell>
               </TableRow>
             ) : null}
@@ -177,19 +170,18 @@ const BabPage: NextPageWithLayout = () => {
         </Table>
       </div>
 
-      <BabFormDialog
-        mode={openBabDialog.mode}
-        open={openBabDialog.open}
+      <SubBabFormDialog
+        mode={subBabDialog.mode}
+        open={subBabDialog.open}
+        bab={{
+          id,
+        }}
         setOpen={(open) => {
-          setBabDialog({ ...openBabDialog, open });
+          setSubBabDialog({ ...subBabDialog, open });
         }}
       />
-    </div>
+    </>
   );
 };
 
-BabPage.getLayout = (page) => {
-  return <AdminMainLayout>{page}</AdminMainLayout>;
-};
-
-export default BabPage;
+export default SubBabListTable;
