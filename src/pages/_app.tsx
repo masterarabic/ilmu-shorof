@@ -6,6 +6,7 @@ import { ReactElement, ReactNode } from "react";
 import "@/styles/globals.css";
 
 import { Toaster } from "@/common/components/ui/toaster";
+import { trpc } from "@/utils/trpc";
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
@@ -22,7 +23,7 @@ type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };
 
-export default function App({ Component, pageProps }: AppPropsWithLayout) {
+const App = ({ Component, pageProps }: AppPropsWithLayout) => {
   // Use the layout defined at the page level, if available
   const getLayout = Component.getLayout ?? ((page) => page);
 
@@ -32,4 +33,6 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
       <Toaster />
     </main>
   );
-}
+};
+
+export default trpc.withTRPC(App);

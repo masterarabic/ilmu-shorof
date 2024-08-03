@@ -7,8 +7,11 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { createServerSideHelpers } from "@trpc/react-query/server";
+import { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import React from "react";
+import superjson from "superjson";
 
 import { Button } from "@/common/components/ui/button";
 import {
@@ -30,6 +33,8 @@ import BabFormDialog from "@/modules/admin/components/bab/FormDialog";
 import SubBabFormDialog from "@/modules/admin/components/sub-bab/FormDialog";
 import AdminMainLayout from "@/modules/admin/layouts/MainLayout";
 import { NextPageWithLayout } from "@/pages/_app";
+import { appRouter } from "@/server/routers/_app";
+import { trpc } from "@/utils/trpc";
 
 export type Data = {
   id: string;
@@ -40,7 +45,7 @@ export type Data = {
 
 const columnHelper = createColumnHelper<Data>();
 
-const data: Data[] = [
+const subBabListData: Data[] = [
   {
     id: "e785559d-6c50-4e51-b2a5-0e1c9da275d4",
     number: 1,
@@ -80,7 +85,33 @@ export const columns = [
   // },
 ];
 
-const BabDetailPage: NextPageWithLayout = () => {
+export async function getServerSideProps(
+  context: GetServerSidePropsContext<{ babId: string }>
+) {
+  const helpers = createServerSideHelpers({
+    router: appRouter,
+    ctx: {},
+    transformer: superjson,
+  });
+  const id = context.params?.babId as string;
+  /*
+   * Prefetching the `post.byId` query.
+   * `prefetch` does not return the result and never throws - if you need that behavior, use `fetch` instead.
+   */
+  await helpers.bab.list.prefetch({
+    id,
+  });
+  return {
+    props: {
+      trpcState: helpers.dehydrate(),
+      id,
+    },
+  };
+}
+
+const BabDetailPage: NextPageWithLayout<{
+  id: string;
+}> = ({ id }) => {
   const [babDialog, setBabDialog] = React.useState({
     open: false,
     mode: "create" as "create" | "update",
@@ -91,8 +122,15 @@ const BabDetailPage: NextPageWithLayout = () => {
   });
 
   const router = useRouter();
+
+  const { data: babListResponse } = trpc.bab.list.useQuery({
+    id,
+  });
+
+  const bab = babListResponse?.items?.[0];
+
   const table = useReactTable({
-    data,
+    data: subBabListData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -124,12 +162,12 @@ const BabDetailPage: NextPageWithLayout = () => {
             <CardTitle className="text-xs font-medium">Nomor Bab</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-center">2</div>
+            <div className="text-2xl font-bold text-center">{bab?.number}</div>
           </CardContent>
         </Card>
         <div className="mt-6">
           <div className="text-sm">Nama Bab</div>
-          <div className="text-2xl">Kata kerja</div>
+          <div className="text-2xl">{bab?.name}</div>
         </div>
       </div>
 
@@ -213,6 +251,7 @@ const BabDetailPage: NextPageWithLayout = () => {
       <BabFormDialog
         mode={babDialog.mode}
         open={babDialog.open}
+        bab={bab}
         setOpen={(open) => {
           setBabDialog({ ...babDialog, open });
         }}

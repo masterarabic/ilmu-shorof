@@ -22,6 +22,7 @@ import {
 import BabFormDialog from "@/modules/admin/components/bab/FormDialog";
 import AdminMainLayout from "@/modules/admin/layouts/MainLayout";
 import { NextPageWithLayout } from "@/pages/_app";
+import { trpc } from "@/utils/trpc";
 
 export type Data = {
   id: string;
@@ -31,21 +32,6 @@ export type Data = {
 };
 
 const columnHelper = createColumnHelper<Data>();
-
-const data: Data[] = [
-  {
-    id: "e785559d-6c50-4e51-b2a5-0e1c9da275d4",
-    number: 1,
-    name: "Kata kerja",
-    totalSubBab: 2,
-  },
-  {
-    id: "e785559d-6c50-4e51-b2a5-0e1c9da275d4",
-    number: 2,
-    name: "Kata benda",
-    totalSubBab: 3,
-  },
-];
 
 export const columns = [
   columnHelper.accessor("number", {
@@ -77,6 +63,18 @@ const BabPage: NextPageWithLayout = () => {
     open: false,
     mode: "create" as "create" | "update",
   });
+
+  const { data: babListResponse, isLoading } = trpc.bab.list.useQuery({});
+
+  const data: Data[] = React.useMemo(() => {
+    if (!babListResponse?.items) return [];
+    return babListResponse.items.map((item) => ({
+      id: item.id,
+      number: item.number,
+      name: item.name,
+      totalSubBab: 0,
+    }));
+  }, [babListResponse?.items]);
 
   const router = useRouter();
   const table = useReactTable({
@@ -126,41 +124,55 @@ const BabPage: NextPageWithLayout = () => {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  className="cursor-pointer"
-                  onClick={() => {
-                    router.push({
-                      pathname: "/admin/bab/[babId]",
-                      query: { babId: row.original.id },
-                    });
-                  }}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      style={{ width: `${cell.column.getSize()}px` }}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
+            {!!table.getRowModel().rows?.length && !isLoading
+              ? table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    className="cursor-pointer"
+                    onClick={() => {
+                      router.push({
+                        pathname: "/admin/bab/[babId]",
+                        query: { babId: row.original.id },
+                      });
+                    }}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        style={{ width: `${cell.column.getSize()}px` }}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              : null}
+
+            {!table.getRowModel().rows?.length && !isLoading ? (
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Belum ada data, silahkan klik tombol &quot;Tambah bab&quot;
+                  untuk menambah data
                 </TableCell>
               </TableRow>
-            )}
+            ) : null}
+
+            {isLoading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  Memuat data...
+                </TableCell>
+              </TableRow>
+            ) : null}
           </TableBody>
         </Table>
       </div>
