@@ -1,19 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 import React from "react";
 import { Control, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/common/components/ui/alert-dialog";
-import { Button, buttonVariants } from "@/common/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import {
   Card,
   CardContent,
@@ -30,6 +20,7 @@ import {
   FormMessage,
 } from "@/common/components/ui/form";
 import { Input } from "@/common/components/ui/input";
+import DeleteLessonButton from "@/modules/admin/components/lesson/DeleteButton";
 import AdminMainLayout from "@/modules/admin/layouts/MainLayout";
 import { NextPageWithLayout } from "@/pages/_app";
 
@@ -78,6 +69,7 @@ const QuestionItem = ({
       <div className="flex items-center justify-between w-full">
         <div className="text-sm">Soal {questionIndex + 1}</div>
         <Button
+          type="button"
           variant="ghost"
           size="sm"
           onClick={() => {
@@ -111,6 +103,7 @@ const QuestionItem = ({
         <div className="flex justify-between items-center mb-3">
           <div className="text-sm">Jawaban</div>
           <Button
+            type="button"
             size="sm"
             onClick={() => {
               appendAnswer({
@@ -127,7 +120,12 @@ const QuestionItem = ({
           {fields.map((_, index) => {
             return (
               <div key={index} className="flex gap-2 w-full">
-                <Button asChild variant="ghost" className="space-x-3">
+                <Button
+                  type="button"
+                  asChild
+                  variant="ghost"
+                  className="space-x-3"
+                >
                   <label
                     htmlFor={`items.${questionIndex}.answers.${index}.correct`}
                     className="flex items-center space-x-2"
@@ -165,6 +163,7 @@ const QuestionItem = ({
                 />
 
                 <Button
+                  type="button"
                   variant="ghost"
                   onClick={() => {
                     removeAnswer(index);
@@ -178,39 +177,6 @@ const QuestionItem = ({
         </div>
       </div>
     </div>
-  );
-};
-
-const DeleteButton: React.FC = () => {
-  return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button size="sm" variant="destructive">
-          Hapus
-        </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Apakah anda yakin?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Anda akan menghapus pelajaran ini beserta seluruh soal
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogPrimitive.Action
-            className={buttonVariants({ variant: "ghost" })}
-          >
-            Yakin
-          </AlertDialogPrimitive.Action>
-
-          <AlertDialogPrimitive.Cancel
-            className={buttonVariants({ variant: "default" })}
-          >
-            Batal
-          </AlertDialogPrimitive.Cancel>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
   );
 };
 
@@ -237,7 +203,7 @@ const LessonDetailPage: NextPageWithLayout = () => {
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-semibold">Pelajaran</h1>
         <div className="space-x-2">
-          <DeleteButton />
+          <DeleteLessonButton />
         </div>
       </div>
 
@@ -267,6 +233,7 @@ const LessonDetailPage: NextPageWithLayout = () => {
             <h2>List Soal</h2>
             <div>
               <Button
+                type="button"
                 size="sm"
                 onClick={() => {
                   appendItem({

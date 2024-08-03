@@ -1,4 +1,3 @@
-import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 import {
   createColumnHelper,
   flexRender,
@@ -8,20 +7,10 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/common/components/ui/alert-dialog";
-import { Button, buttonVariants } from "@/common/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import {
   Card,
   CardContent,
@@ -36,6 +25,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/common/components/ui/table";
+import DeleteBabButton from "@/modules/admin/components/bab/DeleteButton";
+import BabFormDialog from "@/modules/admin/components/bab/FormDialog";
+import SubBabFormDialog from "@/modules/admin/components/sub-bab/FormDialog";
 import AdminMainLayout from "@/modules/admin/layouts/MainLayout";
 import { NextPageWithLayout } from "@/pages/_app";
 
@@ -88,40 +80,16 @@ export const columns = [
   // },
 ];
 
-const DeleteButton: React.FC = () => {
-  return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button size="sm" variant="destructive">
-          Hapus
-        </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Apakah anda yakin?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Anda akan menghapus bab ini beserta seluruh sub bab dan pelajaran
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogPrimitive.Action
-            className={buttonVariants({ variant: "ghost" })}
-          >
-            Yakin
-          </AlertDialogPrimitive.Action>
-
-          <AlertDialogPrimitive.Cancel
-            className={buttonVariants({ variant: "default" })}
-          >
-            Batal
-          </AlertDialogPrimitive.Cancel>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
-};
-
 const BabDetailPage: NextPageWithLayout = () => {
+  const [babDialog, setBabDialog] = React.useState({
+    open: false,
+    mode: "create" as "create" | "update",
+  });
+  const [subBabDialog, setSubBabDialog] = React.useState({
+    open: false,
+    mode: "create" as "create" | "update",
+  });
+
   const router = useRouter();
   const table = useReactTable({
     data,
@@ -137,17 +105,16 @@ const BabDetailPage: NextPageWithLayout = () => {
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-semibold">Detail Bab</h1>
         <div className="space-x-2">
-          <Link
-            href={{
-              pathname: "/admin/bab/edit",
-              query: { babId: "e785559d-6c50-4e51-b2a5-0e1c9da275d4" },
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => {
+              setBabDialog({ open: true, mode: "update" });
             }}
           >
-            <Button size="sm" variant="ghost">
-              Edit
-            </Button>
-          </Link>
-          <DeleteButton />
+            Edit
+          </Button>
+          <DeleteBabButton />
         </div>
       </div>
 
@@ -169,14 +136,14 @@ const BabDetailPage: NextPageWithLayout = () => {
       <div className="text-xl mb-4 flex justify-between items-center">
         <h2>List Sub Bab</h2>
         <div>
-          <Link
-            href={{
-              pathname: "/admin/sub-bab/tambah",
-              query: { babId: "e785559d-6c50-4e51-b2a5-0e1c9da275d4" },
+          <Button
+            size="sm"
+            onClick={() => {
+              setSubBabDialog({ open: true, mode: "create" });
             }}
           >
-            <Button size="sm">Tambah Sub Bab</Button>
-          </Link>
+            Tambah Sub Bab
+          </Button>
         </div>
       </div>
 
@@ -242,6 +209,21 @@ const BabDetailPage: NextPageWithLayout = () => {
           </TableBody>
         </Table>
       </div>
+
+      <BabFormDialog
+        mode={babDialog.mode}
+        open={babDialog.open}
+        setOpen={(open) => {
+          setBabDialog({ ...babDialog, open });
+        }}
+      />
+      <SubBabFormDialog
+        mode={subBabDialog.mode}
+        open={subBabDialog.open}
+        setOpen={(open) => {
+          setSubBabDialog({ ...subBabDialog, open });
+        }}
+      />
     </div>
   );
 };

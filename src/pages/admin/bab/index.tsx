@@ -7,7 +7,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import * as React from "react";
 
@@ -20,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/common/components/ui/table";
+import BabFormDialog from "@/modules/admin/components/bab/FormDialog";
 import AdminMainLayout from "@/modules/admin/layouts/MainLayout";
 import { NextPageWithLayout } from "@/pages/_app";
 
@@ -73,6 +73,11 @@ export const columns = [
 ];
 
 const BabPage: NextPageWithLayout = () => {
+  const [openBabDialog, setBabDialog] = React.useState({
+    open: false,
+    mode: "create" as "create" | "update",
+  });
+
   const router = useRouter();
   const table = useReactTable({
     data,
@@ -87,9 +92,14 @@ const BabPage: NextPageWithLayout = () => {
     <div className="w-full">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-semibold">Bab</h1>
-        <Link href="/admin/bab/tambah">
-          <Button size="sm">Tambah bab</Button>
-        </Link>
+        <Button
+          size="sm"
+          onClick={() => {
+            setBabDialog({ mode: "create", open: true });
+          }}
+        >
+          Tambah bab
+        </Button>
       </div>
 
       <div className="rounded-md border">
@@ -154,6 +164,14 @@ const BabPage: NextPageWithLayout = () => {
           </TableBody>
         </Table>
       </div>
+
+      <BabFormDialog
+        mode={openBabDialog.mode}
+        open={openBabDialog.open}
+        setOpen={(open) => {
+          setBabDialog({ ...openBabDialog, open });
+        }}
+      />
     </div>
   );
 };

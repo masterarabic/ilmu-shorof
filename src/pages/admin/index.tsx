@@ -27,10 +27,6 @@ import { NextPageWithLayout } from "@/pages/_app";
 const DashboardPage: NextPageWithLayout = () => {
   return (
     <div>
-      {/* <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-semibold">Statistik</h1>
-      </div> */}
-
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>

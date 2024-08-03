@@ -1,4 +1,3 @@
-import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog";
 import {
   createColumnHelper,
   flexRender,
@@ -8,20 +7,10 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/common/components/ui/alert-dialog";
-import { Button, buttonVariants } from "@/common/components/ui/button";
+import { Button } from "@/common/components/ui/button";
 import {
   Card,
   CardContent,
@@ -36,6 +25,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/common/components/ui/table";
+import LessonFormDialog from "@/modules/admin/components/lesson/FormDialog";
+import DeleteSubBabButton from "@/modules/admin/components/sub-bab/DeleteButton";
+import SubBabFormDialog from "@/modules/admin/components/sub-bab/FormDialog";
 import AdminMainLayout from "@/modules/admin/layouts/MainLayout";
 import { NextPageWithLayout } from "@/pages/_app";
 
@@ -83,40 +75,16 @@ export const columns = [
   // },
 ];
 
-const DeleteButton: React.FC = () => {
-  return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button size="sm" variant="destructive">
-          Hapus
-        </Button>
-      </AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Apakah anda yakin?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Anda akan menghapus sub bab ini beserta seluruh pelajaran
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogPrimitive.Action
-            className={buttonVariants({ variant: "ghost" })}
-          >
-            Yakin
-          </AlertDialogPrimitive.Action>
-
-          <AlertDialogPrimitive.Cancel
-            className={buttonVariants({ variant: "default" })}
-          >
-            Batal
-          </AlertDialogPrimitive.Cancel>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
-};
-
 const SubBabPage: NextPageWithLayout = () => {
+  const [subBabDialog, setSubBabDialog] = React.useState({
+    open: false,
+    mode: "create" as "create" | "update",
+  });
+  const [lessonDialog, setLessonDialog] = React.useState({
+    open: false,
+    mode: "create" as "create" | "update",
+  });
+
   const router = useRouter();
   const table = useReactTable({
     data,
@@ -132,19 +100,16 @@ const SubBabPage: NextPageWithLayout = () => {
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-semibold">Sub Bab</h1>
         <div className="space-x-2">
-          <Link
-            href={{
-              pathname: "/admin/sub-bab/edit",
-              query: {
-                subBabId: "e785559d-6c50-4e51-b2a5-0e1c9da275d4",
-              },
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => {
+              setSubBabDialog({ mode: "update", open: true });
             }}
           >
-            <Button size="sm" variant="ghost">
-              Edit
-            </Button>
-          </Link>
-          <DeleteButton />
+            Edit
+          </Button>
+          <DeleteSubBabButton />
         </div>
       </div>
 
@@ -169,14 +134,14 @@ const SubBabPage: NextPageWithLayout = () => {
       <div className="text-xl mb-4 flex justify-between items-center">
         <h2>List Pelajaran</h2>
         <div>
-          <Link
-            href={{
-              pathname: "/admin/lesson/tambah",
-              query: { subBabId: "e785559d-6c50-4e51-b2a5-0e1c9da275d4" },
+          <Button
+            size="sm"
+            onClick={() => {
+              setLessonDialog({ mode: "create", open: true });
             }}
           >
-            <Button size="sm">Tambah Pelajaran</Button>
-          </Link>
+            Tambah Pelajaran
+          </Button>
         </div>
       </div>
 
@@ -242,6 +207,21 @@ const SubBabPage: NextPageWithLayout = () => {
           </TableBody>
         </Table>
       </div>
+
+      <SubBabFormDialog
+        mode={subBabDialog.mode}
+        open={subBabDialog.open}
+        setOpen={(open) => {
+          setSubBabDialog({ ...subBabDialog, open });
+        }}
+      />
+      <LessonFormDialog
+        mode={lessonDialog.mode}
+        open={lessonDialog.open}
+        setOpen={(open) => {
+          setLessonDialog({ ...lessonDialog, open });
+        }}
+      />
     </div>
   );
 };
