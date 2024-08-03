@@ -5,6 +5,8 @@ import { ReactElement, ReactNode } from "react";
 
 import "@/styles/globals.css";
 
+import { Toaster } from "@/common/components/ui/toaster";
+
 const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
@@ -27,6 +29,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <main className={poppins.className}>
       {getLayout(<Component {...pageProps} />)}
+      <Toaster />
     </main>
   );
 }
