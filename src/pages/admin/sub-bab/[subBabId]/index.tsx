@@ -95,19 +95,27 @@ const SubBabPage: NextPageWithLayout<{
         </div>
       </div>
 
-      <LessonTable />
+      <LessonTable subBabId={subBab?.id || ""} babId={subBab?.bab?.id || ""} />
 
       <SubBabFormDialog
         mode={subBabDialog.mode}
         open={subBabDialog.open}
-        bab={{
-          id: subBab?.bab?.id,
-        }}
-        subBab={{
-          id: subBab?.id,
-          name: subBab?.name,
-          number: subBab?.number,
-        }}
+        bab={
+          subBab?.bab?.id
+            ? {
+                id: subBab?.bab?.id,
+              }
+            : undefined
+        }
+        subBab={
+          subBab
+            ? {
+                id: subBab?.id,
+                name: subBab?.name,
+                number: subBab?.number,
+              }
+            : undefined
+        }
         setOpen={(open) => {
           setSubBabDialog({ ...subBabDialog, open });
         }}

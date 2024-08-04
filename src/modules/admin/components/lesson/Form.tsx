@@ -15,8 +15,8 @@ import {
 } from "@/common/components/ui/form";
 import { Input } from "@/common/components/ui/input";
 
-const FormSchema = z.object({
-  number: z
+export const FormSchema = z.object({
+  number: z.coerce
     .number({
       message: "Nomor pelajaran harus berupa angka",
     })

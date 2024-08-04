@@ -20,30 +20,15 @@ import {
   TableRow,
 } from "@/common/components/ui/table";
 import LessonFormDialog from "@/modules/admin/components/lesson/FormDialog";
+import { trpc } from "@/utils/trpc";
 
 export type Data = {
   id: string;
   number: number;
-  name: string;
   totalLesson: number;
 };
 
 const columnHelper = createColumnHelper<Data>();
-
-const data: Data[] = [
-  {
-    id: "e785559d-6c50-4e51-b2a5-0e1c9da275d4",
-    number: 1,
-    name: "Kata kerja 1",
-    totalLesson: 2,
-  },
-  {
-    id: "e785559d-6c50-4e51-b2a5-0e1c9da275d4",
-    number: 2,
-    name: "Kata kerja 2",
-    totalLesson: 3,
-  },
-];
 
 export const columns = [
   columnHelper.accessor("number", {
@@ -57,15 +42,30 @@ export const columns = [
   }),
 ];
 
-const LessonTable = () => {
+const LessonTable: React.FC<{
+  babId: string;
+  subBabId: string;
+}> = ({ babId, subBabId }) => {
   const [lessonDialog, setLessonDialog] = React.useState({
     open: false,
     mode: "create" as "create" | "update",
   });
 
+  const { data: lessonData } = trpc.lesson.list.useQuery({
+    subBabId,
+  });
+  const lessonListTableData: Data[] = React.useMemo(() => {
+    if (!lessonData?.items) return [];
+    return lessonData.items.map((item) => ({
+      id: item.id,
+      number: item.number,
+      totalLesson: 0,
+    }));
+  }, [lessonData?.items]);
+
   const router = useRouter();
   const table = useReactTable({
-    data,
+    data: lessonListTableData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -154,6 +154,12 @@ const LessonTable = () => {
       <LessonFormDialog
         mode={lessonDialog.mode}
         open={lessonDialog.open}
+        bab={{
+          id: babId,
+        }}
+        subBab={{
+          id: subBabId,
+        }}
         setOpen={(open) => {
           setLessonDialog({ ...lessonDialog, open });
         }}

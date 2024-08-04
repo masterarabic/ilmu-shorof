@@ -37,13 +37,12 @@ model SubBab {
 model Lesson {
   id        String     @id @default(uuid())
   number    Int
-  name      String
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  babId     String?
+  babId     String
   subBabId  String
   subBab    SubBab     @relation(fields: [subBabId], references: [id])
-  bab       Bab?       @relation(fields: [babId], references: [id])
+  bab       Bab        @relation(fields: [babId], references: [id])
   question  Question[]
 }
 

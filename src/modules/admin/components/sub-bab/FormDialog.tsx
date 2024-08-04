@@ -1,4 +1,3 @@
-import { Bab, SubBab } from "@prisma/client";
 import { TypeOf } from "zod";
 
 import {
@@ -16,8 +15,8 @@ import SubBabForm, { FormSchema } from "./Form";
 const SubBabFormDialog: React.FC<{
   mode: "create" | "update";
   open: boolean;
-  bab?: Partial<Bab>;
-  subBab?: Partial<SubBab>;
+  bab?: { id: string };
+  subBab?: { id: string; name: string; number: number };
   setOpen: (open: boolean) => void;
 }> = ({ mode, bab, subBab, open, setOpen }) => {
   const { toast } = useToast();

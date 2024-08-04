@@ -3,6 +3,7 @@
  */
 import { createCallerFactory, publicProcedure, router } from "../trpc";
 import { babRouter } from "./bab";
+import { lessonRouter } from "./lesson";
 import { subBabRouter } from "./subBab";
 
 export const appRouter = router({
@@ -10,6 +11,7 @@ export const appRouter = router({
 
   bab: babRouter,
   subBab: subBabRouter,
+  lesson: lessonRouter,
 });
 
 export const createCaller = createCallerFactory(appRouter);
