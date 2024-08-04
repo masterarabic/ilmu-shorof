@@ -1,7 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
-import Link from "next/link";
-import { useRouter } from "next/router";
 import React from "react";
 import {
   Control,
@@ -9,6 +7,7 @@ import {
   UseFieldArrayRemove,
   useForm,
 } from "react-hook-form";
+import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 
@@ -29,7 +28,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/common/components/ui/tooltip";
-import { useToast } from "@/common/components/ui/use-toast";
 import { trpc } from "@/utils/trpc";
 
 const FormSchema = z.object({
@@ -65,7 +63,6 @@ const QuestionItem = ({
   control: Control<z.infer<typeof FormSchema>>;
   remove: UseFieldArrayRemove;
 }) => {
-  const router = useRouter();
   const {
     fields,
     append: appendAnswer,
@@ -118,7 +115,7 @@ const QuestionItem = ({
             <FormLabel>
               <TooltipProvider>
                 <Tooltip>
-                  <TooltipTrigger>
+                  <TooltipTrigger type="button">
                     Nilai
                     <InfoCircledIcon className="inline-block ml-1 -translate-y-0.5" />
                   </TooltipTrigger>
@@ -232,7 +229,6 @@ const QuestionForm: React.FC<{
   lessonId: string;
   defaultValues?: z.infer<typeof FormSchema>;
 }> = ({ lessonId, defaultValues }) => {
-  const { toast } = useToast();
   const { mutateAsync } = trpc.question.bulk.useMutation();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -263,13 +259,13 @@ const QuestionForm: React.FC<{
           })),
         })),
       });
-      toast({
-        title: "Berhasil menyimpan soal",
+      toast.success("Berhasil menyimpan soal", {
+        position: "top-center",
         description: "Soal berhasil disimpan.",
       });
     } catch (error) {
-      toast({
-        title: "Gagal menyimpan soal",
+      toast.error("Gagal menyimpan soal", {
+        position: "top-center",
         description:
           "Terjadi kesalahan saat menyimpan soal. Silahkan coba lagi.",
       });

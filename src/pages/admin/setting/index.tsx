@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/common/components/ui/button";
@@ -15,7 +16,6 @@ import {
 } from "@/common/components/ui/form";
 import { Input } from "@/common/components/ui/input";
 import { Switch } from "@/common/components/ui/switch";
-import { toast } from "@/common/components/ui/use-toast";
 import AdminMainLayout from "@/modules/admin/layouts/MainLayout";
 import { NextPageWithLayout } from "@/pages/_app";
 
@@ -41,8 +41,7 @@ const SettingPage: NextPageWithLayout = () => {
   });
 
   function onSubmit(data: SettingFormValues) {
-    toast({
-      title: "You submitted the following values:",
+    toast.success("You submitted the following values:", {
       description: (
         <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
           <code className="text-white">{JSON.stringify(data, null, 2)}</code>

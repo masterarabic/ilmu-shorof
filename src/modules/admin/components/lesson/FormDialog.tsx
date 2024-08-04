@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import { TypeOf } from "zod";
 
 import {
@@ -7,7 +8,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/common/components/ui/dialog";
-import { useToast } from "@/common/components/ui/use-toast";
 import { trpc } from "@/utils/trpc";
 
 import LessonForm, { FormSchema } from "./Form";
@@ -20,7 +20,6 @@ const LessonFormDialog: React.FC<{
   lesson?: { id: string; number: number };
   setOpen: (open: boolean) => void;
 }> = ({ mode, bab, subBab, lesson, open, setOpen }) => {
-  const { toast } = useToast();
   const { mutateAsync: createLesson } = trpc.lesson.add.useMutation();
   const { mutateAsync: updateLesson } = trpc.lesson.update.useMutation();
   const trpcUtils = trpc.useUtils();
@@ -37,8 +36,7 @@ const LessonFormDialog: React.FC<{
       });
       setOpen(false);
     } catch (error) {
-      toast({
-        title: "Gagal menambah bab",
+      toast.error("Gagal menambah bab", {
         description: "Terjadi kesalahan saat menambah bab. Silahkan coba lagi.",
       });
       console.error(error);
@@ -55,8 +53,7 @@ const LessonFormDialog: React.FC<{
       });
       setOpen(false);
     } catch (error) {
-      toast({
-        title: "Gagal mengubah bab",
+      toast.error("Gagal mengubah bab", {
         description: "Terjadi kesalahan saat mengubah bab. Silahkan coba lagi.",
       });
       console.error(error);

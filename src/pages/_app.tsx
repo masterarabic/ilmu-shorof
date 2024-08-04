@@ -5,6 +5,7 @@ import { ReactElement, ReactNode } from "react";
 
 import "@/styles/globals.css";
 
+import { Toaster as SonnerToaster } from "@/common/components/ui/sonner";
 import { Toaster } from "@/common/components/ui/toaster";
 import { trpc } from "@/utils/trpc";
 
@@ -31,6 +32,7 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
     <main className={poppins.className}>
       {getLayout(<Component {...pageProps} />)}
       <Toaster />
+      <SonnerToaster />
     </main>
   );
 };
