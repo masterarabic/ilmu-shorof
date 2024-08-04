@@ -8,7 +8,7 @@ const AdminMainLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className={cn("flex")}>
       <SidebarDesktop />
-      <div className="flex-1 py-6 px-8 ml-[250px]">{children}</div>
+      <div className="flex-1 py-6 px-10 ml-[250px]">{children}</div>
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
@@ -58,7 +59,20 @@ const LessonDetailPage: NextPageWithLayout<{
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-semibold">Pelajaran</h1>
+        <div className="flex items-center relative">
+          <Link
+            href={{
+              pathname: "/admin/sub-bab/[subBabId]",
+              query: { subBabId: lesson?.subBab.id },
+            }}
+            className="left-0 translate-x-[-100%] absolute"
+          >
+            <Button type="button" size="sm" variant="ghost">
+              <ArrowLeftIcon />
+            </Button>
+          </Link>
+          <h1 className="text-3xl font-semibold">Detail Pelajaran</h1>
+        </div>
         <div className="space-x-2">
           <Button
             size="sm"

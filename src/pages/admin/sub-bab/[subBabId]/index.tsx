@@ -1,5 +1,7 @@
+import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import { GetServerSidePropsContext } from "next";
+import Link from "next/link";
 import React from "react";
 import superjson from "superjson";
 
@@ -60,7 +62,20 @@ const SubBabPage: NextPageWithLayout<{
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-semibold">Sub Bab</h1>
+        <div className="flex items-center relative">
+          <Link
+            href={{
+              pathname: "/admin/bab/[babId]",
+              query: { babId: subBab?.bab?.id },
+            }}
+            className="left-0 translate-x-[-100%] absolute"
+          >
+            <Button type="button" size="sm" variant="ghost">
+              <ArrowLeftIcon />
+            </Button>
+          </Link>
+          <h1 className="text-3xl font-semibold">Detail Sub Bab</h1>
+        </div>
         <div className="space-x-2">
           <Button
             size="sm"
