@@ -28,6 +28,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/common/components/ui/tooltip";
+import useSystemSetting from "@/common/hooks/useSystemSetting";
 import { trpc } from "@/utils/trpc";
 
 const FormSchema = z.object({
@@ -58,10 +59,12 @@ const QuestionItem = ({
   questionIndex,
   control,
   remove,
+  score,
 }: {
   questionIndex: number;
   control: Control<z.infer<typeof FormSchema>>;
   remove: UseFieldArrayRemove;
+  score: number;
 }) => {
   const {
     fields,
@@ -129,7 +132,7 @@ const QuestionItem = ({
               <Input
                 type="text"
                 placeholder="Isi dengan nilai"
-                value={10}
+                value={score}
                 onClick={() => {
                   window.open(`/admin/setting`, "_blank");
                 }}
@@ -229,6 +232,8 @@ const QuestionForm: React.FC<{
   lessonId: string;
   defaultValues?: z.infer<typeof FormSchema>;
 }> = ({ lessonId, defaultValues }) => {
+  const { config } = useSystemSetting();
+
   const { mutateAsync } = trpc.question.bulk.useMutation();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -324,6 +329,7 @@ const QuestionForm: React.FC<{
                 control={form.control}
                 questionIndex={index}
                 remove={remove}
+                score={config.defaultScore}
               />
             );
           })}

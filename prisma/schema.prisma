@@ -67,8 +67,7 @@ model Answer {
 }
 
 model Setting {
-  id        String   @id @default(uuid())
-  name      String
+  name      String   @id @unique
   value     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -7,6 +7,7 @@ import superjson from "superjson";
 
 import { Button } from "@/common/components/ui/button";
 import { Card } from "@/common/components/ui/card";
+import useSystemSetting from "@/common/hooks/useSystemSetting";
 import DeleteLessonButton from "@/modules/admin/components/lesson/DeleteButton";
 import LessonFormDialog from "@/modules/admin/components/lesson/FormDialog";
 import QuestionForm from "@/modules/admin/components/lesson/QuestionForm";
@@ -43,6 +44,7 @@ export async function getServerSideProps(
 const LessonDetailPage: NextPageWithLayout<{
   id: string;
 }> = ({ id }) => {
+  const { config } = useSystemSetting();
   const [lessonDialog, setLessonDialog] = React.useState({
     open: false,
     mode: "create" as "create" | "update",
@@ -103,8 +105,8 @@ const LessonDetailPage: NextPageWithLayout<{
       </div>
 
       <div className="flex items-center gap-x-7 mb-8">
-        <div>Acak Soal : Ya</div>
-        <div>Acak Pertanyaan : Ya</div>
+        <div>Acak Soal : {config.randomizeQuestion ? "Ya" : "Tidak"}</div>
+        <div>Acak Pertanyaan : {config.randomizeAnswer ? "Ya" : "Tidak"}</div>
         <div>
           <Link href="/admin/setting">
             <Button size="sm" variant="ghost">
