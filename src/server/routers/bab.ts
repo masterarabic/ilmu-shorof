@@ -17,27 +17,33 @@ export const defaultSelectBab = {
   updatedAt: true,
 } satisfies Prisma.BabSelect;
 
+const accumulatorEnum = z.enum(["countSubBab"]);
+
 export const babRouter = router({
   list: publicProcedure
     .input(
       z.object({
-        with: z.string().optional().or(z.array(z.string())).optional(),
         id: z.string().uuid().optional(),
+        accumulator: accumulatorEnum.optional(),
       })
     )
     .query(async ({ input }) => {
-      //   const withFields = input.with
-      //     ? Array.isArray(input.with)
-      //       ? input.with
-      //       : [input.with]
-      //     : [];
-
       const whereInput: Prisma.BabWhereInput = {};
-
       if (input.id) whereInput.id = input.id;
 
       const items = await prisma.bab.findMany({
-        select: defaultSelectBab,
+        select: {
+          ...defaultSelectBab,
+          ...(input.accumulator === "countSubBab"
+            ? {
+                _count: {
+                  select: {
+                    subBab: true,
+                  },
+                },
+              }
+            : {}),
+        },
         where: whereInput,
         orderBy: {
           number: "asc",

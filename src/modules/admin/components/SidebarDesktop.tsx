@@ -18,6 +18,10 @@ const menuItems = [
     title: "Siswa",
     url: "/admin/siswa",
   },
+  {
+    title: "Pengaturan",
+    url: "/admin/setting",
+  },
 ];
 
 const isActive = (pathname: string, url: string, routes?: string[]) => {
@@ -38,7 +42,7 @@ export const SidebarDesktop = () => {
   const router = useRouter();
 
   return (
-    <div className="w-[250px] fixed h-screen left-0 top-0 bottom-0 overflow-x-hidden overflow-y-auto border-r">
+    <div className="w-[250px] flex flex-col fixed h-screen left-0 top-0 bottom-0 overflow-x-hidden overflow-y-auto border-r">
       <div className="flex justify-center mt-6 mb-8">
         <Link
           href="/admin"
@@ -49,7 +53,7 @@ export const SidebarDesktop = () => {
         </Link>
       </div>
 
-      <div className="flex flex-col">
+      <div className="flex flex-col flex-1">
         {menuItems.map((item) => (
           <Link key={item.url} href={item.url} className="mx-2">
             <Button
@@ -64,6 +68,18 @@ export const SidebarDesktop = () => {
             </Button>
           </Link>
         ))}
+      </div>
+
+      <div>
+        <Button
+          className="w-full"
+          variant="ghost"
+          onClick={() => {
+            // TODO: Implement logout
+          }}
+        >
+          Keluar
+        </Button>
       </div>
     </div>
   );

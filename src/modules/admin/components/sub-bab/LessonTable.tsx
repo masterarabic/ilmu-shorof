@@ -53,13 +53,14 @@ const LessonTable: React.FC<{
 
   const { data: lessonData } = trpc.lesson.list.useQuery({
     subBabId,
+    accumulator: "countQuestion",
   });
   const lessonListTableData: Data[] = React.useMemo(() => {
     if (!lessonData?.items) return [];
     return lessonData.items.map((item) => ({
       id: item.id,
       number: item.number,
-      totalLesson: 0,
+      totalLesson: item._count?.question || 0,
     }));
   }, [lessonData?.items]);
 

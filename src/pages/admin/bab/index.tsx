@@ -64,7 +64,9 @@ const BabPage: NextPageWithLayout = () => {
     mode: "create" as "create" | "update",
   });
 
-  const { data: babListResponse, isLoading } = trpc.bab.list.useQuery({});
+  const { data: babListResponse, isLoading } = trpc.bab.list.useQuery({
+    accumulator: "countSubBab",
+  });
 
   const babTableData: Data[] = React.useMemo(() => {
     if (!babListResponse?.items) return [];
@@ -72,7 +74,7 @@ const BabPage: NextPageWithLayout = () => {
       id: item.id,
       number: item.number,
       name: item.name,
-      totalSubBab: 0,
+      totalSubBab: item._count?.subBab || 0,
     }));
   }, [babListResponse?.items]);
 

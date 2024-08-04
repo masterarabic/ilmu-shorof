@@ -1,4 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import React from "react";
 import {
   Control,
@@ -20,6 +23,12 @@ import {
   FormMessage,
 } from "@/common/components/ui/form";
 import { Input } from "@/common/components/ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/common/components/ui/tooltip";
 import { useToast } from "@/common/components/ui/use-toast";
 import { trpc } from "@/utils/trpc";
 
@@ -56,6 +65,7 @@ const QuestionItem = ({
   control: Control<z.infer<typeof FormSchema>>;
   remove: UseFieldArrayRemove;
 }) => {
+  const router = useRouter();
   const {
     fields,
     append: appendAnswer,
@@ -81,23 +91,58 @@ const QuestionItem = ({
         </Button>
       </div>
       <div className="w-full">
-        <FormField
-          control={control}
-          name={`items.${questionIndex}.question`}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Pertanyaan</FormLabel>
-              <FormControl>
-                <Input
-                  type="text"
-                  placeholder="Isi dengan pertanyaan"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="flex gap-x-3">
+          <FormField
+            control={control}
+            name={`items.${questionIndex}.question`}
+            render={({ field }) => (
+              <FormItem className="flex-1">
+                <FormLabel>Pertanyaan</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    placeholder="Isi dengan pertanyaan"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {/* <FormField
+            control={control}
+            name={`items.${questionIndex}.question`}
+            disabled
+            render={({ field }) => ( */}
+          <FormItem>
+            <FormLabel>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    Nilai
+                    <InfoCircledIcon className="inline-block ml-1 -translate-y-0.5" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Ubah di pengaturan</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </FormLabel>
+            <FormControl>
+              <Input
+                type="text"
+                placeholder="Isi dengan nilai"
+                value={10}
+                onClick={() => {
+                  window.open(`/admin/setting`, "_blank");
+                }}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+          {/* )}
+          /> */}
+        </div>
 
         <hr className="my-4" />
 
@@ -206,13 +251,13 @@ const QuestionForm: React.FC<{
     try {
       await mutateAsync({
         lessonId,
-        items: data.items.map((item) => ({
+        items: data.items.map((item, questionIndex) => ({
           id: item.id,
-          number: 1,
-          score: 1,
+          number: questionIndex + 1,
           question: item.question,
-          answers: item.answers.map((answer) => ({
+          answers: item.answers.map((answer, answerIndex) => ({
             id: answer.id,
+            number: answerIndex + 1,
             text: answer.text,
             correct: answer.correct,
           })),

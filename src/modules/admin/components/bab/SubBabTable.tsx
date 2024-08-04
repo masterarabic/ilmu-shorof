@@ -56,6 +56,7 @@ const SubBabListTable: React.FC<{ id: string }> = ({ id }) => {
 
   const { data: subBabData, isLoading } = trpc.subBab.list.useQuery({
     babId: id,
+    accumulator: "countLesson",
   });
 
   const subBabListData: Data[] = React.useMemo(() => {
@@ -64,7 +65,7 @@ const SubBabListTable: React.FC<{ id: string }> = ({ id }) => {
       id: item.id,
       number: item.number,
       name: item.name,
-      totalLesson: 0,
+      totalLesson: item._count?.lesson || 0,
     }));
   }, [subBabData?.items]);
 

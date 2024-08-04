@@ -19,15 +19,17 @@ export const defaultSelectLesson = {
 } satisfies Prisma.LessonSelect;
 
 const withEnum = z.enum(["bab", "subBab"]);
+const accumulator = z.enum(["countQuestion"]);
 
 export const lessonRouter = router({
   list: publicProcedure
     .input(
       z.object({
-        with: withEnum.optional().or(z.array(withEnum)).optional(),
         id: z.string().uuid().optional(),
         babId: z.string().uuid().optional(),
         subBabId: z.string().uuid().optional(),
+        with: withEnum.optional().or(z.array(withEnum)).optional(),
+        accumulator: accumulator.optional(),
       })
     )
     .query(async ({ input }) => {
@@ -59,6 +61,15 @@ export const lessonRouter = router({
                 select: defaultSelectSubBab,
               }
             : undefined,
+          ...(input.accumulator === "countQuestion"
+            ? {
+                _count: {
+                  select: {
+                    question: true,
+                  },
+                },
+              }
+            : {}),
         },
         where: whereInput,
         orderBy: {

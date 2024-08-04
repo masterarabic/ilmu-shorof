@@ -58,6 +58,10 @@ export const questionRouter = router({
                   id: true,
                   isCorrect: true,
                   answer: true,
+                  number: true,
+                },
+                orderBy: {
+                  number: "asc",
                 },
               }
             : undefined,
@@ -81,10 +85,10 @@ export const questionRouter = router({
             id: z.string().uuid(),
             number: z.number().min(1),
             question: z.string(),
-            score: z.number(),
             answers: z.array(
               z.object({
                 id: z.string().uuid(),
+                number: z.number().min(1),
                 text: z.string(),
                 correct: z.boolean(),
               })
@@ -147,14 +151,12 @@ export const questionRouter = router({
               id: item.id,
             },
             update: {
-              score: item.score,
               number: item.number,
               question: item.question,
             },
             create: {
               id: item.id,
               number: item.number,
-              score: item.score,
               question: item.question,
               lesson: {
                 connect: {
@@ -173,10 +175,12 @@ export const questionRouter = router({
               update: {
                 answer: answer.text,
                 isCorrect: answer.correct,
+                number: answer.number,
               },
               create: {
                 answer: answer.text,
                 isCorrect: answer.correct,
+                number: answer.number,
                 questionId: item.id,
               },
             });
