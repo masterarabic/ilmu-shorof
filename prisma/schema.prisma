@@ -55,4 +55,13 @@ model Question {
   updatedAt DateTime @updatedAt
   lessonId  String
   lesson    Lesson   @relation(fields: [lessonId], references: [id])
+  answer    Answer[]
+}
+
+model Answer {
+  id         String   @id @default(uuid())
+  answer     String
+  isCorrect  Boolean
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 }

@@ -11,7 +11,7 @@ import { defaultSelectSubBab } from "./subBab";
  * It's important to always explicitly say which fields you want to return in order to not leak extra information
  * @link https://github.com/prisma/prisma/issues/9353
  */
-const defaultSelect = {
+export const defaultSelectLesson = {
   id: true,
   number: true,
   createdAt: true,
@@ -48,7 +48,7 @@ export const lessonRouter = router({
 
       const items = await prisma.lesson.findMany({
         select: {
-          ...defaultSelect,
+          ...defaultSelectLesson,
           bab: includeInput.bab
             ? {
                 select: defaultSelectBab,
@@ -93,7 +93,7 @@ export const lessonRouter = router({
             },
           },
         },
-        select: defaultSelect,
+        select: defaultSelectLesson,
       });
       return post;
     }),
@@ -111,7 +111,7 @@ export const lessonRouter = router({
           id,
         },
         data,
-        select: defaultSelect,
+        select: defaultSelectLesson,
       });
       return post;
     }),
@@ -127,7 +127,7 @@ export const lessonRouter = router({
         where: {
           id,
         },
-        select: defaultSelect,
+        select: defaultSelectLesson,
       });
       return post;
     }),

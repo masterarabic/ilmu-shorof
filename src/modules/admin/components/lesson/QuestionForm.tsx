@@ -1,6 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
-import { Control, useFieldArray, useForm } from "react-hook-form";
+import {
+  Control,
+  useFieldArray,
+  UseFieldArrayRemove,
+  useForm,
+} from "react-hook-form";
+import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 
 import { Button } from "@/common/components/ui/button";
@@ -14,10 +20,13 @@ import {
   FormMessage,
 } from "@/common/components/ui/form";
 import { Input } from "@/common/components/ui/input";
+import { useToast } from "@/common/components/ui/use-toast";
+import { trpc } from "@/utils/trpc";
 
 const FormSchema = z.object({
   items: z.array(
     z.object({
+      id: z.string().uuid(),
       question: z
         .string({
           message: "Pertanyaan harus berupa teks",
@@ -27,6 +36,7 @@ const FormSchema = z.object({
         }),
       answers: z.array(
         z.object({
+          id: z.string().uuid(),
           text: z.string().min(1, {
             message: "Jawaban tidak boleh kosong",
           }),
@@ -44,7 +54,7 @@ const QuestionItem = ({
 }: {
   questionIndex: number;
   control: Control<z.infer<typeof FormSchema>>;
-  remove: (index: number) => void;
+  remove: UseFieldArrayRemove;
 }) => {
   const {
     fields,
@@ -98,6 +108,7 @@ const QuestionItem = ({
             size="sm"
             onClick={() => {
               appendAnswer({
+                id: uuidv4(),
                 text: "",
                 correct: false,
               });
@@ -108,9 +119,9 @@ const QuestionItem = ({
         </div>
 
         <div className="space-y-2 w-full">
-          {fields.map((_, index) => {
+          {fields.map((question, answerIndex) => {
             return (
-              <div key={index} className="flex gap-2 w-full">
+              <div key={question.id} className="flex gap-2 w-full">
                 <Button
                   type="button"
                   asChild
@@ -118,15 +129,15 @@ const QuestionItem = ({
                   className="space-x-3"
                 >
                   <label
-                    htmlFor={`items.${questionIndex}.answers.${index}.correct`}
+                    htmlFor={`items.${questionIndex}.answers.${answerIndex}.correct`}
                     className="flex items-center space-x-2"
                   >
                     <FormField
                       control={control}
-                      name={`items.${questionIndex}.answers.${index}.correct`}
+                      name={`items.${questionIndex}.answers.${answerIndex}.correct`}
                       render={({ field }) => (
                         <Checkbox
-                          id={`items.${questionIndex}.answers.${index}.correct`}
+                          id={`items.${questionIndex}.answers.${answerIndex}.correct`}
                           checked={field.value}
                           onCheckedChange={field.onChange}
                           className="mr-2"
@@ -138,7 +149,7 @@ const QuestionItem = ({
                 </Button>
                 <FormField
                   control={control}
-                  name={`items.${questionIndex}.answers.${index}.text`}
+                  name={`items.${questionIndex}.answers.${answerIndex}.text`}
                   render={({ field }) => (
                     <FormItem className="w-full">
                       <FormControl>
@@ -157,7 +168,8 @@ const QuestionItem = ({
                   type="button"
                   variant="ghost"
                   onClick={() => {
-                    removeAnswer(index);
+                    console.log("remove", answerIndex);
+                    removeAnswer(answerIndex);
                   }}
                 >
                   Hapus
@@ -171,10 +183,15 @@ const QuestionItem = ({
   );
 };
 
-const QuestionForm = () => {
+const QuestionForm: React.FC<{
+  lessonId: string;
+  defaultValues?: z.infer<typeof FormSchema>;
+}> = ({ lessonId, defaultValues }) => {
+  const { toast } = useToast();
+  const { mutateAsync } = trpc.question.bulk.useMutation();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {},
+    defaultValues,
   });
   const {
     fields: itemsFields,
@@ -185,8 +202,34 @@ const QuestionForm = () => {
     name: "items",
   });
 
-  const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    console.log(data);
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    try {
+      await mutateAsync({
+        lessonId,
+        items: data.items.map((item) => ({
+          id: item.id,
+          number: 1,
+          score: 1,
+          question: item.question,
+          answers: item.answers.map((answer) => ({
+            id: answer.id,
+            text: answer.text,
+            correct: answer.correct,
+          })),
+        })),
+      });
+      toast({
+        title: "Berhasil menyimpan soal",
+        description: "Soal berhasil disimpan.",
+      });
+    } catch (error) {
+      toast({
+        title: "Gagal menyimpan soal",
+        description:
+          "Terjadi kesalahan saat menyimpan soal. Silahkan coba lagi.",
+      });
+      console.error(error);
+    }
   };
 
   return (
@@ -200,21 +243,26 @@ const QuestionForm = () => {
               size="sm"
               onClick={() => {
                 appendItem({
+                  id: uuidv4(),
                   question: "",
                   answers: [
                     {
+                      id: uuidv4(),
                       text: "",
                       correct: true,
                     },
                     {
+                      id: uuidv4(),
                       text: "",
                       correct: false,
                     },
                     {
+                      id: uuidv4(),
                       text: "",
                       correct: false,
                     },
                     {
+                      id: uuidv4(),
                       text: "",
                       correct: false,
                     },
@@ -228,10 +276,10 @@ const QuestionForm = () => {
         </div>
 
         <div className="space-y-3">
-          {itemsFields.map((_, index) => {
+          {itemsFields.map((question, index) => {
             return (
               <QuestionItem
-                key={index}
+                key={question.id}
                 control={form.control}
                 questionIndex={index}
                 remove={remove}
@@ -248,4 +296,32 @@ const QuestionForm = () => {
   );
 };
 
-export default QuestionForm;
+const Wrapper: React.FC<{ lessonId: string }> = ({ lessonId }) => {
+  const { data, isLoading } = trpc.question.list.useQuery({
+    lessonId,
+    with: ["answers"],
+  });
+
+  const items = data?.items || [];
+
+  if (isLoading) return <div>Loading...</div>;
+
+  return (
+    <QuestionForm
+      defaultValues={{
+        items: items.map((item) => ({
+          id: item.id,
+          question: item.question,
+          answers: item.answer.map((answer) => ({
+            id: answer.id,
+            text: answer.answer,
+            correct: answer.isCorrect,
+          })),
+        })),
+      }}
+      lessonId={lessonId}
+    />
+  );
+};
+
+export default Wrapper;

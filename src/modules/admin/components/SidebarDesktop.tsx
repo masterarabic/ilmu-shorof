@@ -36,7 +36,6 @@ const isActive = (pathname: string, url: string, routes?: string[]) => {
 
 export const SidebarDesktop = () => {
   const router = useRouter();
-  console.log(router.pathname);
 
   return (
     <div className="w-[250px] fixed h-screen left-0 top-0 bottom-0 overflow-x-hidden overflow-y-auto border-r">

@@ -1,15 +1,11 @@
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import { GetServerSidePropsContext } from "next";
+import Link from "next/link";
 import React from "react";
 import superjson from "superjson";
 
 import { Button } from "@/common/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/common/components/ui/card";
+import { Card } from "@/common/components/ui/card";
 import DeleteLessonButton from "@/modules/admin/components/lesson/DeleteButton";
 import LessonFormDialog from "@/modules/admin/components/lesson/FormDialog";
 import QuestionForm from "@/modules/admin/components/lesson/QuestionForm";
@@ -78,18 +74,11 @@ const LessonDetailPage: NextPageWithLayout<{
       </div>
 
       <div className="mb-8 flex gap-x-3">
-        <Card className="w-auto">
-          <CardHeader className="flex flex-row items-center justify-center space-y-0 pb-2">
-            <CardTitle className="text-xs font-medium">
-              Nomor Pelajaran
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-center">
-              {lesson?.number}
-            </div>
-          </CardContent>
+        <Card className="w-auto p-6 flex-col">
+          <div className="text-xs font-medium">Nomor Pelajaran</div>
+          <div className="text-3xl font-bold text-center">{lesson?.number}</div>
         </Card>
+
         <div>
           <div className="text-sm">Nama Bab</div>
           <div className="text-2xl mb-2">{lesson?.bab?.name}</div>
@@ -99,7 +88,19 @@ const LessonDetailPage: NextPageWithLayout<{
         </div>
       </div>
 
-      <QuestionForm />
+      <div className="flex items-center gap-x-7 mb-8">
+        <div>Acak Soal : Ya</div>
+        <div>Acak Pertanyaan : Ya</div>
+        <div>
+          <Link href="/admin/setting">
+            <Button size="sm" variant="ghost">
+              Ubah Pengaturan
+            </Button>
+          </Link>
+        </div>
+      </div>
+
+      <QuestionForm lessonId={id} />
 
       <LessonFormDialog
         mode={lessonDialog.mode}
