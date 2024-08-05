@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextPage } from "next";
 import type { AppProps } from "next/app";
 import { Poppins } from "next/font/google";
+import { SessionProvider, useSession } from "next-auth/react";
 import { ReactElement, ReactNode } from "react";
 
 import "@/styles/globals.css";
@@ -17,6 +19,7 @@ const poppins = Poppins({
 });
 
 export type NextPageWithLayout<P = unknown, IP = P> = NextPage<P, IP> & {
+  auth?: boolean;
   getLayout?: (page: ReactElement) => ReactNode;
 };
 
@@ -24,8 +27,10 @@ type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };
 
-const App = ({ Component, pageProps }: AppPropsWithLayout) => {
-  // Use the layout defined at the page level, if available
+const Content: React.FC<{
+  Component: NextPageWithLayout;
+  pageProps: any;
+}> = ({ Component, pageProps }) => {
   const getLayout = Component.getLayout ?? ((page) => page);
 
   return (
@@ -35,6 +40,38 @@ const App = ({ Component, pageProps }: AppPropsWithLayout) => {
       <SonnerToaster />
     </main>
   );
+};
+
+const App = ({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppPropsWithLayout) => {
+  // Use the layout defined at the page level, if available
+
+  return (
+    <SessionProvider session={session}>
+      {/* {Component.auth ? (
+        <Auth>
+          <Content Component={Component} pageProps={pageProps} />
+        </Auth>
+      ) : ( */}
+      <Content Component={Component} pageProps={pageProps} />
+      {/* )} */}
+    </SessionProvider>
+  );
+};
+
+const Auth: React.FC<{
+  children: ReactNode;
+}> = ({ children }) => {
+  // if `{ required: true }` is supplied, `status` can only be "loading" or "authenticated"
+  const { status } = useSession({ required: true });
+
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  return children;
 };
 
 export default trpc.withTRPC(App);

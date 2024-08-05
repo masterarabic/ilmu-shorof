@@ -1,9 +1,11 @@
+import { signOut } from "next-auth/react";
 import React from "react";
 
 import HomeIcon from "../icons/Home";
 import LeaderBoardIcon from "../icons/Leaderboard";
 import SettingIcon from "../icons/Setting";
 import { cn } from "../utils";
+import { Button } from "./ui/button";
 
 const menuItems = [
   {
@@ -51,6 +53,16 @@ const SidebarDesktop = () => {
           </button>
         ))}
       </div>
+      <Button
+        type="button"
+        variant="ghost"
+        className="mb-2"
+        onClick={() => {
+          signOut();
+        }}
+      >
+        Keluar
+      </Button>
     </div>
   );
 };
