@@ -1,13 +1,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
-import React, { FC, useId } from "react";
-import { useForm } from "react-hook-form";
+import Link from "next/link";
+import React, { FC, useId, useState } from "react";
+import { useForm, UseFormReturn, useWatch } from "react-hook-form";
 import { z } from "zod";
 
 import Button3D from "@/common/components/ui/3d-button";
 import { Button } from "@/common/components/ui/button";
 import { Form } from "@/common/components/ui/form";
 import { Progress } from "@/common/components/ui/progress";
+import { cn } from "@/common/utils";
+import ShareSection from "@/modules/client/components/belajar/ShareSection";
 import { NextPageWithLayout } from "@/pages/_app";
 
 const lesson = {
@@ -37,89 +40,157 @@ const lesson = {
   ],
 };
 
-const colors = [
-  "bg-[#FFA500]",
-  "bg-[#FFD700]",
-  "bg-[#50C878]",
-  "bg-[#FFC107]",
-  "bg-[#FF4500]",
-  "bg-[#32CD32]",
-  "bg-[#FF00FF]",
-  "bg-[#FF6347]",
-  "bg-[#00FFFF]",
-  "bg-[#20B2AA]",
-  "bg-[#FF7F50]",
-  "bg-[#ADFF2F]",
-];
+export const FormSchema = z.object({
+  answer: z.string(),
+  isIncorrect: z.boolean().optional(),
+});
 
-export const FormSchema = z.object({});
+type Form = UseFormReturn<z.infer<typeof FormSchema>>;
 
 const LessonPage: NextPageWithLayout = () => {
+  const [heartCount, setHeartCount] = useState(3);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
-  const onSubmit = () => {};
+
+  const onSubmit = (data: z.infer<typeof FormSchema>) => {
+    const answer = lesson.answers.find((a) => a.id === data.answer);
+
+    if (!answer) return;
+
+    if (answer.isCorrect) {
+      // reset form
+      form.reset();
+    } else {
+      setHeartCount((prev) => prev - 1);
+      form.setValue("isIncorrect", true);
+    }
+  };
 
   return (
-    <div className="bg-primary h-screen overflow-y-auto">
-      <div className="bg-primary-dark2 flex items-center justify-between py-3 px-5">
-        <Button variant="ghost" className="text-white">
-          Keluar
-        </Button>
-        <div className="group flex-col items-center flex justify-center">
-          <div className="flex justify-between w-full text-white/50">
-            <div>Bab 1 - Unit 2</div>
-            <div>1 dari 5 soal</div>
-          </div>
-          <Progress
-            value={70}
-            variant="white"
-            className="w-[700px] transition duration-300 group-hover:opacity-100 opacity-50 mb-2"
-          />
-        </div>
+    <div className="bg-primary min-h-screen overflow-y-auto px-11">
+      <div className="mt-6 mb-3 flex items-center justify-between">
+        <Link href="/belajar">
+          <Button variant="ghost" className="text-white">
+            Keluar
+          </Button>
+        </Link>
         <div className="flex items-center text-white gap-x-2 text-lg">
-          3 <HeartFilledIcon className="text-white size-6" />
+          {heartCount} <HeartFilledIcon className="text-white size-6" />
         </div>
       </div>
-
-      <div className="mt-20 flex justify-center mb-[100px]">
-        <div className="bg-white duration-300 ease-out overflow-hidden transition transform relative group py-8 w-[800px] p-5 rounded-md hover:scale-105">
-          <div className="text-center mb-2">Pertanyaan</div>
-          <p className="text-lg text-center font-semibold">
-            Kalimat bahasa Arab yang tepat untuk menyatakan &apos;Saya makan
-            nasi&apos; adalah...
-          </p>
+      <div className="grid grid-cols-[700px,1fr] gap-x-12">
+        <div>
+          <div className="bg-white pt-6 rounded-xl">
+            <div className="flex select-none p-8 text-lg font-semibold items-center justify-center w-full min-h-[400px] text-center mb-3">
+              {lesson.text}
+            </div>
+            <ShareSection
+              url={window.location.href ?? ""}
+              variant="ghost"
+              className="border-none"
+            />
+          </div>
+          <div className="group flex-col items-center flex justify-center">
+            <Progress
+              value={70}
+              variant="white"
+              className="w-full transition duration-300 group-hover:opacity-100 opacity-50 mb-2"
+            />
+            <div className="flex justify-between w-full transition duration-300 text-white/50 group-hover:text-white">
+              <div>Bab 1 - Unit 2</div>
+              <div>1 dari 5 soal</div>
+            </div>
+          </div>
         </div>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <div className="space-y-6">
+              {lesson.answers.map((answer) => (
+                <Answer key={answer.id} answer={answer} form={form} />
+              ))}
+            </div>
+            <hr className="my-5" />
+            <div>
+              <AnswerButton form={form} />
+            </div>
+          </form>
+        </Form>
       </div>
-
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-2 gap-8 px-32">
-            {lesson.answers.map((answer, index) => (
-              <AnswerCard key={index} answer={answer} />
-            ))}
-          </div>
-          <div className="flex justify-center">
-            <Button3D type="submit" variant="white" className="w-[300px]">
-              Jawab
-            </Button3D>
-          </div>
-        </form>
-      </Form>
     </div>
   );
 };
 
-const AnswerCard: FC<{
+const AnswerButton: FC<{
+  form: Form;
+}> = ({ form }) => {
+  const answer = useWatch({
+    control: form.control,
+    name: "answer",
+  });
+  const isIncorrect = useWatch({
+    control: form.control,
+    name: "isIncorrect",
+  });
+
+  return (
+    <>
+      {isIncorrect ? (
+        <>
+          <Button3D
+            type="button"
+            variant="destructive"
+            className="w-full"
+            frontClassName="!py-8 text-lg font-semibold"
+            onClick={() => {
+              form.reset();
+            }}
+          >
+            Lanjut
+          </Button3D>
+          <div className="text-white text-center mt-3">Jawaban Anda salah.</div>
+        </>
+      ) : (
+        <Button3D
+          type="submit"
+          variant="white"
+          className="w-full"
+          frontClassName="!py-8 text-lg font-semibold"
+          disabled={!answer}
+        >
+          Jawab
+        </Button3D>
+      )}
+    </>
+  );
+};
+
+const Answer: FC<{
   answer: (typeof lesson.answers)[number];
-}> = ({ answer }) => {
+  form: Form;
+}> = ({ answer, form }) => {
   const id = useId();
+  const isIncorrect = useWatch({
+    control: form.control,
+    name: "isIncorrect",
+  });
+
   return (
     <div className="relative">
-      <input className="peer hidden" id={id} type="radio" name="radio" />
+      <input
+        {...form.register("answer")}
+        type="radio"
+        className="peer hidden"
+        id={id}
+        value={answer.id}
+        disabled={isIncorrect}
+      />
       <label
         htmlFor={id}
-        className="flex hover:shadow-lg bg-white items-center justify-center cursor-pointer min-h-24 flex-col rounded-lg border-2 border-gray-300 p-4 peer-checked:border-2 peer-checked:border-primary-dark1"
+        className={cn(
+          "flex select-none text-lg text-white font-semibold transition duration-200 bg-primary shadow-lg items-center justify-center cursor-pointer min-h-24 flex-col rounded-lg border-2 border-white p-4 hover:shadow-lg",
+          "peer-checked:border-2 peer-checked:bg-white peer-checked:text-black peer-disabled:cursor-not-allowed"
+        )}
       >
         {answer.text}
       </label>

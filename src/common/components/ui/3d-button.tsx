@@ -4,7 +4,7 @@ import React, { FC } from "react";
 import { cn } from "@/common/utils";
 
 const button3DVariants = cva(
-  "relative border-none transform bg-transparent p-0 cursor-pointer outline-none transition-filter duration-250 select-none touch-manipulation hover:brightness-110 focus:outline-none focus-visible:outline-offset-4 active:outline-none group",
+  "group disabled:opacity-25 relative border-none transform bg-transparent p-0 cursor-pointer outline-none transition-filter duration-250 select-none touch-manipulation hover:brightness-110 focus:outline-none focus-visible:outline-offset-4 active:outline-none",
   {
     variants: {
       variant: {
@@ -26,9 +26,13 @@ const button3DVariants = cva(
 );
 
 const FrontVariants = cva(
-  "relative inline-flex w-full items-center justify-center text-white rounded-md transform -translate-y-1 transition-transform duration-[600ms] ease-[cubic-bezier(.3,.7,.4,1)] group-hover:-translate-y-1.5 group-active:translate-y-0",
+  "relative inline-flex w-full items-center justify-center text-white rounded-md transform -translate-y-1 transition-transform duration-[600ms] ease-[cubic-bezier(.3,.7,.4,1)] group-[:not(:disabled)]:group-hover:-translate-y-1.5 group-[:not(:disabled)]:group-active:translate-y-0",
   {
     variants: {
+      disabled: {
+        true: "bg-neutral-300 text-neutral-500 cursor-not-allowed",
+        false: "",
+      },
       variant: {
         default: "bg-violet-600",
         destructive: "bg-red-600",
@@ -69,7 +73,7 @@ const MiddleVariants = cva("absolute top-0 left-0 w-full h-full rounded-md", {
 });
 
 const ShadowVariants = cva(
-  "absolute top-0 left-0 w-full h-full rounded-md bg-black/25 transform translate-y-[2px] transition-transform duration-[600ms] ease-[cubic-bezier(.3,.7,.4,1)] group-hover:translate-y-1 group-active:translate-y-1",
+  "absolute top-0 left-0 w-full h-full rounded-md bg-black/25 transform translate-y-[2px] transition-transform duration-[600ms] ease-[cubic-bezier(.3,.7,.4,1)] group-[:not(:disabled)]:group-hover:translate-y-1 group-[:not(:disabled)]:group-active:translate-y-1",
   {
     variants: {
       variant: {
@@ -95,23 +99,38 @@ type Variant = VariantProps<typeof FrontVariants>["variant"];
 type Button3DProps = {
   children?: React.ReactNode;
   className?: string;
+  frontClassName?: string;
   size?: Size;
   variant?: Variant;
   type?: JSX.IntrinsicElements["button"]["type"];
   onClick?: JSX.IntrinsicElements["button"]["onClick"];
+  disabled?: boolean;
 };
 
 const Button3D: FC<Button3DProps> = ({
   size,
   variant,
   className,
+  frontClassName,
   children,
+  disabled,
+  onClick,
 }) => {
   return (
-    <button className={cn(button3DVariants({ variant, className }))}>
+    <button
+      disabled={disabled}
+      className={cn(button3DVariants({ variant, className }))}
+      onClick={onClick}
+    >
       <span className={cn(ShadowVariants({ variant }))}></span>
       <span className={cn(MiddleVariants({ variant }))}></span>
-      <span className={cn(FrontVariants({ size, variant }))}>{children}</span>
+      <span
+        className={cn(
+          FrontVariants({ disabled, size, variant, className: frontClassName })
+        )}
+      >
+        {children}
+      </span>
     </button>
   );
 };

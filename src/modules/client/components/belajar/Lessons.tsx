@@ -77,7 +77,7 @@ const ProgressItem = ({
 
   return (
     <button
-      className={cn("relative items-center flex flex-col", className, {
+      className={cn("group relative items-center flex flex-col", className, {
         "cursor-pointer": !disabled,
         "cursor-not-allowed": disabled,
       })}
@@ -88,20 +88,29 @@ const ProgressItem = ({
       }}
     >
       <div
-        className={cn("size-[60px] rounded-[100%]", {
-          "bg-primary-dark1": !disabled,
-          "bg-[#cbcbcb]": disabled,
-        })}
+        className={cn(
+          "transform duration-100 w-[60px] h-[56px] rounded-[100%]",
+          // "group-hover:h-[52px]",
+          {
+            "bg-primary-dark1": !disabled,
+            "bg-[#cbcbcb]": disabled,
+          }
+        )}
       >
         <div
           className={cn(
-            "w-full flex items-center justify-center rounded-[100%] h-[85%] bg-primary",
+            "w-full transform duration-100 flex items-center justify-center rounded-[100%] h-[48px] bg-primary",
+            "group-hover:h-[44px]",
+            "group-active:h-[50px]",
             {
               "bg-[#e0e0e0]": disabled,
             }
           )}
         >
-          <StarIcon className="size-[25px]" filled={!disabled} />
+          <StarIcon
+            className="transform duration-100 group-hover:scale-y-[.85] size-[25px] scale-y-90"
+            filled={!disabled}
+          />
         </div>
       </div>
       <div className="flex items-center gap-x-2 -mb-1">

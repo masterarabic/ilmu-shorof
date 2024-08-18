@@ -1,3 +1,4 @@
+import { cva, VariantProps } from "class-variance-authority";
 import React, { FC } from "react";
 import QRCode from "react-qr-code";
 import {
@@ -9,24 +10,82 @@ import {
   WhatsappShareButton,
 } from "react-share";
 
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/common/components/ui/popover";
+import { cn } from "@/common/utils";
+
+const ShareSectionVariants = cva("flex mb-3 gap-3 px-4 rounded-md py-4", {
+  variants: {
+    variant: {
+      default: "border",
+      ghost: "",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+});
+
+type ShareSectionVariantsProps = VariantProps<typeof ShareSectionVariants>;
+
+type Variant = NonNullable<ShareSectionVariantsProps["variant"]>;
 type ShareSectionProps = {
   url: string;
+  className?: string;
+  variant?: Variant;
 };
 
-const ShareSection: FC<ShareSectionProps> = ({ url }) => {
+const bgFill: Record<Variant, string> = {
+  default: "#e5e5e5",
+  ghost: "#fff",
+};
+const iconFillColor: Record<Variant, string> = {
+  default: "#6c6c6c",
+  ghost: "#d7d7d7",
+};
+
+const ShareSection: FC<ShareSectionProps> = ({
+  className,
+  variant = "default",
+  url,
+}) => {
   return (
-    <section className="flex mb-3 gap-3 border px-4 rounded-md py-4">
-      <QRCode size={60} value={url} fgColor="#6c6c6c" />
+    <section
+      className={cn(
+        ShareSectionVariants({
+          variant,
+          className,
+        })
+      )}
+    >
+      <Popover>
+        <PopoverTrigger>
+          <QRCode size={60} value={url} fgColor={iconFillColor[variant]} />
+        </PopoverTrigger>
+        <PopoverContent className="w-auto" align="center">
+          <QRCode size={100} value={url} fgColor="#000" />
+        </PopoverContent>
+      </Popover>
 
       <div>
-        <div className="mb-2 leading-none text-neutral-700">Bagikan</div>
+        <div
+          className={cn("mb-2 leading-none", {
+            "text-neutral-300": variant === "ghost",
+            "text-neutral-700": variant === "default",
+          })}
+        >
+          Bagikan
+        </div>
         <div className="flex gap-3">
           <WhatsappShareButton url={url}>
             <WhatsappIcon
               bgStyle={{
-                fill: "#e5e5e5",
+                fill: bgFill[variant],
               }}
-              iconFillColor="#6c6c6c"
+              iconFillColor={iconFillColor[variant]}
               size={32}
               round
             />
@@ -34,9 +93,9 @@ const ShareSection: FC<ShareSectionProps> = ({ url }) => {
           <LinkedinShareButton url={url}>
             <LinkedinIcon
               bgStyle={{
-                fill: "#e5e5e5",
+                fill: bgFill[variant],
               }}
-              iconFillColor="#6c6c6c"
+              iconFillColor={iconFillColor[variant]}
               size={32}
               round
             />
@@ -44,9 +103,9 @@ const ShareSection: FC<ShareSectionProps> = ({ url }) => {
           <FacebookShareButton url={url}>
             <FacebookIcon
               bgStyle={{
-                fill: "#e5e5e5",
+                fill: bgFill[variant],
               }}
-              iconFillColor="#6c6c6c"
+              iconFillColor={iconFillColor[variant]}
               size={32}
               round
             />
