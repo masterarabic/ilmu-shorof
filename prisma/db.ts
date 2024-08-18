@@ -1,11 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 
-import { env } from "@/server/env";
-
 const prismaClientSingleton = () => {
   return new PrismaClient({
-    log:
-      env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
+    // log:
+    //   env.NODE_ENV === "development" ? ["query", "error", "warn"] : ["error"],
   });
 };
 

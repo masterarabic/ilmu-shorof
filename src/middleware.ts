@@ -18,8 +18,6 @@ const middleware = (request: NextRequest) => {
   const token = request?.nextauth?.token as JWT | undefined;
   const path = request.nextUrl.pathname;
 
-  console.log(token);
-
   if (isAdminPath(path) && token && token.role === "student") {
     return NextResponse.redirect(new URL("/", request.nextUrl));
   }

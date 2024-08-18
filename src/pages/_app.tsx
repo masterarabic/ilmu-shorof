@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextPage } from "next";
 import type { AppProps } from "next/app";
-import { Poppins } from "next/font/google";
+import { Nunito } from "next/font/google";
 import { SessionProvider, useSession } from "next-auth/react";
 import { ReactElement, ReactNode } from "react";
 
@@ -11,7 +11,7 @@ import { Toaster as SonnerToaster } from "@/common/components/ui/sonner";
 import { Toaster } from "@/common/components/ui/toaster";
 import { trpc } from "@/utils/trpc";
 
-const poppins = Poppins({
+const nunito = Nunito({
   weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
   display: "swap",
@@ -31,10 +31,11 @@ const Content: React.FC<{
   Component: NextPageWithLayout;
   pageProps: any;
 }> = ({ Component, pageProps }) => {
+  // Use the layout defined at the page level, if available
   const getLayout = Component.getLayout ?? ((page) => page);
 
   return (
-    <main className={poppins.className}>
+    <main className={nunito.className}>
       {getLayout(<Component {...pageProps} />)}
       <Toaster />
       <SonnerToaster />
@@ -46,17 +47,17 @@ const App = ({
   Component,
   pageProps: { session, ...pageProps },
 }: AppPropsWithLayout) => {
-  // Use the layout defined at the page level, if available
+  const checkAuth = Component.auth === undefined ? true : Component.auth;
 
   return (
     <SessionProvider session={session}>
-      {/* {Component.auth ? (
+      {checkAuth ? (
         <Auth>
           <Content Component={Component} pageProps={pageProps} />
         </Auth>
-      ) : ( */}
-      <Content Component={Component} pageProps={pageProps} />
-      {/* )} */}
+      ) : (
+        <Content Component={Component} pageProps={pageProps} />
+      )}
     </SessionProvider>
   );
 };
@@ -68,7 +69,7 @@ const Auth: React.FC<{
   const { status } = useSession({ required: true });
 
   if (status === "loading") {
-    return <div>Loading...</div>;
+    return <div></div>;
   }
 
   return children;

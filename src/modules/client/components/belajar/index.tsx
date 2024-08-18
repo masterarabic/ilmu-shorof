@@ -1,20 +1,24 @@
-import React from "react";
+import React, { FC } from "react";
 
 import { cn } from "@/common/utils";
 
+import Header from "./Header";
+import Lessons from "./Lessons";
 import ProfileSection from "./ProfileSection";
-import { ShareSection } from "./ShareSection";
+import ShareSection from "./ShareSection";
 import StatSection from "./StatSection";
 
-const Bab = () => {
+type BabProps = {
+  babNumber: number;
+};
+
+const Bab: FC<BabProps> = ({ babNumber }) => {
   return (
     <section className="min-h-svh flex">
-      <div
-        className={cn(
-          "flex-1 relative flex flex-col",
-          "md:pt-4 md:mx-12 md:pb-4"
-        )}
-      ></div>
+      <div className={cn("flex-1 relative flex flex-col", "md:py-4 md:mx-12")}>
+        <Header babNumber={babNumber} />
+        <Lessons babNumber={babNumber} />
+      </div>
       <div
         className={cn(
           "hidden",
@@ -25,7 +29,7 @@ const Bab = () => {
         <div className="flex sticky h-svh top-0 flex-col flex-1">
           <ProfileSection />
           <StatSection />
-          <ShareSection />
+          <ShareSection url={window.location.href ?? ""} />
         </div>
       </div>
     </section>

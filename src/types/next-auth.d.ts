@@ -7,6 +7,7 @@ declare module "next-auth" {
    * or the second parameter of the `session` callback, when using a database.
    */
   interface User {
+    id: string;
     role: string;
   }
   /**
@@ -20,6 +21,7 @@ declare module "next-auth" {
    */
   interface Session {
     user: {
+      id: string;
       role: string;
       /**
        * By default, TypeScript merges new interface properties and overwrites existing ones.
@@ -37,6 +39,7 @@ import { JWT } from "next-auth/jwt";
 declare module "next-auth/jwt" {
   /** Returned by the `jwt` callback and `auth`, when using JWT sessions */
   interface JWT {
+    id: string;
     role: string;
   }
 }

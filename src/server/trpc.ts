@@ -8,7 +8,7 @@
  * @link https://trpc.io/docs/v11/procedures
  */
 
-import { initTRPC } from "@trpc/server";
+import { initTRPC, TRPCError } from "@trpc/server";
 
 import { transformer } from "@/utils/transformer";
 
@@ -38,6 +38,39 @@ export const router = t.router;
  * @link https://trpc.io/docs/v11/procedures
  **/
 export const publicProcedure = t.procedure;
+
+/**
+ * Reusable middleware that enforces users are logged in before running the
+ * procedure
+ */
+const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
+  if (!ctx.session || !ctx.session.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
+export const protectedProcedure = publicProcedure.use(enforceUserIsAuthed);
+
+const adminOnly = t.middleware(({ ctx, next }) => {
+  if (ctx.session?.user?.role !== "admin") {
+    throw new TRPCError({ code: "FORBIDDEN" });
+  }
+  return next();
+});
+export const adminProcedure = protectedProcedure.use(adminOnly);
+
+const studentOnly = t.middleware(({ ctx, next }) => {
+  if (ctx.session?.user?.role !== "student") {
+    throw new TRPCError({ code: "FORBIDDEN" });
+  }
+  return next();
+});
+export const studentProcedure = protectedProcedure.use(studentOnly);
 
 /**
  * Merge multiple routers together

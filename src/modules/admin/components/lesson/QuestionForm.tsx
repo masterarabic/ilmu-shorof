@@ -213,7 +213,6 @@ const QuestionItem = ({
                   type="button"
                   variant="ghost"
                   onClick={() => {
-                    console.log("remove", answerIndex);
                     removeAnswer(answerIndex);
                   }}
                 >

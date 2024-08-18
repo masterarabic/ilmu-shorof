@@ -4,6 +4,7 @@ import { signOut } from "next-auth/react";
 import * as React from "react";
 
 import { Button } from "@/common/components/ui/button";
+import { isActiveLink } from "@/common/utils";
 
 const menuItems = [
   {
@@ -24,20 +25,6 @@ const menuItems = [
     url: "/admin/setting",
   },
 ];
-
-const isActive = (pathname: string, url: string, routes?: string[]) => {
-  // Check if the current pathname is equal to the url
-  if (pathname === url) {
-    return true;
-  }
-
-  // Check if the current pathname is starts with routes
-  if (routes) {
-    return routes.some((route) => pathname.startsWith(route));
-  }
-
-  return false;
-};
 
 export const SidebarDesktop = () => {
   const router = useRouter();
@@ -60,7 +47,7 @@ export const SidebarDesktop = () => {
             <Button
               className="w-full justify-between"
               variant={
-                isActive(router.pathname, item.url, item.routes)
+                isActiveLink(router.pathname, item.url, item.routes)
                   ? "default"
                   : "ghost"
               }

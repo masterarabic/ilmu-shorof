@@ -1,8 +1,9 @@
 import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 
-import prisma from "../../../prisma/db";
-import { publicProcedure, router } from "../trpc";
+import { publicProcedure, router } from "@/server/trpc";
+
+import prisma from "../../../../prisma/db";
 import { defaultSelectLesson } from "./lesson";
 
 /**

@@ -12,17 +12,31 @@ function CustomPrismaAdapter(p: typeof prisma): Adapter {
   return {
     ...PrismaAdapter(p),
     async createUser(user: Omit<AdapterUser, "id">) {
-      const created = await p.user.create({
-        data: {
-          image: user.image,
-          role: user.role,
-          emailVerified: user.emailVerified,
-          name: user.name,
-          email: user.email,
-        },
+      const result = await p.$transaction(async (trx) => {
+        const created = await trx.user.create({
+          data: {
+            image: user.image,
+            role: user.role,
+            emailVerified: user.emailVerified,
+            name: user.name,
+            email: user.email,
+          },
+        });
+
+        await trx.student.create({
+          data: {
+            user: {
+              connect: {
+                id: created.id,
+              },
+            },
+          },
+        });
+
+        return created;
       });
 
-      return created as AdapterUser;
+      return result as AdapterUser;
     },
   };
 }
@@ -34,7 +48,6 @@ export const authOptions: AuthOptions = {
     GoogleProvider({
       clientId: process.env.AUTH_GOOGLE_ID!,
       clientSecret: process.env.AUTH_GOOGLE_SECRET!,
-      // allowDangerousEmailAccountLinking: true,
       profile: (profile) => {
         return {
           id: profile.sub,
@@ -54,21 +67,19 @@ export const authOptions: AuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    signIn({ user, account }) {
-      console.log({
-        user,
-        account,
-      });
-      return true;
-    },
     jwt({ token, user }) {
-      if (user) token.role = user.role;
+      if (user) {
+        token.role = user.role;
+        token.id = user.id;
+      }
+
       return token;
     },
-    // session({ session, user }) {
-    //   session.user.role = user.role;
-    //   return session;
-    // },
+    session({ session, token }) {
+      session.user.id = token.id;
+      session.user.role = token.role;
+      return session;
+    },
   },
 };
 
