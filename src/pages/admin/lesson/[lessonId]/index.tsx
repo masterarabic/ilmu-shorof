@@ -15,13 +15,17 @@ import AdminMainLayout from "@/modules/admin/layouts/MainLayout";
 import { NextPageWithLayout } from "@/pages/_app";
 import { appRouter } from "@/server/routers/_app";
 import { trpc } from "@/utils/trpc";
+import { getSession } from "next-auth/react";
+import { createContextInner } from "@/server/context";
 
 export async function getServerSideProps(
   context: GetServerSidePropsContext<{ lessonId: string }>
 ) {
+  const session = await getSession(context);
+
   const helpers = createServerSideHelpers({
     router: appRouter,
-    ctx: {},
+    ctx: await createContextInner({ session }),
     transformer: superjson,
   });
   const id = context.params?.lessonId as string;

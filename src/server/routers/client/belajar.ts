@@ -50,6 +50,9 @@ export const belajarRoute = router({
             include: {
               studentLessonResult: true,
             },
+            orderBy: {
+              number: "asc",
+            },
           },
         },
         orderBy: {

@@ -62,7 +62,7 @@ const Header: FC<HeaderProps> = ({ babNumber }) => {
   return (
     <div className={cn("top-0 sticky z-10")}>
       <div className={cn("bg-white h-3", "md:h-6")}></div>
-      <div className="bg-[#692fce] mx-4 mb-6 rounded-xl overflow-hidden">
+      <div className="bg-[#692fce] mx-4 mb-6 rounded-xl overflow-hidden shadow-lg">
         <div className="flex items-center justify-between mb-2 bg-primary text-left text-white px-4 py-4">
           <div>
             <div className={cn("leading-none text-sm", "md:text-base")}>

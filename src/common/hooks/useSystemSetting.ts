@@ -8,7 +8,7 @@ type Config = {
   defaultScore: number;
 };
 
-const defaultConfig: Config = {
+export const defaultConfig: Config = {
   randomizeQuestion: false,
   randomizeAnswer: false,
   defaultScore: 15,

@@ -24,10 +24,9 @@ export async function getServerSideProps(
     transformer: SuperJSON,
   });
 
-  const { isExist } = await helpers.client.belajar.isBabExist.fetch(
-    { babNumber },
-    {}
-  );
+  const { isExist } = await helpers.client.belajar.isBabExist
+    .fetch({ babNumber }, {})
+    .catch((err) => ({ isExist: false }));
 
   if (!isExist) {
     return {
