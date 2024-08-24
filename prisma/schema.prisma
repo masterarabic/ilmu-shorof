@@ -148,6 +148,8 @@ model StudentLessonResult {
   lessonId  String
   student   Student @relation(fields: [studentId], references: [id])
   lesson    Lesson  @relation(fields: [lessonId], references: [id])
+  score     Int
+  star      Int
 
   @@unique([studentId, lessonId])
 }

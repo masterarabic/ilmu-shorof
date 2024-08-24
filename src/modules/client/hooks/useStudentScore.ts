@@ -2,9 +2,9 @@ import { trpc } from "@/utils/trpc";
 
 import useStudent from "./useStudent";
 
-const useBabList = () => {
+const useScore = () => {
   const { student } = useStudent();
-  const { data } = trpc.student.listBab.listBab.useQuery(
+  const { data } = trpc.student.self.score.useQuery(
     {
       studentId: student?.id!,
     },
@@ -12,10 +12,12 @@ const useBabList = () => {
       enabled: !!student?.id,
     }
   );
-  const babList = data?.docs ?? [];
+
+  const score = data?.score ?? 0;
+
   return {
-    babList,
+    score,
   };
 };
 
-export default useBabList;
+export default useScore;

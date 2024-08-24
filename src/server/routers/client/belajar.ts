@@ -38,6 +38,7 @@ export const belajarRoute = router({
     .input(
       z.object({
         babId: z.string(),
+        studentId: z.string(),
       })
     )
     .query(async ({ input }) => {
@@ -48,7 +49,12 @@ export const belajarRoute = router({
         include: {
           lesson: {
             include: {
-              studentLessonResult: true,
+              studentLessonResult: {
+                where: {
+                  studentId: input.studentId,
+                },
+                take: 1,
+              },
             },
             orderBy: {
               number: "asc",

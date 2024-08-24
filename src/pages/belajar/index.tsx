@@ -23,7 +23,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
    * Prefetching the `post.byId` query.
    * `prefetch` does not return the result and never throws - if you need that behavior, use `fetch` instead.
    */
-  const student = await helpers.client.self.student
+  const student = await helpers.student.self.student
     .fetch()
     .then((data) => data.student)
     .catch(() => null);

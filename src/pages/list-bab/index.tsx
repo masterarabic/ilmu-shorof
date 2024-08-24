@@ -41,7 +41,17 @@ const ListBabPage: NextPageWithLayout = () => {
               Bab {bab.number}: {bab.name}
             </div>
 
-            <Progress value={33} className="mb-3" />
+            <Progress
+              value={Math.round((bab.myLesson / bab.totalLesson) * 100)}
+              className=""
+            />
+
+            <div className="text-sm flex items-center justify-between text-neutral-500 mb-3">
+              <span>
+                {bab.myLesson} dari {bab.totalLesson} pelajaran
+              </span>
+              <span>{Math.round((bab.myLesson / bab.totalLesson) * 100)}%</span>
+            </div>
 
             <div>
               <Link

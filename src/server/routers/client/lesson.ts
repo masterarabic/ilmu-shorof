@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { generateConfig } from "@/common/hooks/useSystemSetting";
+
 import prisma from "../../../../prisma/db";
 import { router, studentProcedure } from "../../trpc";
 
@@ -73,6 +75,80 @@ export const lessonRoute = router({
 
       return {
         isCorrect: answer.isCorrect,
+      };
+    }),
+  submit: studentProcedure
+    .input(
+      z.object({
+        studentId: z.string(),
+        lessonId: z.string(),
+        heartCount: z.number(),
+        answers: z.array(
+          z.object({
+            questionId: z.string(),
+            answerId: z.string(),
+          })
+        ),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const questions = await prisma.question.findMany({
+        where: {
+          lessonId: input.lessonId,
+        },
+      });
+
+      const correctAnswers = await prisma.answer.findMany({
+        where: {
+          questionId: {
+            in: questions.map((question) => question.id),
+          },
+          isCorrect: true,
+        },
+      });
+
+      const correctAnswerIds = correctAnswers.map((answer) => answer.id);
+
+      const totalCorrect = input.answers.filter((answer) =>
+        correctAnswerIds.includes(answer.answerId)
+      ).length;
+
+      const configs = await prisma.setting.findMany();
+      const config = generateConfig(configs);
+
+      const score = totalCorrect * config.defaultScore;
+      const star = input.heartCount; // TODO: calculate star
+
+      const lessonResult = await prisma.studentLessonResult.findFirst({
+        where: {
+          studentId: input.studentId,
+          lessonId: input.lessonId,
+        },
+      });
+
+      await prisma.studentLessonResult.upsert({
+        create: {
+          lessonId: input.lessonId,
+          studentId: input.studentId,
+          score,
+          star,
+        },
+        update: {
+          score,
+          star,
+        },
+        where: {
+          id: lessonResult?.id,
+          studentId: input.studentId,
+          lessonId: input.lessonId,
+        },
+      });
+
+      return {
+        totalQuestion: questions.length,
+        totalCorrect,
+        star,
+        score,
       };
     }),
   listQuestion: studentProcedure

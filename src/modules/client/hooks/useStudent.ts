@@ -1,14 +1,13 @@
 import { trpc } from "@/utils/trpc";
 
 const useStudent = () => {
-  const { data } = trpc.client.self.student.useQuery();
+  const { data } = trpc.student.self.student.useQuery();
 
   const student = data?.student;
 
-  console.log(student);
-
   return {
     student: student ?? null,
+    staleTime: 60 * 10000, // 10 minute
   };
 };
 

@@ -1,11 +1,16 @@
 import React from "react";
 
 import ClientMainLayout from "@/common/layouts/MainLayout";
+import SettingForm from "@/modules/client/components/setting/Form";
 
 import { NextPageWithLayout } from "../_app";
 
 const SettingPage: NextPageWithLayout = () => {
-  return <div className="md:mx-12 md:my-4">SettingPage</div>;
+  return (
+    <div className="flex justify-center py-12 px-4">
+      <SettingForm />
+    </div>
+  );
 };
 
 SettingPage.getLayout = (page) => {

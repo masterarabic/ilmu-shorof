@@ -7,7 +7,7 @@ import { lessonRouter } from "./admin/lesson";
 import { questionRouter } from "./admin/question";
 import { settingRouter } from "./admin/setting";
 import { subBabRouter } from "./admin/subBab";
-import { clientRouter } from "./client/router";
+import { student } from "./client/router";
 
 export const appRouter = router({
   bab: babRouter,
@@ -16,7 +16,7 @@ export const appRouter = router({
   question: questionRouter,
   setting: settingRouter,
 
-  client: clientRouter,
+  student: student,
 });
 
 export const createCaller = createCallerFactory(appRouter);

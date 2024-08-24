@@ -40,12 +40,15 @@ const Lessons: FC<LessonsProps> = ({ babNumber }) => {
                   ? (index % itemPerSide) * spacePerItem
                   : (itemPerSide - (index % itemPerSide)) * spacePerItem;
 
+              console.log(item);
+              const lessonResult = item?.studentLessonResult?.[0];
+
               return (
                 <ProgressItem
                   key={item.id}
                   className="last:!mb-0"
                   href={`/belajar/${babNumber}/${subBab.number}/${item.number}`}
-                  starCount={3}
+                  starCount={lessonResult?.score ?? 0}
                   style={{
                     marginBottom: "30px",
                     left: `${left}px`,
@@ -108,8 +111,8 @@ const ProgressItem = ({
           )}
         >
           <StarIcon
-            className="transform duration-100 group-hover:scale-y-[.85] size-[25px] scale-y-90"
-            filled={!disabled}
+            className="transform drop-shadow-lg duration-100 group-hover:scale-y-[.85] size-[25px] scale-y-90"
+            filled={starCount > 0}
           />
         </div>
       </div>

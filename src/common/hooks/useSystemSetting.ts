@@ -14,6 +14,26 @@ export const defaultConfig: Config = {
   defaultScore: 15,
 };
 
+export const generateConfig = (
+  config: {
+    value: string;
+    name: string;
+  }[]
+) => {
+  return {
+    randomizeQuestion:
+      (config.find((item) => item.name === "randomizeQuestion")?.value ??
+        defaultConfig.randomizeQuestion.toString) === "true",
+    randomizeAnswer:
+      (config.find((item) => item.name === "randomizeAnswer")?.value ??
+        defaultConfig.randomizeAnswer.toString()) === "true",
+    defaultScore: Number(
+      config.find((item) => item.name === "defaultScore")?.value ??
+        defaultConfig.defaultScore
+    ),
+  };
+};
+
 const useSystemSetting = () => {
   const { data: settingData, isLoading } = trpc.setting.list.useQuery(
     {},
@@ -26,18 +46,7 @@ const useSystemSetting = () => {
 
   const config: Config = useMemo(() => {
     if (isLoading) return defaultConfig;
-    return {
-      randomizeQuestion:
-        (setting?.find((item) => item.name === "randomizeQuestion")?.value ??
-          defaultConfig.randomizeQuestion.toString) === "true",
-      randomizeAnswer:
-        (setting?.find((item) => item.name === "randomizeAnswer")?.value ??
-          defaultConfig.randomizeAnswer.toString()) === "true",
-      defaultScore: Number(
-        setting?.find((item) => item.name === "defaultScore")?.value ??
-          defaultConfig.defaultScore
-      ),
-    };
+    return generateConfig(setting ?? []);
   }, [setting, isLoading]);
 
   return {

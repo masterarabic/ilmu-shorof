@@ -28,7 +28,7 @@ const Bab: FC<BabProps> = ({ babNumber }) => {
         <div className="h-6"></div>
         <div className="flex sticky h-svh top-0 flex-col flex-1">
           <ProfileSection />
-          <StatSection />
+          <StatSection babNumber={babNumber} />
           <ShareSection url={window.location.href ?? ""} />
         </div>
       </div>

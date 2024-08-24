@@ -17,6 +17,7 @@ import useSystemSetting from "@/common/hooks/useSystemSetting";
 import { cn } from "@/common/utils";
 import ShareSection from "@/modules/client/components/belajar/ShareSection";
 import EndModal from "@/modules/client/components/lesson/EndModal";
+import useStudent from "@/modules/client/hooks/useStudent";
 import { NextPageWithLayout } from "@/pages/_app";
 import { createContextInner } from "@/server/context";
 import { appRouter } from "@/server/routers/_app";
@@ -45,7 +46,7 @@ export async function getServerSideProps(
    * Prefetching the `post.byId` query.
    * `prefetch` does not return the result and never throws - if you need that behavior, use `fetch` instead.
    */
-  const result = await helpers.client.lesson.data
+  const result = await helpers.student.lesson.data
     .fetch({
       babNumber,
       subBabNumber,
@@ -71,7 +72,7 @@ export async function getServerSideProps(
   };
 }
 
-type Questions = RouterOutput["client"]["lesson"]["listQuestion"]["questions"];
+type Questions = RouterOutput["student"]["lesson"]["listQuestion"]["questions"];
 
 export const FormSchema = z.object({
   answer: z.string(),
@@ -86,19 +87,30 @@ const LessonPage: NextPageWithLayout<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ bab, subBab, lesson }) => {
   const [score, setScore] = useState(0);
+  const [star, setStar] = useState(0);
   const [isEnd, setIsEnd] = useState(false);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [heartCount, setHeartCount] = useState(maxHeartCount);
+  const [myAnswers, setMyAnswers] = useState<
+    {
+      questionId: string;
+      answerId: string;
+    }[]
+  >([]);
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
 
   const { data: questionList, isLoading: loadingQuestions } =
-    trpc.client.lesson.listQuestion.useQuery({
+    trpc.student.lesson.listQuestion.useQuery({
       lessonId: lesson.id,
     });
-  const { mutate } = trpc.client.lesson.checkAnswer.useMutation();
+  const { mutate: checkAnswer } = trpc.student.lesson.checkAnswer.useMutation();
+  const { mutate: submit } = trpc.student.lesson.submit.useMutation();
   const { config, loading: loadingConfig } = useSystemSetting();
+
+  const { student } = useStudent();
 
   const questions = useMemo(() => {
     if (!questionList?.questions?.length || loadingConfig) return [];
@@ -125,10 +137,6 @@ const LessonPage: NextPageWithLayout<
     return result;
   }, [questionList, config, loadingConfig]);
 
-  const star = useMemo(() => {
-    return heartCount;
-  }, [heartCount]);
-
   // TODO: handle loading state
   if (loadingQuestions || loadingConfig) return <div></div>;
 
@@ -136,32 +144,58 @@ const LessonPage: NextPageWithLayout<
   const questionText = question?.question ?? "";
   const answers = question?.answer ?? [];
 
+  const endLesson = (heart: number) => {
+    submit(
+      {
+        studentId: student?.id ?? "",
+        lessonId: lesson.id,
+        heartCount: heart,
+        answers: myAnswers,
+      },
+      {
+        onSuccess: (data) => {
+          setIsEnd(true);
+          setScore(data.score);
+          setStar(data.star);
+        },
+        onError: (error) => {
+          console.error(error);
+        },
+      }
+    );
+  };
+
   const onSubmit = (data: z.infer<typeof FormSchema>) => {
-    mutate(
+    checkAnswer(
       {
         questionId: question.id,
         answerId: data.answer,
       },
       {
-        onSuccess: (data) => {
+        onSuccess: (result) => {
           const isLastQuestion = questionIndex === questions.length - 1;
 
-          if (data.isCorrect) {
-            setScore((prev) => prev + config.defaultScore);
-            if (isLastQuestion) {
-              setIsEnd(true);
-              return;
-            }
+          if (result.isCorrect) {
+            if (isLastQuestion) void endLesson(heartCount);
             setQuestionIndex((prev) => prev + 1);
             form.reset();
           } else {
-            setHeartCount((prev) => prev - 1);
             form.setValue("isIncorrect", true);
-            if (heartCount === 1) setIsEnd(true);
+            setHeartCount((prev) => prev - 1);
+            if (heartCount === 1) void endLesson(heartCount - 1);
           }
         },
         onError: (error) => {
           console.error(error);
+        },
+        onSettled: () => {
+          setMyAnswers((prev) => [
+            ...prev,
+            {
+              questionId: question.id,
+              answerId: data.answer,
+            },
+          ]);
         },
       }
     );
@@ -188,19 +222,19 @@ const LessonPage: NextPageWithLayout<
             {heartCount} <HeartFilledIcon className="text-white size-6" />
           </div>
         </div>
-        <div className="grid grid-cols-[700px,1fr] gap-x-12">
-          <div>
-            <div className="bg-white pt-6 rounded-xl">
-              <div className="flex select-none p-8 text-xl font-semibold items-center justify-center w-full min-h-[400px] text-center mb-3">
+        <div className="grid gap-y-5 xl:grid-cols-[700px,1fr] gap-x-12 mb-6">
+          <div className="flex flex-col-reverse xl:flex-col">
+            <div className="bg-white py-6 xl:pb-0 rounded-xl">
+              <div className="flex select-none p-8 text-xl font-semibold items-center justify-center w-full mix-h-[200px] xl:min-h-[400px] text-center mb-3">
                 {questionText}
               </div>
               <ShareSection
                 url={window.location.href ?? ""}
                 variant="ghost"
-                className="border-none"
+                className="border-none hidden xl:flex"
               />
             </div>
-            <div className="group flex-col items-center flex justify-center">
+            <div className="group flex-col-reverse xl:flex-col items-center flex justify-center mt-3">
               <Progress
                 value={(questionIndex / questions.length) * 100}
                 variant="white"
