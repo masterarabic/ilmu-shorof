@@ -18,14 +18,20 @@ const LeaderBoardPage: NextPageWithLayout = () => {
         Papan Peringkat
       </h1>
 
-      <div className="flex justify-center gap-x-12 mb-16">
-        <TopStudent position={2} leaderboard={leaderboard[1]} />
-        <TopStudent position={1} leaderboard={leaderboard[0]} />
-        <TopStudent position={3} leaderboard={leaderboard[2]} />
+      <div className="grid grid-cols-3 max-w-[700px] mx-auto justify-center gap-x-4 md:gap-x-12 mb-16">
+        {!!leaderboard[1] && (
+          <TopStudent position={2} leaderboard={leaderboard[1]} />
+        )}
+        {!!leaderboard[0] && (
+          <TopStudent position={1} leaderboard={leaderboard[0]} />
+        )}
+        {!!leaderboard[2] && (
+          <TopStudent position={3} leaderboard={leaderboard[2]} />
+        )}
       </div>
 
       <div className="mx-auto w-full flex flex-col items-center gap-y-4">
-        {leaderboard.slice(3).map((_, index) => (
+        {leaderboard.slice(3).map((item, index) => (
           <div
             key={index}
             className="flex bg-primary w-[600px] items-center rounded-xl"
@@ -35,12 +41,18 @@ const LeaderBoardPage: NextPageWithLayout = () => {
             </div>
             <div className="flex flex-1 items-center justify-between pr-4 py-1 text-white">
               <div className="flex items-center">
-                <div className="size-16 border rounded-full"></div>
+                <Image
+                  src={item?.image ?? ""}
+                  alt="Profile"
+                  className="size-16 border rounded-full"
+                />
                 <div className="text-center text-lg font-semibold ml-3">
-                  Rizki Fitra Rahman
+                  {item?.name}
                 </div>
               </div>
-              <div className="text-center text-lg font-semibold">100000</div>
+              <div className="text-center text-lg font-semibold">
+                {item?.score}
+              </div>
             </div>
           </div>
         ))}
@@ -55,24 +67,39 @@ const TopStudent: FC<{
 }> = ({ position, leaderboard }) => {
   return (
     <div
-      className={cn({
+      className={cn("relative overflow-hidden", {
         "mt-8": position !== 1,
       })}
     >
-      <Image
-        width={120}
-        height={120}
-        src={leaderboard?.image ?? ""}
-        className={cn("border rounded-full mx-auto", {
-          "size-[120px]": position === 1,
-          "size-[100px]": position !== 1,
-        })}
-        alt="Profile"
-      />
-      <div className="text-center text-lg font-semibold text-primary mt-2">
+      <div
+        className={cn(
+          "border relative mx-auto shadow-md rounded-full overflow-hidden",
+          {
+            "size-[56px] md:size-[120px] text-base": position === 1,
+            "size-[46px] md:size-[100px] text-sm": position !== 1,
+          }
+        )}
+      >
+        <Image
+          width={120}
+          height={120}
+          src={leaderboard?.image ?? ""}
+          alt="Profile"
+        />
+        <div className="w-[100%] h-[90%] bottom-[-50%] lg:bottom-[-70%] mx-auto left-0 right-0 absolute bg-primary rounded-full">
+          <div className="text-white text-center mx-auto text-xs">
+            {position}
+          </div>
+        </div>
+      </div>
+      <div className="text-center text-xs md:text-lg font-semibold text-primary mt-2">
         {leaderboard?.name}
       </div>
-      <div className={cn("text-center text-lg font-semibold text-primary")}>
+      <div
+        className={cn(
+          "text-center text-xs md:text-lg font-semibold text-primary"
+        )}
+      >
         {leaderboard?.score}
       </div>
     </div>

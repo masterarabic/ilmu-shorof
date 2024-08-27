@@ -19,8 +19,8 @@ const BabFormDialog: React.FC<{
   setOpen: (open: boolean) => void;
   bab?: Bab;
 }> = ({ mode, open, setOpen, bab }) => {
-  const { mutateAsync: createBab } = trpc.bab.add.useMutation();
-  const { mutateAsync: updateBab } = trpc.bab.update.useMutation();
+  const { mutateAsync: createBab } = trpc.admin.bab.add.useMutation();
+  const { mutateAsync: updateBab } = trpc.admin.bab.update.useMutation();
   const trpcUtils = trpc.useUtils();
 
   const handleCreate = async (data: TypeOf<typeof FormSchema>) => {
@@ -60,7 +60,7 @@ const BabFormDialog: React.FC<{
       await handleUpdate(data);
     }
 
-    trpcUtils.bab.invalidate();
+    trpcUtils.admin.bab.invalidate();
   };
 
   return (

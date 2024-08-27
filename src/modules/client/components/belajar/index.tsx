@@ -14,22 +14,33 @@ type BabProps = {
 
 const Bab: FC<BabProps> = ({ babNumber }) => {
   return (
-    <section className="min-h-svh flex">
-      <div className={cn("flex-1 relative flex flex-col", "md:py-4 md:mx-12")}>
+    <section className="min-h-svh flex flex-col-reverse lg:flex-row">
+      <div
+        className={cn(
+          "flex-1 relative flex flex-col",
+          "lg:py-4 lg:mx-8 xl:mx-12"
+        )}
+      >
         <Header babNumber={babNumber} />
         <Lessons babNumber={babNumber} />
       </div>
       <div
         className={cn(
-          "hidden",
-          "md:flex relative flex-col w-[330px] pb-6 pt-4 pr-6"
+          "flex",
+          "relative flex-col lg:w-[330px] pl-6 pb-0 pt-4 pr-6 lg:pl-0 lg:pb-6"
         )}
       >
-        <div className="h-6"></div>
+        <div className="h-6 hidden lg:block"></div>
         <div className="flex sticky h-svh top-0 flex-col flex-1">
-          <ProfileSection />
-          <StatSection babNumber={babNumber} />
-          <ShareSection url={window.location.href ?? ""} />
+          <div className="lg:mb-6">
+            <ProfileSection />
+          </div>
+          <div className="hidden lg:block">
+            <StatSection babNumber={babNumber} />
+          </div>
+          <div className="hidden lg:block">
+            <ShareSection url={window.location.href ?? ""} />
+          </div>
         </div>
       </div>
     </section>

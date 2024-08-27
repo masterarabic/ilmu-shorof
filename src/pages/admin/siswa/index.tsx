@@ -19,40 +19,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/common/components/ui/table";
+import useStudentList, {
+  StudentDataType,
+} from "@/modules/admin/hooks/useStudentList";
 import AdminMainLayout from "@/modules/admin/layouts/MainLayout";
 import { NextPageWithLayout } from "@/pages/_app";
 
-export type Data = {
-  id: string;
-  number: number;
-  name: string;
-  score: number;
-  progress: number;
-};
-
-const columnHelper = createColumnHelper<Data>();
-
-const data: Data[] = [
-  {
-    id: "e785559d-6c50-4e51-b2a5-0e1c9da275d4",
-    number: 1,
-    name: "Rizki Fitra Rahman",
-    score: 120,
-    progress: 85,
-  },
-  {
-    id: "e785559d-6c50-4e51-b2a5-0e1c9da275d4",
-    number: 2,
-    name: "Aji Saka",
-    score: 100,
-    progress: 80,
-  },
-];
+const columnHelper = createColumnHelper<StudentDataType>();
 
 export const columns = [
-  columnHelper.accessor("number", {
+  columnHelper.display({
+    id: "number",
     header: () => <div className="text-center">Nomor</div>,
-    cell: (info) => <div className="text-center">{info.getValue()}</div>,
+    cell: (info) => <div className="text-center">{info.row.index + 1}</div>,
     size: 20,
   }),
   columnHelper.accessor("name", {
@@ -65,18 +44,24 @@ export const columns = [
     size: 30,
     cell: (info) => <div className="text-center">{info.getValue()}</div>,
   }),
-  columnHelper.accessor("progress", {
+  columnHelper.display({
+    id: "progress",
     header: () => <div className="text-center">Progress Belajar</div>,
     size: 100,
     cell: (info) => (
       <div className="flex items-center gap-x-2">
         <span className="text-xs text-muted-foreground">
-          {info.getValue()}/100
+          {info.row.original.myLesson}/{info.row.original.totalLesson}
         </span>
-        <Progress value={info.getValue()} />
+        <Progress
+          value={
+            (info.row.original.myLesson / info.row.original.totalLesson) * 100
+          }
+        />
       </div>
     ),
   }),
+
   // {
   //   id: "actions",
   //   header: "Aksi",
@@ -88,9 +73,11 @@ export const columns = [
 ];
 
 const StudentPage: NextPageWithLayout = () => {
+  const { studentList } = useStudentList();
+
   const router = useRouter();
   const table = useReactTable({
-    data,
+    data: studentList,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

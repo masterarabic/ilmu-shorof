@@ -51,7 +51,7 @@ const LessonTable: React.FC<{
     mode: "create" as "create" | "update",
   });
 
-  const { data: lessonData } = trpc.lesson.list.useQuery({
+  const { data: lessonData } = trpc.admin.lesson.list.useQuery({
     subBabId,
     accumulator: "countQuestion",
   });

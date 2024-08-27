@@ -54,7 +54,7 @@ const SubBabListTable: React.FC<{ id: string }> = ({ id }) => {
     mode: "create" as "create" | "update",
   });
 
-  const { data: subBabData, isLoading } = trpc.subBab.list.useQuery({
+  const { data: subBabData, isLoading } = trpc.admin.subBab.list.useQuery({
     babId: id,
     accumulator: "countLesson",
   });

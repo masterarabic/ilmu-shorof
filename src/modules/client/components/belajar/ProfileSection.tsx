@@ -11,7 +11,7 @@ const ProfileSection = () => {
   const { score } = useScore();
 
   return (
-    <div className="mb-6 flex items-center justify-between text-neutral-500">
+    <div className="flex items-center justify-between text-neutral-500">
       <div className="flex gap-2 items-center">
         <Image
           alt="profile"

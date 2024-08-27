@@ -56,7 +56,7 @@ const SettingForm: React.FC<{
   defaultValues: SettingFormValues;
 }> = ({ defaultValues }) => {
   const trpcUtils = trpc.useUtils();
-  const { mutateAsync } = trpc.setting.upsert.useMutation();
+  const { mutateAsync } = trpc.admin.setting.upsert.useMutation();
   const form = useForm<SettingFormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues,
@@ -75,7 +75,7 @@ const SettingForm: React.FC<{
           { name: "defaultScore", value: data.defaultScore.toString() },
         ],
       });
-      trpcUtils.setting.invalidate();
+      trpcUtils.admin.setting.invalidate();
     } catch (error) {
       toast.error("Gagal menyimpan pengaturan");
       console.error(error);

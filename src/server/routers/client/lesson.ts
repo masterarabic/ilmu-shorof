@@ -119,6 +119,15 @@ export const lessonRoute = router({
       const score = totalCorrect * config.defaultScore;
       const star = input.heartCount; // TODO: calculate star
 
+      if (star < 1) {
+        return {
+          totalQuestion: questions.length,
+          totalCorrect,
+          star: 0,
+          score: 0,
+        };
+      }
+
       const lessonResult = await prisma.studentLessonResult.findFirst({
         where: {
           studentId: input.studentId,
@@ -138,7 +147,7 @@ export const lessonRoute = router({
           star,
         },
         where: {
-          id: lessonResult?.id,
+          id: lessonResult?.id ?? "",
           studentId: input.studentId,
           lessonId: input.lessonId,
         },

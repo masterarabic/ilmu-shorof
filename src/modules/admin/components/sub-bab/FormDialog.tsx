@@ -19,8 +19,8 @@ const SubBabFormDialog: React.FC<{
   subBab?: { id: string; name: string; number: number };
   setOpen: (open: boolean) => void;
 }> = ({ mode, bab, subBab, open, setOpen }) => {
-  const { mutateAsync: createSubBab } = trpc.subBab.add.useMutation();
-  const { mutateAsync: updateSubBab } = trpc.subBab.update.useMutation();
+  const { mutateAsync: createSubBab } = trpc.admin.subBab.add.useMutation();
+  const { mutateAsync: updateSubBab } = trpc.admin.subBab.update.useMutation();
   const trpcUtils = trpc.useUtils();
 
   const handleCreate = async (data: TypeOf<typeof FormSchema>) => {
@@ -65,7 +65,7 @@ const SubBabFormDialog: React.FC<{
       await handleUpdate(data);
     }
 
-    trpcUtils.subBab.invalidate();
+    trpcUtils.admin.subBab.invalidate();
   };
 
   return (

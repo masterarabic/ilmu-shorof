@@ -233,7 +233,7 @@ const QuestionForm: React.FC<{
 }> = ({ lessonId, defaultValues }) => {
   const { config } = useSystemSetting();
 
-  const { mutateAsync } = trpc.question.bulk.useMutation();
+  const { mutateAsync } = trpc.admin.question.bulk.useMutation();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues,
@@ -343,7 +343,7 @@ const QuestionForm: React.FC<{
 };
 
 const Wrapper: React.FC<{ lessonId: string }> = ({ lessonId }) => {
-  const { data, isLoading } = trpc.question.list.useQuery({
+  const { data, isLoading } = trpc.admin.question.list.useQuery({
     lessonId,
     with: ["answers"],
   });

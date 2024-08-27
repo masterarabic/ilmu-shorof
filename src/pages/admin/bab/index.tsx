@@ -64,7 +64,7 @@ const BabPage: NextPageWithLayout = () => {
     mode: "create" as "create" | "update",
   });
 
-  const { data: babListResponse, isLoading } = trpc.bab.list.useQuery({
+  const { data: babListResponse, isLoading } = trpc.admin.bab.list.useQuery({
     accumulator: "countSubBab",
   });
 

@@ -2,6 +2,7 @@ import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
+import { getSession } from "next-auth/react";
 import React from "react";
 import superjson from "superjson";
 
@@ -13,10 +14,9 @@ import LessonFormDialog from "@/modules/admin/components/lesson/FormDialog";
 import QuestionForm from "@/modules/admin/components/lesson/QuestionForm";
 import AdminMainLayout from "@/modules/admin/layouts/MainLayout";
 import { NextPageWithLayout } from "@/pages/_app";
+import { createContextInner } from "@/server/context";
 import { appRouter } from "@/server/routers/_app";
 import { trpc } from "@/utils/trpc";
-import { getSession } from "next-auth/react";
-import { createContextInner } from "@/server/context";
 
 export async function getServerSideProps(
   context: GetServerSidePropsContext<{ lessonId: string }>
@@ -33,7 +33,7 @@ export async function getServerSideProps(
    * Prefetching the `post.byId` query.
    * `prefetch` does not return the result and never throws - if you need that behavior, use `fetch` instead.
    */
-  await helpers.lesson.list.prefetch({
+  await helpers.admin.lesson.list.prefetch({
     id,
     with: ["bab", "subBab"],
   });
@@ -54,7 +54,7 @@ const LessonDetailPage: NextPageWithLayout<{
     mode: "create" as "create" | "update",
   });
 
-  const { data: lessonData, isLoading } = trpc.lesson.list.useQuery({
+  const { data: lessonData, isLoading } = trpc.admin.lesson.list.useQuery({
     id,
     with: ["bab", "subBab"],
   });

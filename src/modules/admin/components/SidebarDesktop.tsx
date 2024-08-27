@@ -19,6 +19,7 @@ const menuItems = [
   {
     title: "Siswa",
     url: "/admin/siswa",
+    routes: ["/admin/siswa"],
   },
   {
     title: "Pengaturan",

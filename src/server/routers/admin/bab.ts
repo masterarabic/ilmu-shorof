@@ -1,7 +1,7 @@
 import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 
-import { publicProcedure, router } from "@/server/trpc";
+import { adminProcedure, router } from "@/server/trpc";
 
 import prisma from "../../../../prisma/db";
 
@@ -21,7 +21,7 @@ export const defaultSelectBab = {
 const accumulatorEnum = z.enum(["countSubBab"]);
 
 export const babRouter = router({
-  list: publicProcedure
+  list: adminProcedure
     .input(
       z.object({
         id: z.string().uuid().optional(),
@@ -55,7 +55,7 @@ export const babRouter = router({
         items,
       };
     }),
-  add: publicProcedure
+  add: adminProcedure
     .input(
       z.object({
         name: z.string().min(1),
@@ -69,7 +69,7 @@ export const babRouter = router({
       });
       return post;
     }),
-  update: publicProcedure
+  update: adminProcedure
     .input(
       z.object({
         id: z.string(),
@@ -88,7 +88,7 @@ export const babRouter = router({
       });
       return post;
     }),
-  delete: publicProcedure
+  delete: adminProcedure
     .input(
       z.object({
         id: z.string(),

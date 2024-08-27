@@ -16,7 +16,7 @@ import { trpc } from "@/utils/trpc";
 
 const DeleteBabButton: React.FC = () => {
   const router = useRouter();
-  const { mutateAsync: deleteBab } = trpc.bab.delete.useMutation();
+  const { mutateAsync: deleteBab } = trpc.admin.bab.delete.useMutation();
   const trpcUtils = trpc.useUtils();
 
   const handleDelete = async () => {
@@ -37,7 +37,7 @@ const DeleteBabButton: React.FC = () => {
       });
       console.error(error);
     }
-    trpcUtils.bab.invalidate();
+    trpcUtils.admin.bab.invalidate();
   };
 
   return (

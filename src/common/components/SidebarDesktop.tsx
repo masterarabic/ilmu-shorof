@@ -40,9 +40,9 @@ const SidebarDesktop = () => {
   return (
     <div
       className={cn(
-        "lg:w-[250px]",
-        "md:flex w-[60px] h-svh block fixed left-0 border-r-[8px] border-r-primary-dark1 flex-col",
-        "hidden bg-primary"
+        "lg:w-[250px] lg:border-r-[8px]",
+        "md:flex w-[60px] h-svh block fixed left-0 border-r-primary-dark1 flex-col",
+        "hidden bg-primary border-r-0"
       )}
     >
       <div
@@ -53,7 +53,7 @@ const SidebarDesktop = () => {
       >
         Belajar <br /> Bahasa Arab
       </div>
-      <div className="flex-1 flex flex-col mt-6 space-y-1">
+      <div className="flex-1 flex flex-col mt-6 space-y-1 items-center lg:items-stretch">
         {menuItems.map((item) => {
           const isActive = isActiveLink(router.pathname, item.url, item.routes);
           return (
@@ -62,7 +62,7 @@ const SidebarDesktop = () => {
               variant={"ghost"}
               size="lg"
               className={cn(
-                "justify-start hover:!text-primary mr-4 text-white rounded-l-none gap-3 px-0 lg:px-4",
+                "hover:!text-primary text-white w-10 justify-center lg:w-auto lg:justify-start lg:mr-4 lg:rounded-l-none gap-3 px-0 lg:px-4",
                 {
                   "bg-white !text-primary": isActive,
                 }

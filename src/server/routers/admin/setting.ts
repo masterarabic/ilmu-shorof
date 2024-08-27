@@ -1,7 +1,7 @@
 import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 
-import { publicProcedure, router } from "@/server/trpc";
+import { adminProcedure, router } from "@/server/trpc";
 
 import prisma from "../../../../prisma/db";
 
@@ -18,7 +18,7 @@ const defaultSelect = {
 } satisfies Prisma.SettingSelect;
 
 export const settingRouter = router({
-  list: publicProcedure.input(z.object({})).query(async () => {
+  list: adminProcedure.input(z.object({})).query(async () => {
     const items = await prisma.setting.findMany({
       select: defaultSelect,
     });
@@ -27,7 +27,7 @@ export const settingRouter = router({
       items,
     };
   }),
-  upsert: publicProcedure
+  upsert: adminProcedure
     .input(
       z.object({
         items: z.array(

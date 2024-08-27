@@ -1,7 +1,7 @@
 import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 
-import { publicProcedure, router } from "@/server/trpc";
+import { adminProcedure, router } from "@/server/trpc";
 
 import prisma from "../../../../prisma/db";
 import { defaultSelectBab } from "./bab";
@@ -23,7 +23,7 @@ const withEnum = z.enum(["bab", "subBab"]);
 const accumulator = z.enum(["countQuestion"]);
 
 export const lessonRouter = router({
-  list: publicProcedure
+  list: adminProcedure
     .input(
       z.object({
         id: z.string().uuid().optional(),
@@ -82,7 +82,7 @@ export const lessonRouter = router({
         items,
       };
     }),
-  add: publicProcedure
+  add: adminProcedure
     .input(
       z.object({
         babId: z.string().uuid(),
@@ -109,7 +109,7 @@ export const lessonRouter = router({
       });
       return post;
     }),
-  update: publicProcedure
+  update: adminProcedure
     .input(
       z.object({
         id: z.string(),
@@ -127,7 +127,7 @@ export const lessonRouter = router({
       });
       return post;
     }),
-  delete: publicProcedure
+  delete: adminProcedure
     .input(
       z.object({
         id: z.string(),

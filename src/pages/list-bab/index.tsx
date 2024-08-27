@@ -14,7 +14,7 @@ const ListBabPage: NextPageWithLayout = () => {
   const { babList } = useBabList();
 
   return (
-    <div className="md:pt-4 md:mx-12 md:pb-4">
+    <div className="md:pt-4 md:mx-12 md:pb-4 mx-4">
       <div className="mb-3">
         <Link
           href={{
@@ -34,7 +34,7 @@ const ListBabPage: NextPageWithLayout = () => {
       </div>
       <h1 className="text-3xl font-semibold mb-8">List Bab</h1>
 
-      <div className="w-1/2 space-y-4">
+      <div className="w-full lg:w-[700px] space-y-4">
         {babList?.map((bab) => (
           <div key={bab.id} className="rounded-md border p-4">
             <div className="mb-2">

@@ -1,4 +1,6 @@
 import { ListBulletIcon, PersonIcon } from "@radix-ui/react-icons";
+import Link from "next/link";
+import { useRouter } from "next/router";
 import React from "react";
 import { Pie, PieChart, Sector } from "recharts";
 
@@ -21,17 +23,24 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/common/components/ui/tabs";
+import useBabCount from "@/modules/admin/hooks/dashboard/useBabCount";
+import useLeaderBoard from "@/modules/admin/hooks/dashboard/useLeaderBoard";
+import useScoreDistribution from "@/modules/admin/hooks/dashboard/useScoreDistribution";
+import useStudentCount from "@/modules/admin/hooks/dashboard/useStudentCount";
 import AdminMainLayout from "@/modules/admin/layouts/MainLayout";
 import { NextPageWithLayout } from "@/pages/_app";
 
 const DashboardPage: NextPageWithLayout = () => {
+  const { studentCount } = useStudentCount();
+  const { babCount } = useBabCount();
+
   return (
     <div>
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="analytics" disabled>
-            Bab
+            Dashboard
           </TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="space-y-4"></TabsContent>
@@ -46,7 +55,7 @@ const DashboardPage: NextPageWithLayout = () => {
               <PersonIcon className="text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">50</div>
+              <div className="text-2xl font-bold">{studentCount}</div>
               <p className="text-xs text-muted-foreground"></p>
             </CardContent>
           </Card>
@@ -56,8 +65,20 @@ const DashboardPage: NextPageWithLayout = () => {
               <ListBulletIcon className="text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">4</div>
+              <div className="text-2xl font-bold">{babCount}</div>
               <p className="text-xs text-muted-foreground"></p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Disusun oleh
+              </CardTitle>
+              <PersonIcon className="text-muted-foreground" />
+            </CardHeader>
+            <CardContent className="pt-2 text-sm">
+              <div>Siti Durotun Naseha, M.Pd</div>
+              <div>Sri Widoyonongrum, ST., M.Pd</div>
             </CardContent>
           </Card>
         </div>
@@ -65,7 +86,7 @@ const DashboardPage: NextPageWithLayout = () => {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
           <Card className="col-span-4">
             <CardHeader>
-              <CardTitle>Pembagian Nilai Per Bab</CardTitle>
+              <CardTitle>Pembagian Score Per Bab</CardTitle>
             </CardHeader>
             <CardContent className="pl-2">
               <ChartSample />
@@ -75,7 +96,7 @@ const DashboardPage: NextPageWithLayout = () => {
             <CardHeader>
               <CardTitle>Papan peringkat</CardTitle>
               <CardDescription>
-                List siswa terbaik berdasarkan jumlah poin
+                10 siswa terbaik berdasarkan jumlah score
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -88,33 +109,40 @@ const DashboardPage: NextPageWithLayout = () => {
   );
 };
 
-export function Leaderboard() {
+export const Leaderboard = () => {
+  const { leaderBoard } = useLeaderBoard();
+
   return (
     <div className="space-y-8">
-      <div className="flex items-center">
-        <Avatar className="h-9 w-9">
-          <AvatarImage src="/avatars/01.png" alt="Avatar" />
-          <AvatarFallback>OM</AvatarFallback>
-        </Avatar>
-        <div className="ml-4 space-y-1">
-          <p className="text-sm font-medium leading-none">Rizki Fitra Rahman</p>
-          <p className="text-sm text-muted-foreground">cahrizki.rf@gmail.com</p>
-        </div>
-        <div className="ml-auto font-medium">100</div>
-      </div>
+      {leaderBoard.map((item) => (
+        <Link
+          key={item.id}
+          href={{
+            pathname: "/admin/siswa/[id]",
+            query: { id: item.id },
+          }}
+          className="flex items-center"
+        >
+          <Avatar className="h-9 w-9">
+            <AvatarImage src="/avatars/01.png" alt="Avatar" />
+            <AvatarFallback>
+              {item.name ? item.name.charAt(0).toUpperCase() : "-"}
+            </AvatarFallback>
+          </Avatar>
+          <div className="ml-4 space-y-1">
+            <p className="text-sm font-medium leading-none">
+              {item.name ?? "-"}
+            </p>
+            <p className="text-sm text-muted-foreground">{item.email ?? "-"}</p>
+          </div>
+          <div className="ml-auto font-medium">{item.score ?? 0}</div>
+        </Link>
+      ))}
     </div>
   );
-}
+};
 
 const chartConfig = {} satisfies ChartConfig;
-
-const data01 = [
-  { name: "Bab 1", value: 400 },
-  { name: "Bab 2", value: 300 },
-  { name: "Bab 3", value: 300 },
-  { name: "Bab 4", value: 200 },
-  { name: "Bab 5", value: 278 },
-];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const renderActiveShape = (props: any) => {
@@ -191,21 +219,31 @@ const renderActiveShape = (props: any) => {
 };
 
 export function ChartSample() {
+  const router = useRouter();
   const [activeIndex, setActiveIndex] = React.useState(0);
+  const { scoreDistribution } = useScoreDistribution();
+
   return (
     <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
       <PieChart width={400} height={400}>
         <Pie
           activeIndex={activeIndex}
           activeShape={renderActiveShape}
-          data={data01}
+          data={scoreDistribution}
           cx="50%"
           cy="50%"
           innerRadius={60}
           outerRadius={80}
           fill="#7C3AED"
-          dataKey="value"
+          dataKey="score"
           onMouseEnter={(_, index) => setActiveIndex(index)}
+          onClick={(data) => {
+            router.push({
+              pathname: "/admin/bab/[babId]",
+              query: { babId: data?.payload?.payload?.id },
+            });
+          }}
+          className="cursor-pointer"
         />
       </PieChart>
     </ChartContainer>

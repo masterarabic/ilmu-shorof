@@ -2,6 +2,7 @@ import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
+import { getSession } from "next-auth/react";
 import React from "react";
 import superjson from "superjson";
 
@@ -17,10 +18,9 @@ import SubBabFormDialog from "@/modules/admin/components/sub-bab/FormDialog";
 import LessonTable from "@/modules/admin/components/sub-bab/LessonTable";
 import AdminMainLayout from "@/modules/admin/layouts/MainLayout";
 import { NextPageWithLayout } from "@/pages/_app";
+import { createContextInner } from "@/server/context";
 import { appRouter } from "@/server/routers/_app";
 import { trpc } from "@/utils/trpc";
-import { getSession } from "next-auth/react";
-import { createContextInner } from "@/server/context";
 
 export async function getServerSideProps(
   context: GetServerSidePropsContext<{ subBabId: string }>
@@ -37,7 +37,7 @@ export async function getServerSideProps(
    * Prefetching the `post.byId` query.
    * `prefetch` does not return the result and never throws - if you need that behavior, use `fetch` instead.
    */
-  await helpers.subBab.list.prefetch({
+  await helpers.admin.subBab.list.prefetch({
     id,
     with: ["bab"],
   });
@@ -57,7 +57,7 @@ const SubBabPage: NextPageWithLayout<{
     mode: "create" as "create" | "update",
   });
 
-  const { data: subBabResponse } = trpc.subBab.list.useQuery({
+  const { data: subBabResponse } = trpc.admin.subBab.list.useQuery({
     id,
     with: ["bab"],
   });
