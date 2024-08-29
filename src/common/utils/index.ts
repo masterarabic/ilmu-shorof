@@ -24,3 +24,7 @@ export const isActiveLink = (
 
   return false;
 };
+
+export const generateStudentBabLink = (babNumber: number) => {
+  return `${process.env.NEXT_PUBLIC_APP_URL}/belajar/${babNumber}`;
+};

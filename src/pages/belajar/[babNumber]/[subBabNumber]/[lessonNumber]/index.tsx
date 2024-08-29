@@ -1,77 +1,25 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { HeartFilledIcon } from "@radix-ui/react-icons";
-import { createServerSideHelpers } from "@trpc/react-query/server";
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import Link from "next/link";
-import { getSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import React, { FC, useId, useMemo, useState } from "react";
 import { useForm, UseFormReturn, useWatch } from "react-hook-form";
-import SuperJSON from "superjson";
 import { z } from "zod";
 
 import Button3D from "@/common/components/ui/3d-button";
 import { Button } from "@/common/components/ui/button";
 import { Form } from "@/common/components/ui/form";
 import { Progress } from "@/common/components/ui/progress";
+import { Spinner } from "@/common/components/ui/spinner";
 import useSystemSetting from "@/common/hooks/useSystemSetting";
 import { cn } from "@/common/utils";
 import ShareSection from "@/modules/client/components/belajar/ShareSection";
 import EndModal from "@/modules/client/components/lesson/EndModal";
 import useStudent from "@/modules/client/hooks/useStudent";
 import { NextPageWithLayout } from "@/pages/_app";
-import { createContextInner } from "@/server/context";
-import { appRouter } from "@/server/routers/_app";
 import { RouterOutput, trpc } from "@/utils/trpc";
 
-export async function getServerSideProps(
-  context: GetServerSidePropsContext<{
-    babNumber: string;
-    subBabNumber: string;
-    lessonNumber: string;
-  }>
-) {
-  const session = await getSession(context);
-
-  const helpers = createServerSideHelpers({
-    router: appRouter,
-    ctx: await createContextInner({ session }),
-    transformer: SuperJSON,
-  });
-
-  const babNumber = Number(context.params?.babNumber);
-  const subBabNumber = Number(context.params?.subBabNumber);
-  const lessonNumber = Number(context.params?.lessonNumber);
-
-  /*
-   * Prefetching the `post.byId` query.
-   * `prefetch` does not return the result and never throws - if you need that behavior, use `fetch` instead.
-   */
-  const result = await helpers.student.lesson.data
-    .fetch({
-      babNumber,
-      subBabNumber,
-      lessonNumber,
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-
-  if (!result || !result?.lesson) {
-    return {
-      notFound: true,
-    };
-  }
-
-  return {
-    props: {
-      trpcState: helpers.dehydrate(),
-      bab: result.bab,
-      subBab: result.subBab,
-      lesson: result.lesson,
-    },
-  };
-}
-
+type Data = RouterOutput["student"]["lesson"]["data"];
 type Questions = RouterOutput["student"]["lesson"]["listQuestion"]["questions"];
 
 export const FormSchema = z.object({
@@ -83,9 +31,11 @@ type Form = UseFormReturn<z.infer<typeof FormSchema>>;
 
 const maxHeartCount = 3;
 
-const LessonPage: NextPageWithLayout<
-  InferGetServerSidePropsType<typeof getServerSideProps>
-> = ({ bab, subBab, lesson }) => {
+const Content: FC<{
+  lesson: NonNullable<Data["lesson"]>;
+  bab: NonNullable<Data["bab"]>;
+  subBab: NonNullable<Data["subBab"]>;
+}> = ({ bab, subBab, lesson }) => {
   const [score, setScore] = useState(0);
   const [star, setStar] = useState(0);
   const [isEnd, setIsEnd] = useState(false);
@@ -272,6 +222,41 @@ const LessonPage: NextPageWithLayout<
         </div>
       </div>
     </>
+  );
+};
+
+const LessonPage: NextPageWithLayout = () => {
+  const router = useRouter();
+
+  const { data, isLoading } = trpc.student.lesson.data.useQuery(
+    {
+      babNumber: Number(router.query.babNumber),
+      subBabNumber: Number(router.query.subBabNumber),
+      lessonNumber: Number(router.query.lessonNumber),
+    },
+    {
+      enabled: router.isReady,
+      retry: false,
+    }
+  );
+
+  if (isLoading) {
+    return (
+      <div className="w-full bg-primary h-screen flex items-center justify-center">
+        <Spinner size="large" className="text-white" />
+      </div>
+    );
+  }
+
+  if (!data || !data.bab || !data.subBab || !data.lesson) {
+    router.replace("/belajar");
+    return (
+      <div className="w-full bg-primary h-screen flex items-center justify-center"></div>
+    );
+  }
+
+  return (
+    <Content bab={data?.bab} subBab={data?.subBab} lesson={data?.lesson} />
   );
 };
 

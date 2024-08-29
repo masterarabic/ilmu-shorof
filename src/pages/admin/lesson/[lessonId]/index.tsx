@@ -1,66 +1,54 @@
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
-import { createServerSideHelpers } from "@trpc/react-query/server";
-import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
-import { getSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import React from "react";
-import superjson from "superjson";
 
 import { Button } from "@/common/components/ui/button";
 import { Card } from "@/common/components/ui/card";
+import { Spinner } from "@/common/components/ui/spinner";
 import useSystemSetting from "@/common/hooks/useSystemSetting";
 import DeleteLessonButton from "@/modules/admin/components/lesson/DeleteButton";
 import LessonFormDialog from "@/modules/admin/components/lesson/FormDialog";
 import QuestionForm from "@/modules/admin/components/lesson/QuestionForm";
 import AdminMainLayout from "@/modules/admin/layouts/MainLayout";
 import { NextPageWithLayout } from "@/pages/_app";
-import { createContextInner } from "@/server/context";
-import { appRouter } from "@/server/routers/_app";
 import { trpc } from "@/utils/trpc";
 
-export async function getServerSideProps(
-  context: GetServerSidePropsContext<{ lessonId: string }>
-) {
-  const session = await getSession(context);
-
-  const helpers = createServerSideHelpers({
-    router: appRouter,
-    ctx: await createContextInner({ session }),
-    transformer: superjson,
-  });
-  const id = context.params?.lessonId as string;
-  /*
-   * Prefetching the `post.byId` query.
-   * `prefetch` does not return the result and never throws - if you need that behavior, use `fetch` instead.
-   */
-  await helpers.admin.lesson.list.prefetch({
-    id,
-    with: ["bab", "subBab"],
-  });
-  return {
-    props: {
-      trpcState: helpers.dehydrate(),
-      id,
-    },
-  };
-}
-
-const LessonDetailPage: NextPageWithLayout<{
-  id: string;
-}> = ({ id }) => {
+const LessonDetailPage: NextPageWithLayout = () => {
+  const router = useRouter();
   const { config } = useSystemSetting();
   const [lessonDialog, setLessonDialog] = React.useState({
     open: false,
     mode: "create" as "create" | "update",
   });
 
-  const { data: lessonData, isLoading } = trpc.admin.lesson.list.useQuery({
-    id,
-    with: ["bab", "subBab"],
-  });
+  const id = router.query.lessonId as string;
+
+  const { data: lessonData, isLoading } = trpc.admin.lesson.list.useQuery(
+    {
+      id,
+      with: ["bab", "subBab"],
+    },
+    {
+      enabled: router.isReady,
+    }
+  );
   const lesson = lessonData?.items?.[0];
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        <Spinner size="large" />
+      </div>
+    );
+  }
+
+  if (!lesson) {
+    router.replace("/admin/bab");
+    return (
+      <div className="w-full h-screen flex items-center justify-center"></div>
+    );
+  }
 
   return (
     <div>

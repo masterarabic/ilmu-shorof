@@ -65,11 +65,8 @@ const Header: FC<HeaderProps> = ({ babNumber }) => {
       <div className="bg-[#692fce] mx-4 mb-6 rounded-xl overflow-hidden shadow-lg">
         <div className="flex items-center justify-between mb-2 bg-primary text-left text-white px-4 py-4">
           <div>
-            <div className={cn("leading-none text-sm", "md:text-base")}>
-              Bab {bab?.number} - Unit {activeSubBab?.number}
-            </div>
-            <div className={cn("text-md font-semibold", "md:text-lg")}>
-              {activeSubBab?.name || "-"}
+            <div className={cn("leading-none text-sm", "md:text-lg")}>
+              Bab {bab?.number} - {bab?.name}
             </div>
           </div>
           <div className="shrink-0">

@@ -6,7 +6,7 @@ import { lessonRoute } from "./lesson";
 import { listBabRoute } from "./listBab";
 import { selfRoute } from "./self";
 
-export const student = router({
+export const studentRouter = router({
   self: selfRoute,
   learn: learnRoute,
   listBab: listBabRoute,

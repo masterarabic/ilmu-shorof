@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE `Answer` ADD COLUMN `number` INTEGER NOT NULL DEFAULT 0;

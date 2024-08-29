@@ -18,15 +18,6 @@ const defaultSelect = {
 } satisfies Prisma.SettingSelect;
 
 export const settingRouter = router({
-  list: adminProcedure.input(z.object({})).query(async () => {
-    const items = await prisma.setting.findMany({
-      select: defaultSelect,
-    });
-
-    return {
-      items,
-    };
-  }),
   upsert: adminProcedure
     .input(
       z.object({

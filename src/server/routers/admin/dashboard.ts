@@ -22,9 +22,9 @@ export const dashboardRouter = router({
       { id: string; number: number; name: string; lesson_count: number }[]
     >`
         SELECT b.id, b.number, b.name, COUNT(l.id) AS lesson_count
-        FROM Bab AS b
-        LEFT JOIN Lesson AS l ON l.babId = b.id
-        GROUP BY b.id
+        FROM "Bab" AS b
+        LEFT JOIN "Lesson" AS l ON l."babId" = b."id"
+        GROUP BY b."id"
     `;
 
     const docs = rawResult.map((row) => ({
@@ -51,11 +51,11 @@ export const dashboardRouter = router({
             u.email, 
             (
                 SELECT SUM(slr.score) 
-                FROM StudentLessonResult AS slr 
-                WHERE slr.studentId = s.id
+                FROM "StudentLessonResult" AS slr 
+                WHERE slr."studentId" = s."id"
             ) AS score
-        FROM Student AS s
-        LEFT JOIN users AS u ON u.id = s.userId
+        FROM "Student" AS s
+        LEFT JOIN "users" AS u ON u."id" = s."userId"
         ORDER BY score DESC
         LIMIT 10
       `;

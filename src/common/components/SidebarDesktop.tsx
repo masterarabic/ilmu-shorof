@@ -1,4 +1,5 @@
 import { ExitIcon } from "@radix-ui/react-icons";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
 import React from "react";
@@ -51,7 +52,12 @@ const SidebarDesktop = () => {
           "lg:text-2xl"
         )}
       >
-        Belajar <br /> Bahasa Arab
+        <Link href="/belajar">
+          <div className="">الصَّرْفُ المُيَسَّرُ</div>
+          <div className="text-2xl leading-none">
+            Mudah Belajar <br /> Ilmu Shorof
+          </div>
+        </Link>
       </div>
       <div className="flex-1 flex flex-col mt-6 space-y-1 items-center lg:items-stretch">
         {menuItems.map((item) => {

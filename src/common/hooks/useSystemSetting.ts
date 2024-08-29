@@ -35,7 +35,7 @@ export const generateConfig = (
 };
 
 const useSystemSetting = () => {
-  const { data: settingData, isLoading } = trpc.admin.setting.list.useQuery(
+  const { data: settingData, isLoading } = trpc.protected.list.useQuery(
     {},
     {
       // 10 minutes

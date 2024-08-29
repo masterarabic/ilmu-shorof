@@ -37,8 +37,10 @@ export const SidebarDesktop = () => {
           href="/admin"
           className="mx-2 text-primary leading-none font-semibold text-xl text-center"
         >
-          Belajar <br /> Bahasa Arab
-          <span className="block text-sm">تعلم اللغة العربية</span>
+          <div className="">الصَّرْفُ المُيَسَّرُ</div>
+          <div className="text-2xl leading-none">
+            Mudah Belajar <br /> Ilmu Shorof
+          </div>
         </Link>
       </div>
 

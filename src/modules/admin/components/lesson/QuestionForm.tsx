@@ -311,6 +311,11 @@ const QuestionForm: React.FC<{
                       text: "",
                       correct: false,
                     },
+                    {
+                      id: uuidv4(),
+                      text: "",
+                      correct: false,
+                    },
                   ],
                 });
               }}

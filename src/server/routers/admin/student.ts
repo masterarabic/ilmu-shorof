@@ -42,15 +42,15 @@ export const studentRouter = router({
             s.id, 
             u.name,
             (
-                SELECT SUM(score) FROM StudentLessonResult AS slr
-                WHERE slr.studentId = s.id
+                SELECT SUM(score) FROM "StudentLessonResult" AS slr
+                WHERE slr."studentId" = s."id"
             ) AS score,
             (
-                SELECT COUNT(DISTINCT slr.lessonId) FROM StudentLessonResult AS slr
-                WHERE slr.studentId = s.id
+                SELECT COUNT(DISTINCT slr."lessonId") FROM "StudentLessonResult" AS slr
+                WHERE slr."studentId" = s."id"
             ) AS progress
-        FROM Student AS s
-        LEFT JOIN users AS u  ON s.userId = u.id
+        FROM "Student" AS s
+        LEFT JOIN "users" AS u  ON s."userId" = u."id"
         ORDER BY score DESC
     `;
 
@@ -81,12 +81,12 @@ export const studentRouter = router({
             u.image,
             u.email,
             (
-                SELECT SUM(score) FROM StudentLessonResult AS slr
-                WHERE slr.studentId = s.id
+                SELECT SUM(score) FROM "StudentLessonResult" AS slr
+                WHERE slr."studentId" = s."id"
             ) AS score
-        FROM Student AS s
-        LEFT JOIN users AS u ON s.userId = u.id
-        WHERE s.id = ${id}
+        FROM "Student" AS s
+        LEFT JOIN users AS u ON s."userId" = u."id"
+        WHERE s."id" = ${id}
       `;
 
       const data = rawResult[0];
@@ -113,16 +113,16 @@ export const studentRouter = router({
             b.number,
             b.name,
             (
-                SELECT COUNT(*) FROM StudentLessonResult AS slr
-                JOIN Lesson AS l ON l.id = slr.lessonId
-                WHERE slr.studentId = ${studentId} AND l.babId = b.id
+                SELECT COUNT(*) FROM "StudentLessonResult" AS slr
+                JOIN "Lesson" AS l ON l."id" = slr."lessonId"
+                WHERE slr."studentId" = ${studentId} AND l."babId" = b."id"
             ) AS progress,
             (
-                SELECT SUM(score) FROM StudentLessonResult AS slr
-                JOIN Lesson AS l ON l.id = slr.lessonId
-                WHERE slr.studentId = ${studentId} AND l.babId = b.id
+                SELECT SUM(score) FROM "StudentLessonResult" AS slr
+                JOIN "Lesson" AS l ON l."id" = slr."lessonId"
+                WHERE slr."studentId" = ${studentId} AND l."babId" = b."id"
             ) AS score
-        FROM Bab AS b
+        FROM "Bab" AS b
       `;
 
       const docs = rawResult.map((item) => {
@@ -150,18 +150,18 @@ export const studentRouter = router({
             sb.number,
             sb.name,
             (
-                SELECT COUNT(*) FROM StudentLessonResult AS slr
-                JOIN Lesson AS l ON l.id = slr.lessonId
-                WHERE slr.studentId = ${studentId} AND l.subBabId = sb.id
+                SELECT COUNT(*) FROM "StudentLessonResult" AS slr
+                JOIN Lesson AS l ON l."id" = slr."lessonId"
+                WHERE slr."studentId" = ${studentId} AND l."subBabId" = sb."id"
             ) AS progress,
             (
                 SELECT SUM(score) FROM StudentLessonResult AS slr
-                JOIN Lesson AS l ON l.id = slr.lessonId
-                WHERE slr.studentId = ${studentId} AND l.subBabId = sb.id
+                JOIN Lesson AS l ON l."id" = slr."lessonId"
+                WHERE slr."studentId" = ${studentId} AND l."subBabId" = sb."id"
             ) AS score
-        FROM SubBab AS sb
-        WHERE sb.babId = ${input.babId}
-        ORDER BY sb.number
+        FROM "SubBab" AS sb
+        WHERE sb."babId" = ${input.babId}
+        ORDER BY sb."number"
       `;
 
       const docs = rawResult.map((item) => {

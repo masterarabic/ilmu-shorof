@@ -9,7 +9,13 @@ const isAdminPath = (path: string) => path.startsWith("/admin");
 
 // ['/login', '/register', '/forgot-password']
 const isPublicPath = (path: string) => {
-  const publicPaths = ["/", "/login", "/register", "/forgot-password"];
+  const publicPaths = [
+    "/",
+    "/login",
+    "/login/admin",
+    "/register",
+    "/forgot-password",
+  ];
   return publicPaths.includes(path);
 };
 

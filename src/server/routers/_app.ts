@@ -2,12 +2,14 @@
  * This file contains the root router of your tRPC-backend
  */
 import { createCallerFactory, router } from "../trpc";
-import { admin } from "./admin/router";
-import { student } from "./client/router";
+import { adminRouter } from "./admin/router";
+import { studentRouter } from "./client/router";
+import { protectedRouter } from "./protected";
 
 export const appRouter = router({
-  admin: admin,
-  student: student,
+  admin: adminRouter,
+  student: studentRouter,
+  protected: protectedRouter,
 });
 
 export const createCaller = createCallerFactory(appRouter);

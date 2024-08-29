@@ -9,7 +9,7 @@ import { settingRouter } from "./setting";
 import { studentRouter } from "./student";
 import { subBabRouter } from "./subBab";
 
-export const admin = router({
+export const adminRouter = router({
   dashboard: dashboardRouter,
   bab: babRouter,
   setting: settingRouter,
