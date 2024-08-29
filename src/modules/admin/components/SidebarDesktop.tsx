@@ -63,8 +63,11 @@ export const SidebarDesktop = () => {
         <Button
           className="w-full"
           variant="ghost"
-          onClick={() => {
-            signOut();
+          onClick={async () => {
+            await signOut({
+              callbackUrl: "/",
+              redirect: true,
+            });
           }}
         >
           Keluar

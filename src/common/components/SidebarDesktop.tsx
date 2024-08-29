@@ -83,8 +83,11 @@ const SidebarDesktop = () => {
       <Button3D
         variant="white"
         className="mb-3 mx-2"
-        onClick={() => {
-          signOut();
+        onClick={async () => {
+          await signOut({
+            callbackUrl: "/",
+            redirect: true,
+          });
         }}
       >
         <span className="hidden lg:inline-block">Keluar</span>

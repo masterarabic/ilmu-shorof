@@ -24,7 +24,7 @@ export async function getServerSideProps(
     transformer: SuperJSON,
   });
 
-  const { isExist } = await helpers.student.belajar.isBabExist
+  const { isExist } = await helpers.student.learn.isBabExist
     .fetch({ babNumber }, {})
     .catch(() => ({ isExist: false }));
 
@@ -47,7 +47,7 @@ export async function getServerSideProps(
 const SpecificBabPage: NextPageWithLayout<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ babNumber }) => {
-  const { mutateAsync } = trpc.student.belajar.updateLastBab.useMutation();
+  const { mutateAsync } = trpc.student.learn.updateLastBab.useMutation();
 
   useEffect(() => {
     if (!babNumber) return;

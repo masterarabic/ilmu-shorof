@@ -99,7 +99,7 @@ const DashboardPage: NextPageWithLayout = () => {
                 10 siswa terbaik berdasarkan jumlah score
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="max-h-[450px] overflow-y-auto">
               <Leaderboard />
             </CardContent>
           </Card>

@@ -1,3 +1,4 @@
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { z } from "zod";
 
 import prisma from "../../../../prisma/db";
@@ -97,4 +98,26 @@ export const selfRoute = router({
         totalLesson,
       };
     }),
+  createStudent: studentProcedure.mutation(async ({ ctx }) => {
+    const student = await ctx.prisma.student
+      .create({
+        data: {
+          userId: ctx.session.user.id,
+        },
+      })
+      .catch((e) => {
+        const error = e as PrismaClientKnownRequestError;
+
+        // student already exists
+        if (error.code === "P2002") {
+          return null;
+        }
+
+        throw e;
+      });
+
+    return {
+      student,
+    };
+  }),
 });

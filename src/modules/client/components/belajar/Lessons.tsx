@@ -20,7 +20,7 @@ const Lessons: FC<LessonsProps> = ({ babNumber }) => {
           <section
             id={subBab.id}
             key={subBab.id}
-            className="w-full px-10 flex flex-col items-center"
+            className="w-full px-10 flex flex-col items-center pb-6"
           >
             {index !== 0 ? (
               <div className="flex w-full items-center my-8">

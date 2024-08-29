@@ -3,7 +3,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
 import NextAuth, { AuthOptions } from "next-auth";
 import { Adapter, AdapterUser } from "next-auth/adapters";
-import GoogleProvider from "next-auth/providers/google";
+import GoogleProvider, { GoogleProfile } from "next-auth/providers/google";
 
 const prisma = new PrismaClient();
 
@@ -20,16 +20,6 @@ function CustomPrismaAdapter(p: typeof prisma): Adapter {
             emailVerified: user.emailVerified,
             name: user.name,
             email: user.email,
-          },
-        });
-
-        await trx.student.create({
-          data: {
-            user: {
-              connect: {
-                id: created.id,
-              },
-            },
           },
         });
 
@@ -62,12 +52,20 @@ export const authOptions: AuthOptions = {
     }),
   ],
 
-  // debug: process.env.NODE_ENV === "development",
+  debug: process.env.NODE_ENV === "development",
   session: {
     strategy: "jwt",
   },
   callbacks: {
-    jwt({ token, user, trigger, session }) {
+    signIn: async ({ account, profile }) => {
+      if (account?.provider === "google") {
+        // @ts-ignore
+        const googleProfile = profile as GoogleProfile;
+        return googleProfile?.email_verified;
+      }
+      return true;
+    },
+    jwt: async ({ token, user, trigger, session }) => {
       if (user) {
         token.role = user.role;
         token.id = user.id;

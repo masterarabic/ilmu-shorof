@@ -229,7 +229,7 @@ const LessonPage: NextPageWithLayout<
                 {questionText}
               </div>
               <ShareSection
-                url={window.location.href ?? ""}
+                url={window?.location?.href ?? ""}
                 variant="ghost"
                 className="border-none hidden xl:flex"
               />

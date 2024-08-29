@@ -3,7 +3,7 @@ import { z } from "zod";
 import prisma from "../../../../prisma/db";
 import { router, studentProcedure } from "../../trpc";
 
-export const belajarRoute = router({
+export const learnRoute = router({
   isBabExist: studentProcedure
     .input(z.object({ babNumber: z.number() }))
     .query(async ({ input }) => {

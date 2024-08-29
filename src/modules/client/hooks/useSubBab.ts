@@ -7,12 +7,12 @@ import useBab from "./useBab";
 import useStudent from "./useStudent";
 
 export type SubBabWithLesson =
-  inferRouterOutputs<AppRouter>["student"]["belajar"]["subBabList"]["subBabList"][number];
+  inferRouterOutputs<AppRouter>["student"]["learn"]["subBabList"]["subBabList"][number];
 
 const useSubBabList = ({ babNumber }: { babNumber: number }) => {
   const { student } = useStudent();
   const { bab } = useBab({ babNumber });
-  const { data, isLoading, error } = trpc.student.belajar.subBabList.useQuery(
+  const { data, isLoading, error } = trpc.student.learn.subBabList.useQuery(
     {
       babId: bab?.id!,
       studentId: student?.id!,

@@ -9,7 +9,7 @@ const isAdminPath = (path: string) => path.startsWith("/admin");
 
 // ['/login', '/register', '/forgot-password']
 const isPublicPath = (path: string) => {
-  const publicPaths = ["/login", "/register", "/forgot-password"];
+  const publicPaths = ["/", "/login", "/register", "/forgot-password"];
   return publicPaths.includes(path);
 };
 
@@ -18,24 +18,41 @@ const middleware = (request: NextRequest) => {
   const token = request?.nextauth?.token as JWT | undefined;
   const path = request.nextUrl.pathname;
 
+  // student can't access admin
   if (isAdminPath(path) && token && token.role === "student") {
-    return NextResponse.redirect(new URL("/", request.nextUrl));
+    return NextResponse.redirect(new URL("/belajar", request.nextUrl));
   }
 
+  // admin can't access student
   if (!isAdminPath(path) && token && token.role === "admin") {
     return NextResponse.redirect(new URL("/admin", request.nextUrl));
   }
 
+  // after login can't access public path
   if (isPublicPath(path) && token) {
-    return NextResponse.redirect(new URL("/", request.nextUrl));
+    if (token.role === "student")
+      return NextResponse.redirect(new URL("/belajar", request.nextUrl));
+
+    if (token.role === "admin")
+      return NextResponse.redirect(new URL("/admin", request.nextUrl));
   }
 };
 
-export default withAuth(middleware);
+export default withAuth(middleware, {
+  callbacks: {
+    authorized: ({ req, token }) => {
+      const { pathname } = req.nextUrl;
+
+      if (isPublicPath(pathname)) return true;
+
+      return !!token;
+    },
+  },
+});
 
 export const config = {
   matcher: [
-    "/",
+    "/create-student",
     "/belajar/:path*",
     "/admin/:path*",
 

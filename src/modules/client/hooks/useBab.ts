@@ -1,7 +1,7 @@
 import { trpc } from "@/utils/trpc";
 
 const useBab = ({ babNumber }: { babNumber: number }) => {
-  const { data, isLoading, error } = trpc.student.belajar.bab.useQuery(
+  const { data, isLoading, error } = trpc.student.learn.bab.useQuery(
     {
       babNumber,
     },
