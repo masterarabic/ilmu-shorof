@@ -19,9 +19,13 @@ const SubBabFormDialog: React.FC<{
   subBab?: { id: string; name: string; number: number };
   setOpen: (open: boolean) => void;
 }> = ({ mode, bab, subBab, open, setOpen }) => {
-  const { mutateAsync: createSubBab } = trpc.admin.subBab.add.useMutation();
-  const { mutateAsync: updateSubBab } = trpc.admin.subBab.update.useMutation();
+  const { mutateAsync: createSubBab, status: createStatus } =
+    trpc.admin.subBab.add.useMutation();
+  const { mutateAsync: updateSubBab, status: updateStatus } =
+    trpc.admin.subBab.update.useMutation();
   const trpcUtils = trpc.useUtils();
+
+  const loading = createStatus === "pending" || updateStatus === "pending";
 
   const handleCreate = async (data: TypeOf<typeof FormSchema>) => {
     try {
@@ -88,6 +92,7 @@ const SubBabFormDialog: React.FC<{
                 : undefined
             }
             onSubmit={handleSubmit}
+            loading={loading}
           />
         </div>
       </DialogContent>

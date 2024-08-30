@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -35,7 +36,8 @@ export const FormSchema = z.object({
 const SubBabForm: React.FC<{
   defaultValues?: z.infer<typeof FormSchema>;
   onSubmit: (data: z.infer<typeof FormSchema>) => void;
-}> = ({ defaultValues, onSubmit }) => {
+  loading: boolean;
+}> = ({ defaultValues, onSubmit, loading }) => {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues,
@@ -84,7 +86,12 @@ const SubBabForm: React.FC<{
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit" disabled={loading}>
+          {loading ? (
+            <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+          ) : null}
+          Submit
+        </Button>
       </form>
     </Form>
   );

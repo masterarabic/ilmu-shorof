@@ -19,9 +19,13 @@ const BabFormDialog: React.FC<{
   setOpen: (open: boolean) => void;
   bab?: Bab;
 }> = ({ mode, open, setOpen, bab }) => {
-  const { mutateAsync: createBab } = trpc.admin.bab.add.useMutation();
-  const { mutateAsync: updateBab } = trpc.admin.bab.update.useMutation();
+  const { mutateAsync: createBab, status: createStatus } =
+    trpc.admin.bab.add.useMutation();
+  const { mutateAsync: updateBab, status: updateStatus } =
+    trpc.admin.bab.update.useMutation();
   const trpcUtils = trpc.useUtils();
+
+  const loading = createStatus === "pending" || updateStatus === "pending";
 
   const handleCreate = async (data: TypeOf<typeof FormSchema>) => {
     try {
@@ -81,6 +85,7 @@ const BabFormDialog: React.FC<{
                 : undefined
             }
             onSubmit={handleSubmit}
+            loading={loading}
           />
         </div>
       </DialogContent>

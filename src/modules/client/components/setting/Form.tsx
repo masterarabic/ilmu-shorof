@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import React from "react";
@@ -33,13 +34,15 @@ type FormValues = z.infer<typeof FormSchema>;
 const SettingForm: React.FC<{
   defaultValues?: FormValues;
   onSubmit: (data: FormValues) => void;
-}> = ({ onSubmit, defaultValues }) => {
+  loading: boolean;
+}> = ({ onSubmit, defaultValues, loading }) => {
   const { data } = useSession();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(FormSchema),
     defaultValues,
   });
+
   return (
     <div className="flex gap-x-3">
       <Image
@@ -71,7 +74,12 @@ const SettingForm: React.FC<{
               </FormItem>
             )}
           />
-          <Button type="submit">Update</Button>
+          <Button type="submit" disabled={loading}>
+            {loading ? (
+              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+            ) : null}
+            Submit
+          </Button>
         </form>
       </Form>
     </div>
@@ -79,9 +87,12 @@ const SettingForm: React.FC<{
 };
 
 const Wrapper = () => {
-  const { mutateAsync } = trpc.student.self.updateSetting.useMutation();
+  const { mutateAsync, status: updateStatus } =
+    trpc.student.self.updateSetting.useMutation();
   const { data: sessionData, update: updateSession } = useSession();
   const trpcUtils = trpc.useUtils();
+
+  const loading = updateStatus === "pending";
 
   const onSubmit = async (data: FormValues) => {
     try {
@@ -115,6 +126,7 @@ const Wrapper = () => {
       defaultValues={{
         name: sessionData?.user.name ?? "",
       }}
+      loading={loading}
     />
   );
 };

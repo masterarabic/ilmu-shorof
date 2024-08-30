@@ -20,9 +20,13 @@ const LessonFormDialog: React.FC<{
   lesson?: { id: string; number: number };
   setOpen: (open: boolean) => void;
 }> = ({ mode, bab, subBab, lesson, open, setOpen }) => {
-  const { mutateAsync: createLesson } = trpc.admin.lesson.add.useMutation();
-  const { mutateAsync: updateLesson } = trpc.admin.lesson.update.useMutation();
+  const { mutateAsync: createLesson, status: createStatus } =
+    trpc.admin.lesson.add.useMutation();
+  const { mutateAsync: updateLesson, status: updateStatus } =
+    trpc.admin.lesson.update.useMutation();
   const trpcUtils = trpc.useUtils();
+
+  const loading = createStatus === "pending" || updateStatus === "pending";
 
   const handleCreate = async (data: TypeOf<typeof FormSchema>) => {
     try {
@@ -84,6 +88,7 @@ const LessonFormDialog: React.FC<{
           <LessonForm
             defaultValues={lesson ? { number: lesson.number } : undefined}
             onSubmit={handleSubmit}
+            loading={loading}
           />
         </div>
       </DialogContent>
