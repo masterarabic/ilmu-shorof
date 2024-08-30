@@ -15,6 +15,7 @@ import {
   FormMessage,
 } from "@/common/components/ui/form";
 import { Input } from "@/common/components/ui/input";
+import { Spinner } from "@/common/components/ui/spinner";
 import { Switch } from "@/common/components/ui/switch";
 import useSystemSetting from "@/common/hooks/useSystemSetting";
 import AdminMainLayout from "@/modules/admin/layouts/MainLayout";
@@ -30,24 +31,30 @@ const FormSchema = z.object({
 type SettingFormValues = z.infer<typeof FormSchema>;
 
 const SettingPage: NextPageWithLayout = () => {
-  const { config, loading } = useSystemSetting();
+  const { error, config, loading } = useSystemSetting();
+
+  if (loading) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        <Spinner size="large" />
+      </div>
+    );
+  }
+
+  if (error) return <div>{error.message}</div>;
 
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-semibold">Pengaturan</h1>
       </div>
-      {loading ? (
-        <div>Loading...</div>
-      ) : (
-        <SettingForm
-          defaultValues={{
-            randomizeQuestion: config.randomizeQuestion,
-            randomizeAnswer: config.randomizeAnswer,
-            defaultScore: config.defaultScore,
-          }}
-        />
-      )}
+      <SettingForm
+        defaultValues={{
+          randomizeQuestion: config.randomizeQuestion,
+          randomizeAnswer: config.randomizeAnswer,
+          defaultScore: config.defaultScore,
+        }}
+      />
     </div>
   );
 };

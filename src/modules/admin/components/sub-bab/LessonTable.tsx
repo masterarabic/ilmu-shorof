@@ -51,7 +51,7 @@ const LessonTable: React.FC<{
     mode: "create" as "create" | "update",
   });
 
-  const { data: lessonData } = trpc.admin.lesson.list.useQuery({
+  const { data: lessonData, isLoading } = trpc.admin.lesson.list.useQuery({
     subBabId,
     accumulator: "countQuestion",
   });
@@ -114,41 +114,54 @@ const LessonTable: React.FC<{
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  className="cursor-pointer"
-                  onClick={() => {
-                    router.push({
-                      pathname: "/admin/lesson/[lessonId]",
-                      query: { lessonId: row.original.id },
-                    });
-                  }}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      style={{ width: `${cell.column.getSize()}px` }}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
+            {!!table.getRowModel().rows?.length && !isLoading
+              ? table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    className="cursor-pointer"
+                    onClick={() => {
+                      router.push({
+                        pathname: "/admin/lesson/[lessonId]",
+                        query: { lessonId: row.original.id },
+                      });
+                    }}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        style={{ width: `${cell.column.getSize()}px` }}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              : null}
+
+            {!table.getRowModel().rows?.length && !isLoading ? (
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Belum ada data, silahkan tambah data
                 </TableCell>
               </TableRow>
-            )}
+            ) : null}
+
+            {isLoading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  Memuat data...
+                </TableCell>
+              </TableRow>
+            ) : null}
           </TableBody>
         </Table>
       </div>

@@ -61,15 +61,6 @@ export const columns = [
       </div>
     ),
   }),
-
-  // {
-  //   id: "actions",
-  //   header: "Aksi",
-  //   size: 10,
-  //   cell: () => {
-  //     return <div>test</div>;
-  //   },
-  // },
 ];
 
 const StudentPage: NextPageWithLayout = () => {
