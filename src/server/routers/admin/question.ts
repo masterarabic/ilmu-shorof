@@ -99,95 +99,94 @@ export const questionRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      prisma.$transaction(async (trx) => {
-        // get all questions
-        const questions = await trx.question.findMany({
-          where: {
+      // get all questions
+      const questions = await prisma.question.findMany({
+        where: {
+          lessonId: input.lessonId,
+        },
+      });
+
+      // check if existing question not in items then delete
+      const deleteQuestionsId: string[] = [];
+      for (const question of questions) {
+        if (!input.items.some((item) => item.id === question.id)) {
+          deleteQuestionsId.push(question.id);
+        }
+      }
+      await prisma.question.deleteMany({
+        where: {
+          id: {
+            in: deleteQuestionsId,
+          },
+        },
+      });
+
+      // check if existing answer not in items then delete
+      const answers = await prisma.answer.findMany({
+        where: {
+          question: {
             lessonId: input.lessonId,
           },
-        });
-
-        // check if existing question not in items then delete
-        const deleteQuestionsId: string[] = [];
-        for (const question of questions) {
-          if (!input.items.some((item) => item.id === question.id)) {
-            deleteQuestionsId.push(question.id);
-          }
+        },
+      });
+      const deleteAnswersId: string[] = [];
+      const flattenAnswers = input.items.flatMap((item) => item.answers);
+      for (const answer of answers) {
+        if (!flattenAnswers.some((item) => item.id === answer.id)) {
+          deleteAnswersId.push(answer.id);
         }
-        await trx.question.deleteMany({
+      }
+      await prisma.answer.deleteMany({
+        where: {
+          id: {
+            in: deleteAnswersId,
+          },
+        },
+      });
+
+      // create or update questions
+      for (const item of input.items) {
+        await prisma.question.upsert({
           where: {
-            id: {
-              in: deleteQuestionsId,
+            id: item.id,
+          },
+          update: {
+            number: item.number,
+            question: item.question,
+          },
+          create: {
+            id: item.id,
+            number: item.number,
+            question: item.question,
+            lesson: {
+              connect: {
+                id: input.lessonId,
+              },
             },
           },
         });
 
-        // check if existing answer not in items then delete
-        const answers = await trx.answer.findMany({
-          where: {
-            question: {
-              lessonId: input.lessonId,
-            },
-          },
-        });
-        const deleteAnswersId: string[] = [];
-        const flattenAnswers = input.items.flatMap((item) => item.answers);
-        for (const answer of answers) {
-          if (!flattenAnswers.some((item) => item.id === answer.id)) {
-            deleteAnswersId.push(answer.id);
-          }
-        }
-        await trx.answer.deleteMany({
-          where: {
-            id: {
-              in: deleteAnswersId,
-            },
-          },
-        });
-
-        // create or update questions
-        for (const item of input.items) {
-          await trx.question.upsert({
+        // create or update answers
+        for (const answer of item.answers) {
+          await prisma.answer.upsert({
             where: {
-              id: item.id,
+              id: answer.id,
             },
             update: {
-              number: item.number,
-              question: item.question,
+              answer: answer.text,
+              isCorrect: answer.correct,
+              number: answer.number,
             },
             create: {
-              id: item.id,
-              number: item.number,
-              question: item.question,
-              lesson: {
-                connect: {
-                  id: input.lessonId,
-                },
-              },
+              answer: answer.text,
+              isCorrect: answer.correct,
+              number: answer.number,
+              questionId: item.id,
             },
           });
-
-          // create or update answers
-          for (const answer of item.answers) {
-            await trx.answer.upsert({
-              where: {
-                id: answer.id,
-              },
-              update: {
-                answer: answer.text,
-                isCorrect: answer.correct,
-                number: answer.number,
-              },
-              create: {
-                answer: answer.text,
-                isCorrect: answer.correct,
-                number: answer.number,
-                questionId: item.id,
-              },
-            });
-          }
         }
-      });
+      }
+
       return {};
     }),
 });
