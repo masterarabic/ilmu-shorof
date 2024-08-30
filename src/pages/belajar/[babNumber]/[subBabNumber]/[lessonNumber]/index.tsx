@@ -161,8 +161,8 @@ const Content: FC<{
           setIsEnd(open);
         }}
       />
-      <div className="bg-primary min-h-screen overflow-y-auto px-11">
-        <div className="mt-6 mb-3 flex items-center justify-between">
+      <div className="bg-primary min-h-screen px-4 md:px-11">
+        <div className="pt-6 sticky top-0 flex items-center justify-between">
           <Link href="/belajar">
             <Button variant="ghost" className="text-white">
               Keluar
@@ -172,8 +172,8 @@ const Content: FC<{
             {heartCount} <HeartFilledIcon className="text-white size-6" />
           </div>
         </div>
-        <div className="grid gap-y-5 xl:grid-cols-[700px,1fr] gap-x-12 mb-6">
-          <div className="flex flex-col-reverse xl:flex-col">
+        <div className="grid gap-y-5 xl:grid-cols-[700px,1fr] gap-x-12 pb-6">
+          <div className="flex sticky bg-primary top-0 pt-3 z-50 flex-col-reverse xl:flex-col">
             <div className="bg-white py-6 xl:pb-0 rounded-xl">
               <div className="flex select-none p-8 text-xl font-semibold items-center justify-center w-full mix-h-[200px] xl:min-h-[400px] text-center mb-3">
                 {questionText}
@@ -184,7 +184,7 @@ const Content: FC<{
                 className="border-none hidden xl:flex"
               />
             </div>
-            <div className="group flex-col-reverse xl:flex-col items-center flex justify-center mt-3">
+            <div className="group flex-col-reverse xl:flex-col items-center flex justify-center lg:mt-3 lg:mb-0 mt-0 mb-3">
               <Progress
                 value={(questionIndex / questions.length) * 100}
                 variant="white"
