@@ -13,7 +13,7 @@ const ClientMainLayout = ({ children }: { children: ReactNode }) => {
       <div className="flex py-3 justify-center gap-x-16 md:hidden border-t shadow-lg bg-white fixed bottom-0 inset-x-0 z-50">
         {menuItems.map((menu) => {
           return (
-            <Link href={menu.url} className={cn({})}>
+            <Link key={menu.id} href={menu.url}>
               {menu.icon}
             </Link>
           );
