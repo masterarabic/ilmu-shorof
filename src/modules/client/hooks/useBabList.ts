@@ -4,7 +4,11 @@ import useStudent from "./useStudent";
 
 const useBabList = () => {
   const { student } = useStudent();
-  const { data } = trpc.student.listBab.listBab.useQuery(
+  const {
+    data,
+    isLoading: loadingBabList,
+    error: errorBabList,
+  } = trpc.student.listBab.listBab.useQuery(
     {
       studentId: student?.id!,
     },
@@ -15,6 +19,8 @@ const useBabList = () => {
   const babList = data?.docs ?? [];
   return {
     babList,
+    loadingBabList,
+    errorBabList,
   };
 };
 

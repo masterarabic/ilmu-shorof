@@ -9,9 +9,10 @@ import ClientMainLayout from "@/common/layouts/MainLayout";
 import useBabList from "@/modules/client/hooks/useBabList";
 
 import { NextPageWithLayout } from "../_app";
+import { Spinner } from "@/common/components/ui/spinner";
 
 const ListBabPage: NextPageWithLayout = () => {
-  const { babList } = useBabList();
+  const { babList, loadingBabList, errorBabList } = useBabList();
 
   return (
     <div className="md:pt-4 md:mx-12 md:pb-4 mx-4">
@@ -36,40 +37,54 @@ const ListBabPage: NextPageWithLayout = () => {
         List Bab
       </h1>
 
-      <div className="w-full lg:w-[700px] space-y-4">
-        {babList?.map((bab) => (
-          <div key={bab.id} className="rounded-md border p-4">
-            <div className="mb-2">
-              Bab {bab.number}: {bab.name}
-            </div>
+      {loadingBabList && <Spinner size="medium" />}
+      {!loadingBabList && (
+        <>
+          {errorBabList && (
+            <p className="text-center text-red-500">
+              {errorBabList?.message ?? "Terjadi kesalahan"}
+            </p>
+          )}
+          {!errorBabList && (
+            <div className="w-full lg:w-[700px] space-y-4">
+              {babList?.map((bab) => (
+                <div key={bab.id} className="rounded-md border p-4">
+                  <div className="mb-2">
+                    Bab {bab.number}: {bab.name}
+                  </div>
 
-            <Progress
-              value={Math.round((bab.myLesson / bab.totalLesson) * 100)}
-              className=""
-            />
+                  <Progress
+                    value={Math.round((bab.myLesson / bab.totalLesson) * 100)}
+                    className=""
+                  />
 
-            <div className="text-sm flex items-center justify-between text-neutral-500 mb-3">
-              <span>
-                {bab.myLesson} dari {bab.totalLesson} pelajaran
-              </span>
-              <span>{Math.round((bab.myLesson / bab.totalLesson) * 100)}%</span>
-            </div>
+                  <div className="text-sm flex items-center justify-between text-neutral-500 mb-3">
+                    <span>
+                      {bab.myLesson} dari {bab.totalLesson} pelajaran
+                    </span>
+                    <span>
+                      {Math.round((bab.myLesson / bab.totalLesson) * 100)}%
+                    </span>
+                  </div>
 
-            <div>
-              <Link
-                href={{
-                  pathname: "/belajar/[babNumber]",
-                  query: { babNumber: bab.number },
-                }}
-              >
-                <Button3D type="button" size="sm">
-                  Lanjutan
-                </Button3D>
-              </Link>
+                  <div>
+                    <Link
+                      href={{
+                        pathname: "/belajar/[babNumber]",
+                        query: { babNumber: bab.number },
+                      }}
+                    >
+                      <Button3D type="button" size="sm">
+                        Lanjutan
+                      </Button3D>
+                    </Link>
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
-        ))}
-      </div>
+          )}
+        </>
+      )}
     </div>
   );
 };
