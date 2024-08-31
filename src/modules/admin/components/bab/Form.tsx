@@ -45,7 +45,6 @@ const BabForm: React.FC<{
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        {/* TODO: cek uniq bab number */}
         <FormField
           control={form.control}
           name="number"

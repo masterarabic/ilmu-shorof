@@ -12,7 +12,11 @@ export type SubBabWithLesson =
 const useSubBabList = ({ babNumber }: { babNumber: number }) => {
   const { student } = useStudent();
   const { bab } = useBab({ babNumber });
-  const { data, isLoading, error } = trpc.student.learn.subBabList.useQuery(
+  const {
+    data,
+    isLoading: loadingSubBabList,
+    error: errorSubBabList,
+  } = trpc.student.learn.subBabList.useQuery(
     {
       babId: bab?.id!,
       studentId: student?.id!,
@@ -24,9 +28,9 @@ const useSubBabList = ({ babNumber }: { babNumber: number }) => {
   );
 
   return {
-    subBabList: data?.subBabList,
-    isLoading,
-    error,
+    subBabList: data?.subBabList ?? [],
+    loadingSubBabList,
+    errorSubBabList,
   };
 };
 

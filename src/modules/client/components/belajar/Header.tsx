@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FC, useEffect, useState } from "react";
 
+import { Skeleton } from "@/common/components/ui/skeleton";
 import { cn } from "@/common/utils";
 
 import useBab from "../../hooks/useBab";
@@ -15,7 +16,7 @@ const Header: FC<HeaderProps> = ({ babNumber }) => {
     null
   );
 
-  const { bab } = useBab({ babNumber });
+  const { bab, isLoading: loadingBab } = useBab({ babNumber });
   const { subBabList } = useSubBabList({ babNumber });
 
   useEffect(() => {
@@ -65,9 +66,13 @@ const Header: FC<HeaderProps> = ({ babNumber }) => {
       <div className="bg-[#692fce] mx-4 mb-6 rounded-xl overflow-hidden shadow-lg">
         <div className="flex items-center justify-between mb-2 bg-primary text-left text-white px-4 py-4">
           <div>
-            <div className={cn("leading-none text-sm", "md:text-lg")}>
-              Bab {bab?.number} - {bab?.name}
-            </div>
+            {loadingBab ? (
+              <Skeleton className="bg-white/40 h-[20px] lg:h-[28px] w-[150px] lg:w-[250px]" />
+            ) : (
+              <div className={cn("leading-none text-sm", "md:text-lg")}>
+                Bab {bab?.number} - {bab?.name}
+              </div>
+            )}
           </div>
           <div className="shrink-0">
             <Link

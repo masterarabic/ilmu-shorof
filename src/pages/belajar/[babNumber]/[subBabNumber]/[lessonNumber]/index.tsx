@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { HeartFilledIcon } from "@radix-ui/react-icons";
+import { HeartFilledIcon, ReloadIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { FC, useId, useMemo, useState } from "react";
@@ -52,12 +52,16 @@ const Content: FC<{
     resolver: zodResolver(FormSchema),
   });
 
+  const trpcUtils = trpc.useUtils();
+
   const { data: questionList, isLoading: loadingQuestions } =
     trpc.student.lesson.listQuestion.useQuery({
       lessonId: lesson.id,
     });
-  const { mutate: checkAnswer } = trpc.student.lesson.checkAnswer.useMutation();
-  const { mutate: submit } = trpc.student.lesson.submit.useMutation();
+  const { mutate: checkAnswer, status: checkAnswerStatus } =
+    trpc.student.lesson.checkAnswer.useMutation();
+  const { mutate: submit, status: submitStatus } =
+    trpc.student.lesson.submit.useMutation();
   const { config, loading: loadingConfig } = useSystemSetting();
 
   const { student } = useStudent();
@@ -87,26 +91,37 @@ const Content: FC<{
     return result;
   }, [questionList, config, loadingConfig]);
 
-  // TODO: handle loading state
-  if (loadingQuestions || loadingConfig) return <div></div>;
+  if (loadingQuestions || loadingConfig)
+    return (
+      <div className="h-screen flex justify-center items-center">
+        <Spinner size="large" />
+      </div>
+    );
 
   const question = questions[questionIndex];
   const questionText = question?.question ?? "";
   const answers = question?.answer ?? [];
 
-  const endLesson = (heart: number) => {
+  const endLesson = (
+    heart: number,
+    answers: {
+      questionId: string;
+      answerId: string;
+    }[]
+  ) => {
     submit(
       {
         studentId: student?.id ?? "",
         lessonId: lesson.id,
         heartCount: heart,
-        answers: myAnswers,
+        answers,
       },
       {
         onSuccess: (data) => {
           setIsEnd(true);
           setScore(data.score);
           setStar(data.star);
+          trpcUtils.student.learn.subBabList.invalidate();
         },
         onError: (error) => {
           console.error(error);
@@ -125,27 +140,32 @@ const Content: FC<{
         onSuccess: (result) => {
           const isLastQuestion = questionIndex === questions.length - 1;
 
-          if (result.isCorrect) {
-            if (isLastQuestion) void endLesson(heartCount);
-            setQuestionIndex((prev) => prev + 1);
-            form.reset();
-          } else {
-            form.setValue("isIncorrect", true);
-            setHeartCount((prev) => prev - 1);
-            if (heartCount === 1) void endLesson(heartCount - 1);
-          }
-        },
-        onError: (error) => {
-          console.error(error);
-        },
-        onSettled: () => {
-          setMyAnswers((prev) => [
-            ...prev,
+          const newMyAnswers = [
+            ...myAnswers,
             {
               questionId: question.id,
               answerId: data.answer,
             },
-          ]);
+          ];
+
+          const newHeartCount = result.isCorrect ? heartCount : heartCount - 1;
+
+          // TODO: refactor this logic
+          if (result.isCorrect) {
+            if (isLastQuestion) return endLesson(newHeartCount, newMyAnswers);
+            setQuestionIndex((prev) => prev + 1);
+            form.reset();
+          }
+          if (!result.isCorrect) {
+            form.setValue("isIncorrect", true);
+            setHeartCount((prev) => prev - 1);
+            if (!newHeartCount) return endLesson(newHeartCount, newMyAnswers);
+          }
+
+          setMyAnswers(newMyAnswers);
+        },
+        onError: (error) => {
+          console.error(error);
         },
       }
     );
@@ -162,7 +182,7 @@ const Content: FC<{
         }}
       />
       <div className="bg-primary min-h-screen px-4 md:px-11">
-        <div className="pt-6 sticky top-0 flex items-center justify-between">
+        <div className="pt-6 sticky top-0 flex items-center justify-between md:mb-2">
           <Link href="/belajar">
             <Button variant="ghost" className="text-white">
               Keluar
@@ -173,7 +193,7 @@ const Content: FC<{
           </div>
         </div>
         <div className="grid gap-y-5 xl:grid-cols-[700px,1fr] gap-x-12 pb-6">
-          <div className="flex sticky bg-primary top-0 pt-3 z-50 flex-col-reverse xl:flex-col">
+          <div className="flex sticky bg-primary top-0 pt-3 md:pt-0 z-50 flex-col-reverse xl:flex-col">
             <div className="bg-white py-6 xl:pb-0 rounded-xl">
               <div className="flex select-none p-8 text-xl font-semibold items-center justify-center w-full mix-h-[200px] xl:min-h-[400px] text-center mb-3">
                 {questionText}
@@ -192,7 +212,8 @@ const Content: FC<{
               />
               <div className="flex justify-between w-full transition duration-300 text-white/50 group-hover:text-white">
                 <div>
-                  Bab {bab.number} - Unit {subBab.number}
+                  Bab {bab.number}{" "}
+                  {subBab.name ? `- Unit ${subBab.number}` : `: ${bab.name}`}
                 </div>
                 <div>
                   {questionIndex + 1} dari {questions.length} soal
@@ -204,7 +225,15 @@ const Content: FC<{
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className="space-y-6">
                 {answers.map((answer) => (
-                  <Answer key={answer.id} answer={answer} form={form} />
+                  <Answer
+                    key={answer.id}
+                    answer={answer}
+                    form={form}
+                    loading={
+                      checkAnswerStatus === "pending" ||
+                      submitStatus === "pending"
+                    }
+                  />
                 ))}
               </div>
               <hr className="my-5" />
@@ -215,6 +244,10 @@ const Content: FC<{
                     form.reset();
                     setQuestionIndex((prev) => prev + 1);
                   }}
+                  loading={
+                    checkAnswerStatus === "pending" ||
+                    submitStatus === "pending"
+                  }
                 />
               </div>
             </form>
@@ -263,7 +296,8 @@ const LessonPage: NextPageWithLayout = () => {
 const AnswerButton: FC<{
   form: Form;
   onContinue: () => void;
-}> = ({ onContinue, form }) => {
+  loading: boolean;
+}> = ({ onContinue, form, loading }) => {
   const answer = useWatch({
     control: form.control,
     name: "answer",
@@ -296,9 +330,13 @@ const AnswerButton: FC<{
           variant="white"
           className="w-full"
           frontClassName="!py-8 text-lg font-semibold"
-          disabled={!answer}
+          disabled={!answer || loading}
         >
-          Jawab
+          {loading ? (
+            <ReloadIcon className="mr-2 size-6 animate-spin" />
+          ) : (
+            "Jawab"
+          )}
         </Button3D>
       )}
     </>
@@ -308,7 +346,8 @@ const AnswerButton: FC<{
 const Answer: FC<{
   answer: Questions[number]["answer"][number];
   form: Form;
-}> = ({ answer, form }) => {
+  loading: boolean;
+}> = ({ answer, form, loading }) => {
   const id = useId();
   const isIncorrect = useWatch({
     control: form.control,
@@ -323,12 +362,12 @@ const Answer: FC<{
         className="peer hidden"
         id={id}
         value={answer?.id}
-        disabled={isIncorrect}
+        disabled={isIncorrect || loading}
       />
       <label
         htmlFor={id}
         className={cn(
-          "flex select-none text-xl text-white font-semibold transition duration-200 bg-primary shadow-lg items-center justify-center cursor-pointer min-h-24 flex-col rounded-lg border-2 border-white p-4 hover:shadow-lg",
+          "flex select-none text-xl text-white text-center font-semibold transition duration-200 bg-primary shadow-lg items-center justify-center cursor-pointer min-h-24 flex-col rounded-lg border-2 border-white p-4 hover:shadow-lg",
           "peer-checked:border-2 peer-checked:bg-white peer-checked:text-black peer-disabled:cursor-not-allowed"
         )}
       >

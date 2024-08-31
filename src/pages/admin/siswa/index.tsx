@@ -64,7 +64,7 @@ export const columns = [
 ];
 
 const StudentPage: NextPageWithLayout = () => {
-  const { studentList } = useStudentList();
+  const { studentList, loadingStudentList } = useStudentList();
 
   const router = useRouter();
   const table = useReactTable({
@@ -106,41 +106,54 @@ const StudentPage: NextPageWithLayout = () => {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  className="cursor-pointer"
-                  onClick={() => {
-                    router.push({
-                      pathname: "/admin/siswa/[studentId]",
-                      query: { studentId: row.original.id },
-                    });
-                  }}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      style={{ width: `${cell.column.getSize()}px` }}
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
+            {!!table.getRowModel().rows?.length && !loadingStudentList
+              ? table.getRowModel().rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    className="cursor-pointer"
+                    onClick={() => {
+                      router.push({
+                        pathname: "/admin/siswa/[studentId]",
+                        query: { studentId: row.original.id },
+                      });
+                    }}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell
+                        key={cell.id}
+                        style={{ width: `${cell.column.getSize()}px` }}
+                      >
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              : null}
+
+            {!table.getRowModel().rows?.length && !loadingStudentList ? (
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Belum ada data
                 </TableCell>
               </TableRow>
-            )}
+            ) : null}
+
+            {loadingStudentList ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  Memuat data...
+                </TableCell>
+              </TableRow>
+            ) : null}
           </TableBody>
         </Table>
       </div>

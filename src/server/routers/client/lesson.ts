@@ -19,6 +19,7 @@ export const lessonRoute = router({
         select: {
           id: true,
           number: true,
+          name: true,
         },
         where: {
           number: input.babNumber,
@@ -30,6 +31,7 @@ export const lessonRoute = router({
         select: {
           id: true,
           number: true,
+          name: true,
         },
         where: {
           babId: bab.id,

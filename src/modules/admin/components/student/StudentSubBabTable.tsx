@@ -58,7 +58,7 @@ const StudentSubBabTable: FC<{
 }> = ({ babId }) => {
   const router = useRouter();
 
-  const { studentSubBabList } = useStudentSubBabList({
+  const { studentSubBabList, loadingStudentSubBabList } = useStudentSubBabList({
     babId: babId!,
     studentId: router.query.studentId as string,
   });
@@ -93,29 +93,42 @@ const StudentSubBabTable: FC<{
         ))}
       </TableHeader>
       <TableBody>
-        {table.getRowModel().rows?.length ? (
-          table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <TableCell
-                  key={cell.id}
-                  style={{ width: `${cell.column.getSize()}px` }}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))
-        ) : (
+        {!!table.getRowModel().rows?.length && !loadingStudentSubBabList
+          ? table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell
+                    key={cell.id}
+                    style={{ width: `${cell.column.getSize()}px` }}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          : null}
+
+        {!table.getRowModel().rows?.length && !loadingStudentSubBabList ? (
           <TableRow>
             <TableCell
               colSpan={subBabColumns.length}
               className="h-24 text-center"
             >
-              No results.
+              Belum ada data
             </TableCell>
           </TableRow>
-        )}
+        ) : null}
+
+        {loadingStudentSubBabList ? (
+          <TableRow>
+            <TableCell
+              colSpan={subBabColumns.length}
+              className="h-24 text-center"
+            >
+              Memuat data...
+            </TableCell>
+          </TableRow>
+        ) : null}
       </TableBody>
     </Table>
   );

@@ -11,7 +11,7 @@ type Config = {
 export const defaultConfig: Config = {
   randomizeQuestion: false,
   randomizeAnswer: false,
-  defaultScore: 15,
+  defaultScore: 10,
 };
 
 export const generateConfig = (

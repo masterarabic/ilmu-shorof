@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import React, { FC } from "react";
 
+import { Spinner } from "@/common/components/ui/spinner";
 import { cn } from "@/common/utils";
 
 import useSubBabList from "../../hooks/useSubBab";
@@ -11,55 +12,63 @@ type LessonsProps = {
 };
 
 const Lessons: FC<LessonsProps> = ({ babNumber }) => {
-  const { subBabList } = useSubBabList({ babNumber });
+  const { subBabList, loadingSubBabList } = useSubBabList({ babNumber });
 
   return (
     <>
-      {subBabList?.map((subBab, index) => {
-        return (
-          <section
-            id={subBab.id}
-            key={subBab.id}
-            className="w-full px-10 flex flex-col items-center pb-6"
-          >
-            {index !== 0 ? (
-              <div className="flex w-full items-center my-8">
-                <hr className="flex-1 leading-[24px]" />
-                <h1 className="leading-[24px] mx-3 text-neutral-500">
-                  {subBab?.name}
-                </h1>
-                <hr className="flex-1 leading-[24px]" />
-              </div>
-            ) : null}
+      {loadingSubBabList ? (
+        <div>
+          <Spinner />
+        </div>
+      ) : (
+        <>
+          {subBabList.map((subBab, index) => {
+            return (
+              <section
+                id={subBab.id}
+                key={subBab.id}
+                className="w-full px-10 flex flex-col items-center pb-6"
+              >
+                {index !== 0 ? (
+                  <div className="flex w-full items-center my-8">
+                    <hr className="flex-1 leading-[24px]" />
+                    <h1 className="leading-[24px] mx-3 text-neutral-500">
+                      {subBab?.name}
+                    </h1>
+                    <hr className="flex-1 leading-[24px]" />
+                  </div>
+                ) : null}
 
-            {subBab.lesson.map((item, index) => {
-              const itemPerSide = 2;
-              const spacePerItem = 40;
-              const left =
-                index % (itemPerSide * 2) < itemPerSide
-                  ? (index % itemPerSide) * spacePerItem
-                  : (itemPerSide - (index % itemPerSide)) * spacePerItem;
+                {subBab.lesson.map((item, index) => {
+                  const itemPerSide = 2;
+                  const spacePerItem = 40;
+                  const left =
+                    index % (itemPerSide * 2) < itemPerSide
+                      ? (index % itemPerSide) * spacePerItem
+                      : (itemPerSide - (index % itemPerSide)) * spacePerItem;
 
-              console.log(item);
-              const lessonResult = item?.studentLessonResult?.[0];
+                  console.log(item);
+                  const lessonResult = item?.studentLessonResult?.[0];
 
-              return (
-                <ProgressItem
-                  key={item.id}
-                  className="last:!mb-0"
-                  href={`/belajar/${babNumber}/${subBab.number}/${item.number}`}
-                  starCount={lessonResult?.score ?? 0}
-                  style={{
-                    marginBottom: "30px",
-                    left: `${left}px`,
-                  }}
-                  disabled={false}
-                />
-              );
-            })}
-          </section>
-        );
-      })}
+                  return (
+                    <ProgressItem
+                      key={item.id}
+                      className="last:!mb-0"
+                      href={`/belajar/${babNumber}/${subBab.number}/${item.number}`}
+                      starCount={lessonResult?.star ?? 0}
+                      style={{
+                        marginBottom: "30px",
+                        left: `${left}px`,
+                      }}
+                      disabled={false}
+                    />
+                  );
+                })}
+              </section>
+            );
+          })}
+        </>
+      )}
     </>
   );
 };
@@ -119,7 +128,7 @@ const ProgressItem = ({
       <div className="flex items-center gap-x-2 -mb-1">
         <StarIcon className="size-[25px] -mt-3.5" filled={starCount > 0} />
         <StarIcon className="size-[25px] mt-0.5" filled={starCount > 1} />
-        <StarIcon className="size-[25px] -mt-3.5" filled={starCount > 3} />
+        <StarIcon className="size-[25px] -mt-3.5" filled={starCount > 2} />
       </div>
     </button>
   );

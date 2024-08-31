@@ -58,7 +58,7 @@ const StudentBabTable: FC<{
 }> = ({ onRowClick }) => {
   const router = useRouter();
 
-  const { studentBabList } = useStudentBabList({
+  const { studentBabList, loadingStudentBabList } = useStudentBabList({
     id: router.query.studentId as string,
   });
 
@@ -92,32 +92,42 @@ const StudentBabTable: FC<{
         ))}
       </TableHeader>
       <TableBody>
-        {table.getRowModel().rows?.length ? (
-          table.getRowModel().rows.map((row) => (
-            <TableRow
-              key={row.id}
-              className="hover:bg-gray-100 cursor-pointer"
-              onClick={() => {
-                onRowClick(row.original);
-              }}
-            >
-              {row.getVisibleCells().map((cell) => (
-                <TableCell
-                  key={cell.id}
-                  style={{ width: `${cell.column.getSize()}px` }}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))
-        ) : (
+        {!!table.getRowModel().rows?.length && !loadingStudentBabList
+          ? table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                className="hover:bg-gray-100 cursor-pointer"
+                onClick={() => {
+                  onRowClick(row.original);
+                }}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell
+                    key={cell.id}
+                    style={{ width: `${cell.column.getSize()}px` }}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          : null}
+
+        {!table.getRowModel().rows?.length && !loadingStudentBabList ? (
           <TableRow>
             <TableCell colSpan={babColumns.length} className="h-24 text-center">
-              No results.
+              Belum ada data
             </TableCell>
           </TableRow>
-        )}
+        ) : null}
+
+        {loadingStudentBabList ? (
+          <TableRow>
+            <TableCell colSpan={babColumns.length} className="h-24 text-center">
+              Memuat data...
+            </TableCell>
+          </TableRow>
+        ) : null}
       </TableBody>
     </Table>
   );

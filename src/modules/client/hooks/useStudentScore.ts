@@ -4,7 +4,7 @@ import useStudent from "./useStudent";
 
 const useScore = () => {
   const { student } = useStudent();
-  const { data } = trpc.student.self.score.useQuery(
+  const { data, isLoading } = trpc.student.self.score.useQuery(
     {
       studentId: student?.id!,
     },
@@ -17,6 +17,7 @@ const useScore = () => {
 
   return {
     score,
+    loadingScore: isLoading,
   };
 };
 
