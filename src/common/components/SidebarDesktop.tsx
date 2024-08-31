@@ -4,36 +4,10 @@ import { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
 import React from "react";
 
-import HomeIcon from "../icons/Home";
-import LeaderBoardIcon from "../icons/Leaderboard";
-import SettingIcon from "../icons/Setting";
 import { cn, isActiveLink } from "../utils";
 import Button3D from "./ui/3d-button";
 import { Button } from "./ui/button";
-
-const menuItems = [
-  {
-    id: "learn",
-    name: "Belajar",
-    icon: <HomeIcon className="size-7" />,
-    url: "belajar",
-    routes: ["/belajar", "/list-bab"],
-  },
-  {
-    id: "ranking",
-    name: "Papan Peringkat",
-    icon: <LeaderBoardIcon className="size-7" />,
-    url: "papan-peringkat",
-    routes: [],
-  },
-  {
-    id: "setting",
-    name: "Pengaturan",
-    icon: <SettingIcon className="size-7" />,
-    url: "/pengaturan",
-    routes: [],
-  },
-];
+import { menuItems } from "../constants";
 
 const SidebarDesktop = () => {
   const router = useRouter();
@@ -53,8 +27,8 @@ const SidebarDesktop = () => {
         )}
       >
         <Link href="/belajar">
-          <div className="">الصَّرْفُ المُيَسَّرُ</div>
-          <div className="text-2xl leading-none">
+          <div className="hidden lg:block">الصَّرْفُ المُيَسَّرُ</div>
+          <div className=" lg:text-2xl leading-none">
             Mudah Belajar <br /> Ilmu Shorof
           </div>
         </Link>

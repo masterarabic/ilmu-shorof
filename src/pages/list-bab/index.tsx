@@ -20,7 +20,7 @@ const ListBabPage: NextPageWithLayout = () => {
           href={{
             pathname: "/belajar",
           }}
-          className="-ml-6"
+          className="-ml-3 md:-ml-6"
         >
           <Button
             type="button"
@@ -32,7 +32,9 @@ const ListBabPage: NextPageWithLayout = () => {
           </Button>
         </Link>
       </div>
-      <h1 className="text-3xl font-semibold mb-8">List Bab</h1>
+      <h1 className="text-3xl text-center md:text-left font-semibold mb-5 md:mb-8">
+        List Bab
+      </h1>
 
       <div className="w-full lg:w-[700px] space-y-4">
         {babList?.map((bab) => (

@@ -37,8 +37,8 @@ export const SidebarDesktop = () => {
           href="/admin"
           className="mx-2 text-primary leading-none font-semibold text-xl text-center"
         >
-          <div className="">الصَّرْفُ المُيَسَّرُ</div>
-          <div className="text-2xl leading-none">
+          <div className="hidden lg:block">الصَّرْفُ المُيَسَّرُ</div>
+          <div className=" lg:text-2xl leading-none">
             Mudah Belajar <br /> Ilmu Shorof
           </div>
         </Link>

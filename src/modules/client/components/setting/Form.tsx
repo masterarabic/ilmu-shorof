@@ -44,18 +44,18 @@ const SettingForm: React.FC<{
   });
 
   return (
-    <div className="flex gap-x-3">
+    <div className="flex flex-1 items-center md:items-stretch flex-col md:flex-row gap-x-3">
       <Image
         src={data?.user.image ?? ""}
         width={64}
         height={64}
-        className="size-16 mt-2 rounded-full bg-neutral-300"
+        className="size-24 md:size-16 mt-2 rounded-full bg-neutral-300"
         alt="Profile"
       />
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-6 min-w-full"
+          className="space-y-6 w-[250px]"
         >
           <FormField
             control={form.control}
@@ -74,11 +74,11 @@ const SettingForm: React.FC<{
               </FormItem>
             )}
           />
-          <Button type="submit" disabled={loading}>
+          <Button type="submit" disabled={loading} className="mx-auto">
             {loading ? (
               <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
             ) : null}
-            Submit
+            Update
           </Button>
         </form>
       </Form>

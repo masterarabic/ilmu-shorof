@@ -114,7 +114,7 @@ const TopStudent: FC<{
           src={leaderboard?.image ?? ""}
           alt="Profile"
         />
-        <div className="w-[100%] h-[90%] bottom-[-50%] lg:bottom-[-70%] mx-auto left-0 right-0 absolute bg-primary rounded-full">
+        <div className="w-[100%] h-[90%] bottom-[-50%] md:bottom-[-70%] mx-auto left-0 right-0 absolute bg-primary rounded-full">
           <div className="text-white text-center mx-auto text-xs">
             {position}
           </div>
