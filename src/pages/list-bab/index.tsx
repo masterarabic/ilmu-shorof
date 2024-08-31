@@ -5,11 +5,11 @@ import React from "react";
 import Button3D from "@/common/components/ui/3d-button";
 import { Button } from "@/common/components/ui/button";
 import { Progress } from "@/common/components/ui/progress";
+import { Spinner } from "@/common/components/ui/spinner";
 import ClientMainLayout from "@/common/layouts/MainLayout";
 import useBabList from "@/modules/client/hooks/useBabList";
 
 import { NextPageWithLayout } from "../_app";
-import { Spinner } from "@/common/components/ui/spinner";
 
 const ListBabPage: NextPageWithLayout = () => {
   const { babList, loadingBabList, errorBabList } = useBabList();

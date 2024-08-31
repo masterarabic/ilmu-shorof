@@ -1,11 +1,11 @@
+import { signOut } from "next-auth/react";
 import React from "react";
 
+import Button3D from "@/common/components/ui/3d-button";
 import ClientMainLayout from "@/common/layouts/MainLayout";
 import SettingForm from "@/modules/client/components/setting/Form";
 
 import { NextPageWithLayout } from "../_app";
-import Button3D from "@/common/components/ui/3d-button";
-import { signOut } from "next-auth/react";
 
 const SettingPage: NextPageWithLayout = () => {
   return (

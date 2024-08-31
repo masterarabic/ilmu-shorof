@@ -1,9 +1,9 @@
+import Link from "next/link";
 import { ReactNode } from "react";
 
 import SidebarDesktop from "../components/SidebarDesktop";
-import { cn } from "../utils";
 import { menuItems } from "../constants";
-import Link from "next/link";
+import { cn } from "../utils";
 
 const ClientMainLayout = ({ children }: { children: ReactNode }) => {
   return (

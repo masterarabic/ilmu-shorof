@@ -4,10 +4,10 @@ import { useRouter } from "next/router";
 import { signOut } from "next-auth/react";
 import React from "react";
 
+import { menuItems } from "../constants";
 import { cn, isActiveLink } from "../utils";
 import Button3D from "./ui/3d-button";
 import { Button } from "./ui/button";
-import { menuItems } from "../constants";
 
 const SidebarDesktop = () => {
   const router = useRouter();
