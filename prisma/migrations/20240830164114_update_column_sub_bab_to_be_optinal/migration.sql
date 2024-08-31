@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "SubBab" ALTER COLUMN "name" DROP NOT NULL;

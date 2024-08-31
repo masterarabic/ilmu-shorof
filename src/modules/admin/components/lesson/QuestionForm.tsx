@@ -109,11 +109,7 @@ const QuestionItem = ({
               </FormItem>
             )}
           />
-          {/* <FormField
-            control={control}
-            name={`items.${questionIndex}.question`}
-            disabled
-            render={({ field }) => ( */}
+
           <FormItem>
             <FormLabel>
               <TooltipProvider>
@@ -140,8 +136,6 @@ const QuestionItem = ({
             </FormControl>
             <FormMessage />
           </FormItem>
-          {/* )}
-          /> */}
         </div>
 
         <hr className="my-4" />
@@ -231,6 +225,7 @@ const QuestionForm: React.FC<{
   lessonId: string;
   defaultValues?: z.infer<typeof FormSchema>;
 }> = ({ lessonId, defaultValues }) => {
+  const trpcUtils = trpc.useUtils();
   const { config } = useSystemSetting();
 
   const { mutateAsync } = trpc.admin.question.bulk.useMutation();
@@ -263,6 +258,7 @@ const QuestionForm: React.FC<{
           })),
         })),
       });
+      trpcUtils.admin.question.invalidate();
       toast.success("Berhasil menyimpan soal", {
         position: "top-center",
         description: "Soal berhasil disimpan.",
@@ -280,7 +276,7 @@ const QuestionForm: React.FC<{
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="text-xl mb-4 flex justify-between items-center">
+        <div className="text-xl sticky bg-white top-0 pb-4 pt-3 flex justify-between items-center">
           <h2>List Soal</h2>
           <div>
             <Button
@@ -294,7 +290,7 @@ const QuestionForm: React.FC<{
                     {
                       id: uuidv4(),
                       text: "",
-                      correct: true,
+                      correct: false,
                     },
                     {
                       id: uuidv4(),

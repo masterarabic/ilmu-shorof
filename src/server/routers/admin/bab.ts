@@ -104,4 +104,58 @@ export const babRouter = router({
       });
       return post;
     }),
+  babLesson: adminProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .query(async ({ input }) => {
+      const { id } = input;
+
+      const bab = await prisma.bab.findFirst({
+        where: {
+          id,
+        },
+        select: defaultSelectBab,
+      });
+
+      const subBabList = await prisma.subBab.findMany({
+        include: {
+          lesson: {
+            orderBy: {
+              number: "asc",
+            },
+            include: {
+              question: {
+                orderBy: {
+                  number: "asc",
+                },
+                include: {
+                  answer: {
+                    orderBy: {
+                      number: "asc",
+                    },
+                    include: {
+                      question: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        where: {
+          babId: id,
+        },
+        orderBy: {
+          number: "asc",
+        },
+      });
+
+      return {
+        bab,
+        subBabList,
+      };
+    }),
 });

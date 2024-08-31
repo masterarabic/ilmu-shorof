@@ -78,7 +78,7 @@ export const subBabRouter = router({
     .input(
       z.object({
         babId: z.string().uuid(),
-        name: z.string().min(1),
+        name: z.string().nullable(),
         number: z.number().min(1),
       })
     )
@@ -101,7 +101,7 @@ export const subBabRouter = router({
     .input(
       z.object({
         id: z.string(),
-        name: z.string().min(1),
+        name: z.string().nullable(),
         number: z.number().min(1),
       })
     )

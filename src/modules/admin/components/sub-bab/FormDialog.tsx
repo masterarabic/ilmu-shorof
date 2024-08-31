@@ -16,7 +16,7 @@ const SubBabFormDialog: React.FC<{
   mode: "create" | "update";
   open: boolean;
   bab?: { id: string };
-  subBab?: { id: string; name: string; number: number };
+  subBab?: { id: string; name: string | null; number: number };
   setOpen: (open: boolean) => void;
 }> = ({ mode, bab, subBab, open, setOpen }) => {
   const { mutateAsync: createSubBab, status: createStatus } =
@@ -32,8 +32,9 @@ const SubBabFormDialog: React.FC<{
       if (!bab?.id) throw new Error("Bab ID is missing");
 
       await createSubBab({
-        babId: bab?.id,
         ...data,
+        babId: bab?.id,
+        name: data.name || null,
       });
       setOpen(false);
     } catch (error) {
@@ -49,8 +50,9 @@ const SubBabFormDialog: React.FC<{
       if (!subBab?.id) throw new Error("Sub Bab ID is missing");
 
       await updateSubBab({
-        id: subBab?.id,
         ...data,
+        id: subBab?.id,
+        name: data.name || null,
       });
       setOpen(false);
     } catch (error) {

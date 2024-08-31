@@ -30,7 +30,8 @@ export const FormSchema = z.object({
     })
     .max(25, {
       message: "Nama sub bab tidak boleh lebih dari 25 karakter",
-    }),
+    })
+    .optional(),
 });
 
 const SubBabForm: React.FC<{
@@ -82,6 +83,9 @@ const SubBabForm: React.FC<{
                   {...field}
                 />
               </FormControl>
+              <FormDescription>
+                Kosongi jika tidak ingin ada sub bab
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

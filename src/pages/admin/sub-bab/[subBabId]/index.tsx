@@ -100,7 +100,7 @@ const SubBabPage: NextPageWithLayout = () => {
           <div className="text-2xl mb-2">{subBab?.bab?.name}</div>
 
           <div className="text-sm">Nama Sub Bab</div>
-          <div className="text-2xl">{subBab?.name}</div>
+          <div className="text-2xl">{subBab?.name || "{Tanpa sub bab}"}</div>
         </div>
       </div>
 

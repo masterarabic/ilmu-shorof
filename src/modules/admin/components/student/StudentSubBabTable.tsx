@@ -32,7 +32,7 @@ const subBabColumns = [
   subBabColumnHelper.accessor("name", {
     header: "Nama Sub Bab",
     size: 45,
-    cell: (info) => info.getValue(),
+    cell: (info) => `${info.getValue() || "{Tanpa sub bab}"}`,
   }),
   subBabColumnHelper.accessor("score", {
     header: () => <div className="text-center">Score Per Sub Bab</div>,

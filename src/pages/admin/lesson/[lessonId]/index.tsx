@@ -92,11 +92,13 @@ const LessonDetailPage: NextPageWithLayout = () => {
           <div className="text-2xl mb-2">{lesson?.bab?.name}</div>
 
           <div className="text-sm">Nama Sub Bab</div>
-          <div className="text-2xl">{lesson?.subBab?.name}</div>
+          <div className="text-2xl">
+            {lesson?.subBab?.name || "{Tanpa sub bab}"}
+          </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-x-7 mb-8">
+      <div className="flex items-center gap-x-7 mb-5">
         <div>Acak Soal : {config.randomizeQuestion ? "Ya" : "Tidak"}</div>
         <div>Acak Pertanyaan : {config.randomizeAnswer ? "Ya" : "Tidak"}</div>
         <div>

@@ -7,6 +7,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 
@@ -25,7 +26,7 @@ import { trpc } from "@/utils/trpc";
 export type Data = {
   id: string;
   number: number;
-  name: string;
+  name: string | null;
   totalLesson: number;
 };
 
@@ -39,7 +40,7 @@ export const columns = [
   }),
   columnHelper.accessor("name", {
     header: "Nama Sub Bab",
-    cell: (info) => info.getValue(),
+    cell: (info) => `${info.getValue() || "{Tanpa sub bab}"}`,
   }),
   columnHelper.accessor("totalLesson", {
     header: () => <div className="text-center">Total Pelajaran</div>,
@@ -83,7 +84,17 @@ const SubBabListTable: React.FC<{ id: string }> = ({ id }) => {
     <>
       <div className="text-xl mb-4 flex justify-between items-center">
         <h2>List Sub Bab</h2>
-        <div>
+        <div className="space-x-2">
+          <Link
+            href={{
+              pathname: "/admin/bab/[babId]/soal",
+              query: { babId: id },
+            }}
+          >
+            <Button size="sm" variant="outline">
+              Lihat seluruh soal
+            </Button>
+          </Link>
           <Button
             size="sm"
             onClick={() => {

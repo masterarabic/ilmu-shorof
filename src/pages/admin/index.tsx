@@ -173,7 +173,7 @@ const renderActiveShape = (props: any) => {
   return (
     <g>
       <text x={cx} y={cy} fontSize={16} dy={8} textAnchor="middle" fill={fill}>
-        {payload.name}
+        Bab {payload.number}
       </text>
       <Sector
         cx={cx}
@@ -199,6 +199,12 @@ const renderActiveShape = (props: any) => {
         fill="none"
       />
       <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
+      <text
+        x={ex + (cos >= 0 ? 1 : -1) * 12}
+        y={ey - 16}
+        textAnchor={textAnchor}
+        fill="#333"
+      >{`${payload.name}`}</text>
       <text
         x={ex + (cos >= 0 ? 1 : -1) * 12}
         y={ey}

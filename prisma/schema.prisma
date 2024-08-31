@@ -27,7 +27,7 @@ model Bab {
 model SubBab {
   id        String   @id @default(uuid())
   number    Int
-  name      String
+  name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   babId     String
