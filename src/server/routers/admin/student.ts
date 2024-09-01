@@ -41,10 +41,10 @@ export const studentRouter = router({
         SELECT 
             s.id, 
             u.name,
-            (
+            COALESCE((
                 SELECT SUM(score) FROM "StudentLessonResult" AS slr
                 WHERE slr."studentId" = s."id"
-            ) AS score,
+            ),0) AS score,
             (
                 SELECT COUNT(DISTINCT slr."lessonId") FROM "StudentLessonResult" AS slr
                 WHERE slr."studentId" = s."id"
@@ -80,10 +80,10 @@ export const studentRouter = router({
             u.name,
             u.image,
             u.email,
-            (
+            COALESCE((
                 SELECT SUM(score) FROM "StudentLessonResult" AS slr
                 WHERE slr."studentId" = s."id"
-            ) AS score
+            ),0) AS score
         FROM "Student" AS s
         LEFT JOIN users AS u ON s."userId" = u."id"
         WHERE s."id" = ${id}
@@ -117,11 +117,11 @@ export const studentRouter = router({
                 JOIN "Lesson" AS l ON l."id" = slr."lessonId"
                 WHERE slr."studentId" = ${studentId} AND l."babId" = b."id"
             ) AS progress,
-            (
+            COALESCE((
                 SELECT SUM(score) FROM "StudentLessonResult" AS slr
                 JOIN "Lesson" AS l ON l."id" = slr."lessonId"
                 WHERE slr."studentId" = ${studentId} AND l."babId" = b."id"
-            ) AS score
+            ),0) AS score
         FROM "Bab" AS b
       `;
 
@@ -154,11 +154,11 @@ export const studentRouter = router({
                 JOIN Lesson AS l ON l."id" = slr."lessonId"
                 WHERE slr."studentId" = ${studentId} AND l."subBabId" = sb."id"
             ) AS progress,
-            (
+            COALESCE((
                 SELECT SUM(score) FROM StudentLessonResult AS slr
                 JOIN Lesson AS l ON l."id" = slr."lessonId"
                 WHERE slr."studentId" = ${studentId} AND l."subBabId" = sb."id"
-            ) AS score
+            ),0) AS score
         FROM "SubBab" AS sb
         WHERE sb."babId" = ${input.babId}
         ORDER BY sb."number"
