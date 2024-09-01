@@ -10,8 +10,8 @@ const StatSection: FC<{ babNumber: number }> = ({ babNumber }) => {
   const { myLesson, totalLesson, progress } = useProgress({ babId: bab?.id! });
 
   return (
-    <section className="flex flex-col-reverse md:flex-col md:mb-3 md:border md:px-4 rounded-md md:py-4">
-      <div className="hidden md:block text-base mb-2 font-semibold text-neutral-600">
+    <section className="flex flex-col-reverse lg:flex-col mt-3 lg:mt-0 md:mb-0 lg:mb-3 lg:border lg:px-4 rounded-md lg:py-4">
+      <div className="hidden lg:block text-base mb-2 font-semibold text-neutral-600">
         Progress belajar
       </div>
       <div>

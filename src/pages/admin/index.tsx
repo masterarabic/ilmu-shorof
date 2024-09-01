@@ -17,6 +17,8 @@ import {
   CardTitle,
 } from "@/common/components/ui/card";
 import { ChartConfig, ChartContainer } from "@/common/components/ui/chart";
+import { Skeleton } from "@/common/components/ui/skeleton";
+import { Spinner } from "@/common/components/ui/spinner";
 import {
   Tabs,
   TabsContent,
@@ -29,8 +31,6 @@ import useScoreDistribution from "@/modules/admin/hooks/dashboard/useScoreDistri
 import useStudentCount from "@/modules/admin/hooks/dashboard/useStudentCount";
 import AdminMainLayout from "@/modules/admin/layouts/MainLayout";
 import { NextPageWithLayout } from "@/pages/_app";
-import { Spinner } from "@/common/components/ui/spinner";
-import { Skeleton } from "@/common/components/ui/skeleton";
 
 const DashboardPage: NextPageWithLayout = () => {
   const { studentCount, loadingStudentCount } = useStudentCount();
