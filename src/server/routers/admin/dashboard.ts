@@ -19,17 +19,20 @@ export const dashboardRouter = router({
     const config = generateConfig(configs);
 
     const rawResult = await prisma.$queryRaw<
-      { id: string; number: number; name: string; lesson_count: number }[]
+      { id: string; number: number; name: string; question_count: number }[]
     >`
-        SELECT b.id, b.number, b.name, COUNT(l.id) AS lesson_count
+        SELECT b.id, b.number, b.name, COUNT(l.id) AS question_count
         FROM "Bab" AS b
         LEFT JOIN "Lesson" AS l ON l."babId" = b."id"
+        LEFT JOIN "Question" AS q ON q."lessonId" = l."id"
         GROUP BY b."id"
+        ORDER BY b."number"
     `;
 
     const docs = rawResult.map((row) => ({
       ...row,
-      score: config.defaultScore * Number(row.lesson_count),
+      score: config.defaultScore * Number(row.question_count),
+      question_count: Number(row.question_count),
     }));
 
     return {
@@ -49,10 +52,13 @@ export const dashboardRouter = router({
             s.id, 
             u.name, 
             u.email, 
-            (
-                SELECT SUM(slr.score) 
-                FROM "StudentLessonResult" AS slr 
-                WHERE slr."studentId" = s."id"
+            COALESCE(
+                (
+                	SELECT SUM(slr.score)  
+                	FROM "StudentLessonResult" AS slr 
+                	WHERE slr."studentId" = s."id"
+                ),
+                0
             ) AS score
         FROM "Student" AS s
         LEFT JOIN "users" AS u ON u."id" = s."userId"

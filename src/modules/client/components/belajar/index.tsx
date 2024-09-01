@@ -43,6 +43,7 @@ const Bab: FC<BabProps> = ({ babNumber }) => {
           </div>
           <div className="text-xs text-neutral-500 hidden lg:block">
             <div>Disusun oleh:</div>
+            <div>Abdul Ghofur, S.Pd.I., M.Pd.</div>
             <div>Siti Durotun Naseha, M.Pd</div>
             <div>Sri Widoyonongrum, ST., M.Pd</div>
           </div>

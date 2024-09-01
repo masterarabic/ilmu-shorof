@@ -29,88 +29,124 @@ import useScoreDistribution from "@/modules/admin/hooks/dashboard/useScoreDistri
 import useStudentCount from "@/modules/admin/hooks/dashboard/useStudentCount";
 import AdminMainLayout from "@/modules/admin/layouts/MainLayout";
 import { NextPageWithLayout } from "@/pages/_app";
+import { Spinner } from "@/common/components/ui/spinner";
+import { Skeleton } from "@/common/components/ui/skeleton";
 
 const DashboardPage: NextPageWithLayout = () => {
-  const { studentCount } = useStudentCount();
-  const { babCount } = useBabCount();
+  const { studentCount, loadingStudentCount } = useStudentCount();
+  const { babCount, loadingBabCount } = useBabCount();
 
   return (
-    <div>
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="analytics" disabled>
-            Dashboard
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="overview" className="space-y-4"></TabsContent>
-      </Tabs>
-      <div className="space-y-4">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Jumlah Siswa
-              </CardTitle>
-              <PersonIcon className="text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{studentCount}</div>
-              <p className="text-xs text-muted-foreground"></p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Jumlah Bab</CardTitle>
-              <ListBulletIcon className="text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{babCount}</div>
-              <p className="text-xs text-muted-foreground"></p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Disusun oleh
-              </CardTitle>
-              <PersonIcon className="text-muted-foreground" />
-            </CardHeader>
-            <CardContent className="pt-2 text-sm">
-              <div>Siti Durotun Naseha, M.Pd</div>
-              <div>Sri Widoyonongrum, ST., M.Pd</div>
-            </CardContent>
-          </Card>
-        </div>
+    <div className="flex flex-col min-h-screen">
+      <div className="flex-1">
+        <Tabs defaultValue="overview" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
+            <TabsTrigger value="analytics" disabled>
+              Dashboard
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="overview" className="space-y-4"></TabsContent>
+        </Tabs>
+        <div className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Jumlah Siswa
+                </CardTitle>
+                <PersonIcon className="text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {loadingStudentCount ? (
+                    <Skeleton className="w-[30px] h-6" />
+                  ) : (
+                    studentCount
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground"></p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Jumlah Bab
+                </CardTitle>
+                <ListBulletIcon className="text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {loadingBabCount ? (
+                    <Skeleton className="w-[30px] h-6" />
+                  ) : (
+                    babCount
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground"></p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Disusun oleh
+                </CardTitle>
+                <PersonIcon className="text-muted-foreground" />
+              </CardHeader>
+              <CardContent className="text-sm">
+                <div>Abdul Ghofur, S.Pd.I., M.Pd.</div>
+                <div>Siti Durotun Naseha, M.Pd.</div>
+                <div>Sri Widoyonongrum, ST., M.Pd.</div>
+              </CardContent>
+            </Card>
+          </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-          <Card className="col-span-4">
-            <CardHeader>
-              <CardTitle>Pembagian Score Per Bab</CardTitle>
-            </CardHeader>
-            <CardContent className="pl-2">
-              <ChartSample />
-            </CardContent>
-          </Card>
-          <Card className="col-span-3">
-            <CardHeader>
-              <CardTitle>Papan peringkat</CardTitle>
-              <CardDescription>
-                10 siswa terbaik berdasarkan jumlah score
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="max-h-[450px] overflow-y-auto">
-              <Leaderboard />
-            </CardContent>
-          </Card>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+            <Card className="col-span-4">
+              <CardHeader>
+                <CardTitle>Pembagian Score Per Bab</CardTitle>
+              </CardHeader>
+              <CardContent className="pl-2">
+                <ScoreDistributionChart />
+              </CardContent>
+            </Card>
+            <Card className="col-span-3">
+              <CardHeader>
+                <CardTitle>Papan peringkat</CardTitle>
+                <CardDescription>
+                  10 siswa terbaik berdasarkan jumlah score
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="max-h-[450px] overflow-y-auto">
+                <Leaderboard />
+              </CardContent>
+            </Card>
+          </div>
         </div>
+      </div>
+
+      <div className="text-sm flex justify-end bg-white">
+        <span className="opacity-30">
+          Created with ❤️ by{" "}
+          <a href="https://github.com/Rizki36" target="_blank">
+            fitra36_
+          </a>
+        </span>
       </div>
     </div>
   );
 };
 
 export const Leaderboard = () => {
-  const { leaderBoard } = useLeaderBoard();
+  const { leaderBoard, loadingLeaderBoard } = useLeaderBoard();
+
+  if (loadingLeaderBoard) {
+    return (
+      <div className="flex justify-center">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -210,7 +246,7 @@ const renderActiveShape = (props: any) => {
         y={ey}
         textAnchor={textAnchor}
         fill="#333"
-      >{`Total nilai ${value}`}</text>
+      >{`${payload.question_count} Pertanyaan (Total nilai ${value})`}</text>
       <text
         x={ex + (cos >= 0 ? 1 : -1) * 12}
         y={ey}
@@ -224,10 +260,15 @@ const renderActiveShape = (props: any) => {
   );
 };
 
-export function ChartSample() {
+const ScoreDistributionChart = () => {
   const router = useRouter();
   const [activeIndex, setActiveIndex] = React.useState(0);
-  const { scoreDistribution } = useScoreDistribution();
+  const { scoreDistribution, loadingScoreDistribution } =
+    useScoreDistribution();
+
+  if (loadingScoreDistribution) {
+    return <Spinner />;
+  }
 
   return (
     <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
@@ -240,6 +281,7 @@ export function ChartSample() {
           cy="50%"
           innerRadius={60}
           outerRadius={80}
+          paddingAngle={2}
           fill="#7C3AED"
           dataKey="score"
           onMouseEnter={(_, index) => setActiveIndex(index)}
@@ -254,7 +296,7 @@ export function ChartSample() {
       </PieChart>
     </ChartContainer>
   );
-}
+};
 
 DashboardPage.getLayout = (page) => {
   return <AdminMainLayout>{page}</AdminMainLayout>;

@@ -31,7 +31,7 @@ export const SidebarDesktop = () => {
   const router = useRouter();
 
   return (
-    <div className="w-[250px] flex flex-col fixed h-screen left-0 top-0 bottom-0 overflow-x-hidden overflow-y-auto border-r">
+    <div className="w-[250px] flex flex-col bg-white z-50 fixed h-screen left-0 top-0 bottom-0 overflow-x-hidden overflow-y-auto border-r">
       <div className="flex justify-center mt-6 mb-8">
         <Link
           href="/admin"
