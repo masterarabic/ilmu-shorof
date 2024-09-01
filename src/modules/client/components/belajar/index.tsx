@@ -27,7 +27,7 @@ const Bab: FC<BabProps> = ({ babNumber }) => {
       <div
         className={cn(
           "flex",
-          "relative flex-col lg:w-[330px] pl-6 pb-0 pt-4 pr-6 lg:pl-0 lg:pb-6"
+          "relative flex-col lg:w-[330px] pl-4 pb-0 pt-4 pr-4 lg:pr-6 lg:pl-0 lg:pb-6"
         )}
       >
         <div className="h-6 hidden lg:block"></div>
@@ -35,7 +35,7 @@ const Bab: FC<BabProps> = ({ babNumber }) => {
           <div className="lg:mb-6">
             <ProfileSection />
           </div>
-          <div className="hidden lg:block">
+          <div className=" lg:block">
             <StatSection babNumber={babNumber} />
           </div>
           <div className="hidden lg:block">

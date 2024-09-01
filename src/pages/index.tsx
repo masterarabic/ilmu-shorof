@@ -55,6 +55,15 @@ const HomePage: NextPageWithLayout = () => {
             </Button3D>
           </div>
         </div>
+
+        <div className="absolute bottom-2 right-2 text-sm flex justify-end bg-white">
+          <span className="opacity-20 hover:opacity-100 transition-all duration-300">
+            Created with ❤️ by{" "}
+            <a href="https://github.com/Rizki36" target="_blank">
+              fitra36_
+            </a>
+          </span>
+        </div>
       </section>
     </main>
   );
