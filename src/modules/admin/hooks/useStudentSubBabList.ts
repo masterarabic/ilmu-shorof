@@ -1,7 +1,11 @@
+import { useMemo } from "react";
+
 import { RouterOutput, trpc } from "@/utils/trpc";
 
 export type StudentSubBabDataType =
-  RouterOutput["admin"]["student"]["listSubBab"]["docs"][number];
+  RouterOutput["admin"]["student"]["listSubBab"]["docs"][number] & {
+    maxProgress: number;
+  };
 
 const useStudentSubBabList = ({
   studentId,
@@ -20,7 +24,20 @@ const useStudentSubBabList = ({
     }
   );
 
-  const studentSubBabList = data?.docs ?? [];
+  const studentSubBabList: StudentSubBabDataType[] = useMemo(() => {
+    if (!data?.docs?.length) return [];
+
+    return data?.docs.map((item) => {
+      const subBab = data?.progressMaxPerSubBab.find(
+        (subBab) => subBab.subBabId === item.id
+      );
+
+      return {
+        ...item,
+        maxProgress: subBab?.progressMax ?? 0,
+      };
+    });
+  }, [data]);
 
   return {
     studentSubBabList,

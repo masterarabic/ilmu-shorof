@@ -45,7 +45,7 @@ const subBabColumns = [
     cell: (info) => (
       <div className="flex items-center gap-x-2">
         <span className="text-xs text-muted-foreground">
-          {info.getValue()}/100
+          {info.getValue()}/{info.row.original.maxProgress}
         </span>
         <Progress value={info.getValue()} />
       </div>

@@ -135,8 +135,23 @@ export const studentRouter = router({
         };
       });
 
+      const progressMax = await prisma.lesson.groupBy({
+        _count: {
+          id: true,
+        },
+        by: "babId",
+      });
+
+      const progressMaxPerBab = progressMax.map((item) => {
+        return {
+          babId: item.babId,
+          progressMax: item._count.id,
+        };
+      });
+
       return {
         docs,
+        progressMaxPerBab,
       };
     }),
   listSubBab: adminProcedure
@@ -151,12 +166,12 @@ export const studentRouter = router({
             sb.name,
             (
                 SELECT COUNT(*) FROM "StudentLessonResult" AS slr
-                JOIN Lesson AS l ON l."id" = slr."lessonId"
+                JOIN "Lesson" AS l ON l."id" = slr."lessonId"
                 WHERE slr."studentId" = ${studentId} AND l."subBabId" = sb."id"
             ) AS progress,
             COALESCE((
-                SELECT SUM(score) FROM StudentLessonResult AS slr
-                JOIN Lesson AS l ON l."id" = slr."lessonId"
+                SELECT SUM(score) FROM "StudentLessonResult" AS slr
+                JOIN "Lesson" AS l ON l."id" = slr."lessonId"
                 WHERE slr."studentId" = ${studentId} AND l."subBabId" = sb."id"
             ),0) AS score
         FROM "SubBab" AS sb
@@ -174,8 +189,26 @@ export const studentRouter = router({
         };
       });
 
+      const progressMax = await prisma.lesson.groupBy({
+        _count: {
+          id: true,
+        },
+        by: "subBabId",
+        where: {
+          babId: input.babId,
+        },
+      });
+
+      const progressMaxPerSubBab = progressMax.map((item) => {
+        return {
+          subBabId: item.subBabId,
+          progressMax: item._count.id,
+        };
+      });
+
       return {
         docs,
+        progressMaxPerSubBab,
       };
     }),
 });
