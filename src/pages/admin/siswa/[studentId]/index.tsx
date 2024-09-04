@@ -1,4 +1,5 @@
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
+import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -28,65 +29,70 @@ const StudentDetailPage: NextPageWithLayout = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6 relative">
-        <Link
-          href="/admin/siswa"
-          className="left-0 translate-x-[-100%] absolute"
-        >
-          <Button type="button" size="sm" variant="ghost">
-            <ArrowLeftIcon />
-          </Button>
-        </Link>
-        <h1 className="text-3xl font-semibold">Detail Siswa</h1>
-      </div>
+    <>
+      <Head>
+        <title>Mudah belajar ilmu shorof</title>
+      </Head>
+      <div>
+        <div className="flex items-center justify-between mb-6 relative">
+          <Link
+            href="/admin/siswa"
+            className="left-0 translate-x-[-100%] absolute"
+          >
+            <Button type="button" size="sm" variant="ghost">
+              <ArrowLeftIcon />
+            </Button>
+          </Link>
+          <h1 className="text-3xl font-semibold">Detail Siswa</h1>
+        </div>
 
-      <div className="mb-5 flex items-center justify-between gap-x-3 bg-primary py-3 pl-3 pr-6 rounded-lg text-white">
-        <div className="flex gap-x-4 items-center">
-          <Image
-            width={100}
-            height={100}
-            src={student?.image ?? ""}
-            alt={student?.name ?? ""}
-            className="rounded-full"
-          />
+        <div className="mb-5 flex items-center justify-between gap-x-3 bg-primary py-3 pl-3 pr-6 rounded-lg text-white">
+          <div className="flex gap-x-4 items-center">
+            <Image
+              width={100}
+              height={100}
+              src={student?.image ?? ""}
+              alt={student?.name ?? ""}
+              className="rounded-full"
+            />
 
+            <div>
+              <div>
+                <div className="text-sm">Nama Siswa</div>
+                <div className="text-2xl">{student?.name}</div>
+              </div>
+              <div>
+                <div className="text-sm text-white/50">{student?.email}</div>
+              </div>
+            </div>
+          </div>
           <div>
-            <div>
-              <div className="text-sm">Nama Siswa</div>
-              <div className="text-2xl">{student?.name}</div>
-            </div>
-            <div>
-              <div className="text-sm text-white/50">{student?.email}</div>
+            <div className="text-md font-medium">Total Score</div>
+            <div className="text-2xl font-bold text-center">
+              {student?.score ?? 0}
             </div>
           </div>
         </div>
-        <div>
-          <div className="text-md font-medium">Total Score</div>
-          <div className="text-2xl font-bold text-center">
-            {student?.score ?? 0}
-          </div>
-        </div>
-      </div>
 
-      <div className="rounded-md border">
-        <StudentBabTable
-          onRowClick={(data) => {
-            setBabId(data.id);
-            setOpen((open) => !open);
+        <div className="rounded-md border">
+          <StudentBabTable
+            onRowClick={(data) => {
+              setBabId(data.id);
+              setOpen((open) => !open);
+            }}
+          />
+        </div>
+
+        <DetailBabDialog
+          babId={babId}
+          open={open}
+          setOpen={() => {
+            setOpen(false);
+            setBabId(null);
           }}
         />
       </div>
-
-      <DetailBabDialog
-        babId={babId}
-        open={open}
-        setOpen={() => {
-          setOpen(false);
-          setBabId(null);
-        }}
-      />
-    </div>
+    </>
   );
 };
 

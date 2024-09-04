@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import Head from "next/head";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -44,18 +45,23 @@ const SettingPage: NextPageWithLayout = () => {
   if (error) return <div>{error.message}</div>;
 
   return (
-    <div className="w-full">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-semibold">Pengaturan</h1>
+    <>
+      <Head>
+        <title>Mudah belajar ilmu shorof</title>
+      </Head>
+      <div className="w-full">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-semibold">Pengaturan</h1>
+        </div>
+        <SettingForm
+          defaultValues={{
+            randomizeQuestion: config.randomizeQuestion,
+            randomizeAnswer: config.randomizeAnswer,
+            defaultScore: config.defaultScore,
+          }}
+        />
       </div>
-      <SettingForm
-        defaultValues={{
-          randomizeQuestion: config.randomizeQuestion,
-          randomizeAnswer: config.randomizeAnswer,
-          defaultScore: config.defaultScore,
-        }}
-      />
-    </div>
+    </>
   );
 };
 

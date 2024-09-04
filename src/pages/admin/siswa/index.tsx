@@ -7,6 +7,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import React from "react";
 
@@ -77,87 +78,92 @@ const StudentPage: NextPageWithLayout = () => {
   });
 
   return (
-    <div className="w-full">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-semibold">List Siswa</h1>
-      </div>
+    <>
+      <Head>
+        <title>Mudah belajar ilmu shorof</title>
+      </Head>
+      <div className="w-full">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-semibold">List Siswa</h1>
+        </div>
 
-      <div className="rounded-md border">
-        <Table className="table-fixed">
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead
-                      key={header.id}
-                      style={{ width: `${header.getSize()}px` }}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {!!table.getRowModel().rows?.length && !loadingStudentList
-              ? table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    className="cursor-pointer"
-                    onClick={() => {
-                      router.push({
-                        pathname: "/admin/siswa/[studentId]",
-                        query: { studentId: row.original.id },
-                      });
-                    }}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        style={{ width: `${cell.column.getSize()}px` }}
+        <div className="rounded-md border">
+          <Table className="table-fixed">
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead
+                        key={header.id}
+                        style={{ width: `${header.getSize()}px` }}
                       >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              : null}
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {!!table.getRowModel().rows?.length && !loadingStudentList
+                ? table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      className="cursor-pointer"
+                      onClick={() => {
+                        router.push({
+                          pathname: "/admin/siswa/[studentId]",
+                          query: { studentId: row.original.id },
+                        });
+                      }}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell
+                          key={cell.id}
+                          style={{ width: `${cell.column.getSize()}px` }}
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                : null}
 
-            {!table.getRowModel().rows?.length && !loadingStudentList ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  Belum ada data
-                </TableCell>
-              </TableRow>
-            ) : null}
+              {!table.getRowModel().rows?.length && !loadingStudentList ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    Belum ada data
+                  </TableCell>
+                </TableRow>
+              ) : null}
 
-            {loadingStudentList ? (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  Memuat data...
-                </TableCell>
-              </TableRow>
-            ) : null}
-          </TableBody>
-        </Table>
+              {loadingStudentList ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    Memuat data...
+                  </TableCell>
+                </TableRow>
+              ) : null}
+            </TableBody>
+          </Table>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

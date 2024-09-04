@@ -1,3 +1,4 @@
+import Head from "next/head";
 import Image from "next/image";
 import React, { FC } from "react";
 
@@ -15,77 +16,82 @@ const LeaderBoardPage: NextPageWithLayout = () => {
     useLeaderboard();
 
   return (
-    <div className="mx-auto w-full py-12 px-6">
-      <h1 className="text-xl font-bold text-primary text-center mb-8">
-        Papan Peringkat
-      </h1>
+    <>
+      <Head>
+        <title>Mudah belajar ilmu shorof</title>
+      </Head>
+      <div className="mx-auto w-full py-12 px-6">
+        <h1 className="text-xl font-bold text-primary text-center mb-8">
+          Papan Peringkat
+        </h1>
 
-      {loadingLeaderboard ? (
-        <Spinner />
-      ) : (
-        <>
-          {!!errorLeaderboard && (
-            <p className="text-center text-red-500">
-              {errorLeaderboard?.message ?? "Terjadi kesalahan"}
-            </p>
-          )}
+        {loadingLeaderboard ? (
+          <Spinner />
+        ) : (
+          <>
+            {!!errorLeaderboard && (
+              <p className="text-center text-red-500">
+                {errorLeaderboard?.message ?? "Terjadi kesalahan"}
+              </p>
+            )}
 
-          {!!leaderboard.length && (
-            <>
-              <div className="grid grid-cols-3 max-w-[700px] mx-auto justify-center gap-x-4 md:gap-x-12 mb-16">
-                {leaderboard[1] ? (
-                  <TopStudent position={2} leaderboard={leaderboard[1]} />
-                ) : (
-                  <div></div>
-                )}
-                {leaderboard[0] ? (
-                  <TopStudent position={1} leaderboard={leaderboard[0]} />
-                ) : (
-                  <div></div>
-                )}
-                {leaderboard[2] ? (
-                  <TopStudent position={3} leaderboard={leaderboard[2]} />
-                ) : (
-                  <div></div>
-                )}
-              </div>
+            {!!leaderboard.length && (
+              <>
+                <div className="grid grid-cols-3 max-w-[700px] mx-auto justify-center gap-x-4 md:gap-x-12 mb-16">
+                  {leaderboard[1] ? (
+                    <TopStudent position={2} leaderboard={leaderboard[1]} />
+                  ) : (
+                    <div></div>
+                  )}
+                  {leaderboard[0] ? (
+                    <TopStudent position={1} leaderboard={leaderboard[0]} />
+                  ) : (
+                    <div></div>
+                  )}
+                  {leaderboard[2] ? (
+                    <TopStudent position={3} leaderboard={leaderboard[2]} />
+                  ) : (
+                    <div></div>
+                  )}
+                </div>
 
-              <div className="mx-auto w-full flex flex-col items-center gap-y-4">
-                {leaderboard.slice(3).map((item, index) => (
-                  <div
-                    key={index}
-                    className="flex bg-primary w-[600px] items-center rounded-xl"
-                  >
-                    <div className="w-9 -rotate-90 flex items-center justify-center rounded-full text-white bg-primary">
-                      {index + 4}
-                    </div>
-                    <div className="flex flex-1 items-center justify-between pr-4 py-1 text-white">
-                      <div className="flex items-center">
-                        <Image
-                          src={item?.image ?? ""}
-                          alt="Profile"
-                          className="size-16 border rounded-full"
-                        />
-                        <div className="text-center text-lg font-semibold ml-3">
-                          {item?.name}
+                <div className="mx-auto w-full flex flex-col items-center gap-y-4">
+                  {leaderboard.slice(3).map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex bg-primary w-[600px] items-center rounded-xl"
+                    >
+                      <div className="w-9 -rotate-90 flex items-center justify-center rounded-full text-white bg-primary">
+                        {index + 4}
+                      </div>
+                      <div className="flex flex-1 items-center justify-between pr-4 py-1 text-white">
+                        <div className="flex items-center">
+                          <Image
+                            src={item?.image ?? ""}
+                            alt="Profile"
+                            className="size-16 border rounded-full"
+                          />
+                          <div className="text-center text-lg font-semibold ml-3">
+                            {item?.name}
+                          </div>
+                        </div>
+                        <div className="text-center text-lg font-semibold">
+                          {item?.score}
                         </div>
                       </div>
-                      <div className="text-center text-lg font-semibold">
-                        {item?.score}
-                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
+                  ))}
+                </div>
+              </>
+            )}
 
-          {!leaderboard.length && (
-            <p className="text-center text-neutral-500">Belum ada data</p>
-          )}
-        </>
-      )}
-    </div>
+            {!leaderboard.length && (
+              <p className="text-center text-neutral-500">Belum ada data</p>
+            )}
+          </>
+        )}
+      </div>
+    </>
   );
 };
 

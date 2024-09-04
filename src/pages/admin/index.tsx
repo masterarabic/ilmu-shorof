@@ -1,4 +1,5 @@
 import { ListBulletIcon, PersonIcon } from "@radix-ui/react-icons";
+import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
@@ -37,103 +38,108 @@ const DashboardPage: NextPageWithLayout = () => {
   const { babCount, loadingBabCount } = useBabCount();
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <div className="flex-1">
-        <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="analytics" disabled>
-              Dashboard
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="overview" className="space-y-4"></TabsContent>
-        </Tabs>
-        <div className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Jumlah Siswa
-                </CardTitle>
-                <PersonIcon className="text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {loadingStudentCount ? (
-                    <Skeleton className="w-[30px] h-6" />
-                  ) : (
-                    studentCount
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground"></p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Jumlah Bab
-                </CardTitle>
-                <ListBulletIcon className="text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {loadingBabCount ? (
-                    <Skeleton className="w-[30px] h-6" />
-                  ) : (
-                    babCount
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground"></p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Disusun oleh
-                </CardTitle>
-                <PersonIcon className="text-muted-foreground" />
-              </CardHeader>
-              <CardContent className="text-sm">
-                <div>Abdul Ghofur, S.Pd.I., M.Pd.</div>
-                <div>Siti Durotun Naseha, M.Pd.</div>
-                <div>Sri Widoyonongrum, ST., M.Pd.</div>
-              </CardContent>
-            </Card>
-          </div>
+    <>
+      <Head>
+        <title>Mudah belajar ilmu shorof</title>
+      </Head>
+      <div className="flex flex-col min-h-screen">
+        <div className="flex-1">
+          <Tabs defaultValue="overview" className="space-y-4">
+            <TabsList>
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="analytics" disabled>
+                Dashboard
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="overview" className="space-y-4"></TabsContent>
+          </Tabs>
+          <div className="space-y-4">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Jumlah Siswa
+                  </CardTitle>
+                  <PersonIcon className="text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {loadingStudentCount ? (
+                      <Skeleton className="w-[30px] h-6" />
+                    ) : (
+                      studentCount
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground"></p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Jumlah Bab
+                  </CardTitle>
+                  <ListBulletIcon className="text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {loadingBabCount ? (
+                      <Skeleton className="w-[30px] h-6" />
+                    ) : (
+                      babCount
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground"></p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    Disusun oleh
+                  </CardTitle>
+                  <PersonIcon className="text-muted-foreground" />
+                </CardHeader>
+                <CardContent className="text-sm">
+                  <div>Abdul Ghofur, S.Pd.I., M.Pd.</div>
+                  <div>Siti Durotun Naseha, M.Pd.</div>
+                  <div>Sri Widoyonongrum, ST., M.Pd.</div>
+                </CardContent>
+              </Card>
+            </div>
 
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="col-span-4">
-              <CardHeader>
-                <CardTitle>Pembagian Score Per Bab</CardTitle>
-              </CardHeader>
-              <CardContent className="pl-2">
-                <ScoreDistributionChart />
-              </CardContent>
-            </Card>
-            <Card className="col-span-3">
-              <CardHeader>
-                <CardTitle>Papan peringkat</CardTitle>
-                <CardDescription>
-                  10 siswa terbaik berdasarkan jumlah score
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="max-h-[450px] overflow-y-auto">
-                <Leaderboard />
-              </CardContent>
-            </Card>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+              <Card className="col-span-4">
+                <CardHeader>
+                  <CardTitle>Pembagian Score Per Bab</CardTitle>
+                </CardHeader>
+                <CardContent className="pl-2">
+                  <ScoreDistributionChart />
+                </CardContent>
+              </Card>
+              <Card className="col-span-3">
+                <CardHeader>
+                  <CardTitle>Papan peringkat</CardTitle>
+                  <CardDescription>
+                    10 siswa terbaik berdasarkan jumlah score
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="max-h-[450px] overflow-y-auto">
+                  <Leaderboard />
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="text-sm flex justify-end bg-white">
-        <span className="opacity-30">
-          Created with ❤️ by{" "}
-          <a href="https://github.com/Rizki36" target="_blank">
-            fitra36_
-          </a>
-        </span>
+        <div className="text-sm flex justify-end bg-white">
+          <span className="opacity-30">
+            Created with ❤️ by{" "}
+            <a href="https://github.com/Rizki36" target="_blank">
+              fitra36_
+            </a>
+          </span>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

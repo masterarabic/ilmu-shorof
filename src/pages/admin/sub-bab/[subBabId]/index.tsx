@@ -1,4 +1,5 @@
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
+import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
@@ -54,82 +55,92 @@ const SubBabPage: NextPageWithLayout = () => {
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center relative">
-          <Link
-            href={{
-              pathname: "/admin/bab/[babId]",
-              query: { babId: subBab?.bab?.id },
-            }}
-            className="left-0 translate-x-[-100%] absolute"
-          >
-            <Button type="button" size="sm" variant="ghost">
-              <ArrowLeftIcon />
+    <>
+      <Head>
+        <title>Mudah belajar ilmu shorof</title>
+      </Head>
+      <div>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center relative">
+            <Link
+              href={{
+                pathname: "/admin/bab/[babId]",
+                query: { babId: subBab?.bab?.id },
+              }}
+              className="left-0 translate-x-[-100%] absolute"
+            >
+              <Button type="button" size="sm" variant="ghost">
+                <ArrowLeftIcon />
+              </Button>
+            </Link>
+            <h1 className="text-3xl font-semibold">Detail Sub Bab</h1>
+          </div>
+          <div className="space-x-2">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                setSubBabDialog({ mode: "update", open: true });
+              }}
+            >
+              Edit
             </Button>
-          </Link>
-          <h1 className="text-3xl font-semibold">Detail Sub Bab</h1>
+            <DeleteSubBabButton />
+          </div>
         </div>
-        <div className="space-x-2">
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => {
-              setSubBabDialog({ mode: "update", open: true });
-            }}
-          >
-            Edit
-          </Button>
-          <DeleteSubBabButton />
+
+        <div className="mb-8 flex gap-x-3">
+          <Card className="w-auto">
+            <CardHeader className="flex flex-row items-center justify-center space-y-0 pb-2">
+              <CardTitle className="text-xs font-medium">
+                Nomor Sub Bab
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-center">
+                {subBab?.number}
+              </div>
+            </CardContent>
+          </Card>
+          <div>
+            <div className="text-sm">Nama Bab</div>
+            <div className="text-2xl mb-2">{subBab?.bab?.name}</div>
+
+            <div className="text-sm">Nama Sub Bab</div>
+            <div className="text-2xl">{subBab?.name || "{Tanpa sub bab}"}</div>
+          </div>
         </div>
+
+        <LessonTable
+          subBabId={subBab?.id || ""}
+          babId={subBab?.bab?.id || ""}
+        />
+
+        <SubBabFormDialog
+          mode={subBabDialog.mode}
+          open={subBabDialog.open}
+          bab={
+            subBab?.bab?.id
+              ? {
+                  id: subBab?.bab?.id,
+                }
+              : undefined
+          }
+          subBab={
+            subBab
+              ? {
+                  id: subBab?.id,
+                  name: subBab?.name,
+                  number: subBab?.number,
+                }
+              : undefined
+          }
+          setOpen={(open) => {
+            setSubBabDialog({ ...subBabDialog, open });
+          }}
+        />
       </div>
-
-      <div className="mb-8 flex gap-x-3">
-        <Card className="w-auto">
-          <CardHeader className="flex flex-row items-center justify-center space-y-0 pb-2">
-            <CardTitle className="text-xs font-medium">Nomor Sub Bab</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-center">
-              {subBab?.number}
-            </div>
-          </CardContent>
-        </Card>
-        <div>
-          <div className="text-sm">Nama Bab</div>
-          <div className="text-2xl mb-2">{subBab?.bab?.name}</div>
-
-          <div className="text-sm">Nama Sub Bab</div>
-          <div className="text-2xl">{subBab?.name || "{Tanpa sub bab}"}</div>
-        </div>
-      </div>
-
-      <LessonTable subBabId={subBab?.id || ""} babId={subBab?.bab?.id || ""} />
-
-      <SubBabFormDialog
-        mode={subBabDialog.mode}
-        open={subBabDialog.open}
-        bab={
-          subBab?.bab?.id
-            ? {
-                id: subBab?.bab?.id,
-              }
-            : undefined
-        }
-        subBab={
-          subBab
-            ? {
-                id: subBab?.id,
-                name: subBab?.name,
-                number: subBab?.number,
-              }
-            : undefined
-        }
-        setOpen={(open) => {
-          setSubBabDialog({ ...subBabDialog, open });
-        }}
-      />
-    </div>
+    </>
   );
 };
 

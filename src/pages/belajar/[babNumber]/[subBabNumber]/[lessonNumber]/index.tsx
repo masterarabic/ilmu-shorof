@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { HeartFilledIcon, ReloadIcon } from "@radix-ui/react-icons";
+import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { FC, useId, useMemo, useState } from "react";
@@ -173,6 +174,10 @@ const Content: FC<{
 
   return (
     <>
+      <Head>
+        <title>Mudah belajar ilmu shorof</title>
+      </Head>
+
       <EndModal
         score={score}
         star={star}

@@ -61,7 +61,7 @@ const SpecificBabPage: NextPageWithLayout<
   return (
     <>
       <Head>
-        <title>Belajar bahasa arab</title>
+        <title>Mudah belajar ilmu shorof</title>
       </Head>
       <Bab babNumber={babNumber} />
     </>

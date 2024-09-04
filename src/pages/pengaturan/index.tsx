@@ -1,3 +1,4 @@
+import Head from "next/head";
 import { signOut } from "next-auth/react";
 import React from "react";
 
@@ -9,21 +10,26 @@ import { NextPageWithLayout } from "../_app";
 
 const SettingPage: NextPageWithLayout = () => {
   return (
-    <div className="flex h-[calc(100vh-64px)] flex-col items-center py-12 px-4">
-      <SettingForm />
+    <>
+      <Head>
+        <title>Mudah belajar ilmu shorof</title>
+      </Head>
+      <div className="flex h-[calc(100vh-64px)] flex-col items-center py-12 px-4">
+        <SettingForm />
 
-      <Button3D
-        className="md:hidden"
-        onClick={async () => {
-          await signOut({
-            callbackUrl: "/",
-            redirect: true,
-          });
-        }}
-      >
-        Keluar
-      </Button3D>
-    </div>
+        <Button3D
+          className="md:hidden"
+          onClick={async () => {
+            await signOut({
+              callbackUrl: "/",
+              redirect: true,
+            });
+          }}
+        >
+          Keluar
+        </Button3D>
+      </div>
+    </>
   );
 };
 

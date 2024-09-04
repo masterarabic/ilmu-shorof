@@ -1,5 +1,6 @@
 import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import { toPng } from "html-to-image";
+import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useRef } from "react";
@@ -65,67 +66,72 @@ const BabDetailPage: NextPageWithLayout = () => {
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center relative">
-          <Link
-            href="/admin/bab"
-            className="left-0 translate-x-[-100%] absolute"
-          >
-            <Button type="button" size="sm" variant="ghost">
-              <ArrowLeftIcon />
+    <>
+      <Head>
+        <title>Mudah belajar ilmu shorof</title>
+      </Head>
+      <div>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center relative">
+            <Link
+              href="/admin/bab"
+              className="left-0 translate-x-[-100%] absolute"
+            >
+              <Button type="button" size="sm" variant="ghost">
+                <ArrowLeftIcon />
+              </Button>
+            </Link>
+            <h1 className="text-3xl font-semibold">Detail Bab</h1>
+          </div>
+          <div className="space-x-2">
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => {
+                setBabDialog({ open: true, mode: "update" });
+              }}
+            >
+              Edit
             </Button>
-          </Link>
-          <h1 className="text-3xl font-semibold">Detail Bab</h1>
-        </div>
-        <div className="space-x-2">
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={() => {
-              setBabDialog({ open: true, mode: "update" });
-            }}
-          >
-            Edit
-          </Button>
-          <DeleteBabButton />
-        </div>
-      </div>
-
-      <div className="mb-8 flex items-center justify-between">
-        <div className="flex gap-x-3">
-          <Card className="w-auto">
-            <CardHeader className="flex flex-row items-center justify-center space-y-0 pb-2">
-              <CardTitle className="text-xs font-medium">Nomor Bab</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-center">
-                {bab?.number}
-              </div>
-            </CardContent>
-          </Card>
-          <div className="mt-6">
-            <div className="text-sm">Nama Bab</div>
-            <div className="text-2xl">{bab?.name}</div>
+            <DeleteBabButton />
           </div>
         </div>
 
-        <div>
-          <QR babNumber={bab.number} />
+        <div className="mb-8 flex items-center justify-between">
+          <div className="flex gap-x-3">
+            <Card className="w-auto">
+              <CardHeader className="flex flex-row items-center justify-center space-y-0 pb-2">
+                <CardTitle className="text-xs font-medium">Nomor Bab</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-center">
+                  {bab?.number}
+                </div>
+              </CardContent>
+            </Card>
+            <div className="mt-6">
+              <div className="text-sm">Nama Bab</div>
+              <div className="text-2xl">{bab?.name}</div>
+            </div>
+          </div>
+
+          <div>
+            <QR babNumber={bab.number} />
+          </div>
         </div>
+
+        <SubBabListTable id={id} />
+
+        <BabFormDialog
+          mode={babDialog.mode}
+          open={babDialog.open}
+          bab={bab}
+          setOpen={(open) => {
+            setBabDialog({ ...babDialog, open });
+          }}
+        />
       </div>
-
-      <SubBabListTable id={id} />
-
-      <BabFormDialog
-        mode={babDialog.mode}
-        open={babDialog.open}
-        bab={bab}
-        setOpen={(open) => {
-          setBabDialog({ ...babDialog, open });
-        }}
-      />
-    </div>
+    </>
   );
 };
 
