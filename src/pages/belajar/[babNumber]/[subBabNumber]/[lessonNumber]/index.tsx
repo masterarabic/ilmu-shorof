@@ -123,6 +123,7 @@ const Content: FC<{
           setScore(data.score);
           setStar(data.star);
           trpcUtils.student.learn.subBabList.invalidate();
+          trpcUtils.student.listBab.listBab.invalidate();
         },
         onError: (error) => {
           console.error(error);

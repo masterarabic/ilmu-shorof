@@ -71,7 +71,7 @@ export const learnRoute = router({
       };
     }),
 
-  updateLastBab: studentProcedure
+  updateLatestBab: studentProcedure
     .input(z.object({ babNumber: z.number() }))
     .mutation(async ({ input, ctx }) => {
       const bab = await prisma.bab.findFirst({
@@ -93,4 +93,81 @@ export const learnRoute = router({
         success: true,
       };
     }),
+  checkLatestBab: studentProcedure.mutation(async ({ ctx }) => {
+    const student = await prisma.student.findFirst({
+      select: {
+        id: true,
+        latestBabId: true,
+      },
+      where: {
+        userId: ctx?.session?.user?.id,
+      },
+    });
+
+    const latestBab = await prisma.bab.findFirst({
+      select: {
+        id: true,
+        number: true,
+      },
+      where: {
+        id: student?.latestBabId ?? "",
+      },
+    });
+
+    if (!latestBab) {
+      return {
+        latestBab: null,
+      };
+    }
+
+    const studentLessonResultCount = await prisma.studentLessonResult.count({
+      where: {
+        studentId: student?.id,
+        lesson: {
+          babId: latestBab.id,
+        },
+      },
+    });
+
+    const babLessonCount = await prisma.lesson.count({
+      where: {
+        babId: latestBab.id,
+      },
+    });
+
+    const isComplete = studentLessonResultCount >= babLessonCount;
+
+    if (!isComplete) {
+      return {
+        latestBab: undefined,
+      };
+    }
+
+    const latestBabNumber = latestBab.number + 1;
+
+    const newLatestBab = await prisma.bab.findFirst({
+      where: {
+        number: latestBabNumber,
+      },
+    });
+
+    if (!newLatestBab) {
+      return {
+        latestBab: undefined,
+      };
+    }
+
+    await prisma.student.update({
+      where: {
+        id: student?.id,
+      },
+      data: {
+        latestBabId: newLatestBab.id,
+      },
+    });
+
+    return {
+      latestBab,
+    };
+  }),
 });

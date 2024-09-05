@@ -30,8 +30,7 @@ const FrontVariants = cva(
   {
     variants: {
       disabled: {
-        true: "bg-neutral-300 text-neutral-500 cursor-not-allowed",
-        false: "",
+        true: "cursor-not-allowed",
       },
       variant: {
         default: "bg-violet-600",
@@ -45,6 +44,18 @@ const FrontVariants = cva(
         icon: "h-9 w-9",
       },
     },
+    compoundVariants: [
+      {
+        variant: "white",
+        disabled: true,
+        className: "bg-neutral-300 text-neutral-500",
+      },
+      {
+        variant: "default",
+        disabled: true,
+        className: "",
+      },
+    ],
     defaultVariants: {
       size: "default",
       variant: "default",

@@ -14,6 +14,7 @@ const useBabList = () => {
     },
     {
       enabled: !!student?.id,
+      staleTime: 60 * 10000, // 10 minute
     }
   );
   const babList = data?.docs ?? [];
