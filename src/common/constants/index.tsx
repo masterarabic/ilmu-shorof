@@ -14,7 +14,7 @@ export const menuItems = [
     id: "ranking",
     name: "Papan Peringkat",
     icon: <LeaderBoardIcon className="size-7" />,
-    url: "papan-peringkat",
+    url: "/papan-peringkat",
     routes: [],
   },
   {
