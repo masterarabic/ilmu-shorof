@@ -36,8 +36,6 @@ const ListBabPage: NextPageWithLayout = () => {
       setShouldCheckNextBab(true);
   }, [student?.latestBab?.id, babList]);
 
-  console.log(shouldCheckNextBab);
-
   useEffect(() => {
     if (!shouldCheckNextBab) return;
 

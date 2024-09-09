@@ -1,45 +1,54 @@
-import { createServerSideHelpers } from "@trpc/react-query/server";
-import { GetServerSidePropsContext } from "next";
-import { getSession } from "next-auth/react";
-import React from "react";
-import SuperJSON from "superjson";
+import { useRouter } from "next/router";
+import React, { useEffect } from "react";
 
+import { Spinner } from "@/common/components/ui/spinner";
+import { useLocalStorage } from "@/common/hooks/useLocalStorage";
 import ClientMainLayout from "@/common/layouts/MainLayout";
-import { createContextInner } from "@/server/context";
-import { appRouter } from "@/server/routers/_app";
+import { CLIENT_LOCAL_STORAGE_KEYS } from "@/modules/client/constants";
+import useStudent from "@/modules/client/hooks/useStudent";
 
 import { NextPageWithLayout } from "../_app";
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const session = await getSession(context);
+const LearnPage: NextPageWithLayout = () => {
+  const router = useRouter();
+  const [previousOpenedBabNumber, setPreviousOpenedBabNumber] = useLocalStorage<
+    number | null
+  >(CLIENT_LOCAL_STORAGE_KEYS["previousOpenedBabNumber"], null);
 
-  const helpers = createServerSideHelpers({
-    router: appRouter,
-    ctx: await createContextInner({ session }),
-    transformer: SuperJSON,
+  const { student, loadingStudent } = useStudent({
+    enabled: !previousOpenedBabNumber,
   });
 
-  /*
-   * Prefetching the `post.byId` query.
-   * `prefetch` does not return the result and never throws - if you need that behavior, use `fetch` instead.
-   */
-  const student = await helpers.student.self.student
-    .fetch()
-    .then((data) => data.student)
-    .catch(() => null);
+  useEffect(() => {
+    if (previousOpenedBabNumber) {
+      router.push({
+        pathname: "/belajar/[babNumber]",
+        query: { babNumber: previousOpenedBabNumber },
+      });
+      return;
+    }
 
-  const latestBab = student?.latestBab;
-  const babNumber = latestBab?.number ?? 1;
+    const latestBabNumber = student?.latestBab?.number ?? 1;
 
-  return {
-    redirect: {
-      destination: `/belajar/${babNumber}`,
-      permanent: false,
-    },
-  };
-}
+    if (!loadingStudent && latestBabNumber) {
+      setPreviousOpenedBabNumber(latestBabNumber);
+      router.push({
+        pathname: "/belajar/[babNumber]",
+        query: {
+          babNumber: latestBabNumber,
+        },
+      });
+    }
+  }, [previousOpenedBabNumber]);
 
-const LearnPage: NextPageWithLayout = () => {
+  if (loadingStudent) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        <Spinner size="large" />
+      </div>
+    );
+  }
+
   return <></>;
 };
 
