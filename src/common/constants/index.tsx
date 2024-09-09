@@ -7,7 +7,7 @@ export const menuItems = [
     id: "learn",
     name: "Belajar",
     icon: <HomeIcon className="size-7" />,
-    url: "belajar",
+    url: "/belajar",
     routes: ["/belajar", "/list-bab"],
   },
   {

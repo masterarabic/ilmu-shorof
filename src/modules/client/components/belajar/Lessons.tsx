@@ -47,7 +47,6 @@ const Lessons: FC<LessonsProps> = ({ babNumber }) => {
                       ? (index % itemPerSide) * spacePerItem
                       : (itemPerSide - (index % itemPerSide)) * spacePerItem;
 
-                  console.log(item);
                   const lessonResult = item?.studentLessonResult?.[0];
 
                   return (
