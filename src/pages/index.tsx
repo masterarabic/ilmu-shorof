@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Link from "next/link";
 import { signIn } from "next-auth/react";
 
 import Button3D from "@/common/components/ui/3d-button";
@@ -13,7 +14,7 @@ const HomePage: NextPageWithLayout = () => {
         <title>Mudah belajar ilmu shorof</title>
       </Head>
       <main className="mx-auto max-w-screen-2xl">
-        <section className="flex items-center h-screen px-3 md:px-7">
+        <section className="flex justify-center flex-col min-h-screen px-3 md:px-7">
           <div className="fixed flex justify-end top-1 inset-x-1">
             <Button
               variant="ghost"
@@ -30,7 +31,7 @@ const HomePage: NextPageWithLayout = () => {
               Masuk dengan akun lain
             </Button>
           </div>
-          <div className="md:ml-24 w-full">
+          <div className="md:ml-24 w-full flex flex-col justify-center flex-1">
             <div className="text-5xl text-center md:text-left md:text-7xl font-bold text-primary mb-3">
               Mudah Belajar <br /> Ilmu Shorof
             </div>
@@ -61,8 +62,12 @@ const HomePage: NextPageWithLayout = () => {
             </div>
           </div>
 
-          <div className="absolute bottom-2 right-2 text-sm flex justify-end bg-white">
-            <span className="opacity-20 hover:opacity-100 transition-all duration-300">
+          <div className="mb-7 mx-auto lg:ml-0 lg:mb-2 z-50 text-neutral-900">
+            <Link href="/privacy-policy">Kebijakan Privasi dan Keamanan</Link>
+          </div>
+
+          <div className="absolute bottom-2 inset-x-2 text-sm flex justify-center lg:justify-end">
+            <span className="opacity-10 hover:opacity-100 transition-all duration-300">
               Created with ❤️ by{" "}
               <a href="https://github.com/Rizki36" target="_blank">
                 fitra36_

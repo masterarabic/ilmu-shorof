@@ -15,6 +15,7 @@ const isPublicPath = (path: string) => {
     "/login/admin",
     "/register",
     "/forgot-password",
+    "/privacy-policy",
   ];
   return publicPaths.includes(path);
 };
