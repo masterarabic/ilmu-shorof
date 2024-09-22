@@ -47,7 +47,7 @@ const HomePage: NextPageWithLayout = () => {
                 </span>
                 <span className="hidden md:inline">{" | "}</span>
                 <span className="block md:inline-block">
-                  Sri Widoyonongrum, ST., M.Pd.
+                  Sri Widoyoningrum, ST., M.Pd.
                 </span>
               </div>
             </div>
