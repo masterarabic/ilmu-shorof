@@ -101,7 +101,7 @@ const DashboardPage: NextPageWithLayout = () => {
                 <CardContent className="text-sm">
                   <div>Abdul Ghofur, S.Pd.I., M.Pd.</div>
                   <div>Siti Durotun Naseha, M.Pd.</div>
-                  <div>Sri Widoyonongrum, ST., M.Pd.</div>
+                  <div>Sri Widoyoningrum, ST., M.Pd.</div>
                 </CardContent>
               </Card>
             </div>
