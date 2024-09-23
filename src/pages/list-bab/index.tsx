@@ -25,11 +25,14 @@ const ListBabPage: NextPageWithLayout = () => {
   const { babList, loadingBabList, errorBabList } = useBabList();
 
   useEffect(() => {
-    if (!babList.length || !student?.latestBab?.id) return;
+    if (!babList.length || loadingStudent || !student) return;
 
-    const latestBab = babList.find((bab) => {
-      return bab.id === student?.latestBab?.id;
-    });
+    const latestBab = student?.latestBab
+      ? babList.find((bab) => {
+          return bab.id === student?.latestBab?.id;
+        })
+      : babList[0];
+
     if (!latestBab) return;
 
     if (latestBab.myLesson >= latestBab.totalLesson)
