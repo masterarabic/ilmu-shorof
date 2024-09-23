@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
 import prisma from "../../../../prisma/db";
@@ -104,14 +105,18 @@ export const learnRoute = router({
       },
     });
 
+    const whereLatestBab: Prisma.BabWhereInput = student?.latestBabId
+      ? { id: student?.latestBabId }
+      : {
+          number: 1,
+        };
+
     const latestBab = await prisma.bab.findFirst({
       select: {
         id: true,
         number: true,
       },
-      where: {
-        id: student?.latestBabId ?? "",
-      },
+      where: whereLatestBab,
     });
 
     if (!latestBab) {
