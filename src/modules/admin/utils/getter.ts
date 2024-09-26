@@ -102,17 +102,17 @@ const getUpdatedItems = (
   defaultItems: QuestionFormSchemaType["items"],
   currentItems: QuestionFormSchemaType["items"]
 ) => {
-  return defaultItems.filter((item) => {
-    const currentItem = currentItems.find(
-      (currentItem) => currentItem.id === item.id
+  return currentItems.filter((item) => {
+    const defaultItem = defaultItems.find(
+      (defaultItem) => defaultItem.id === item.id
     );
 
-    if (!currentItem) return false;
+    if (!defaultItem) return false;
 
     const copyDefault = { question: item.question, number: item.number };
     const copyCurrent = {
-      question: currentItem.question,
-      number: currentItem.number,
+      question: defaultItem.question,
+      number: defaultItem.number,
     };
 
     return JSON.stringify(copyDefault) !== JSON.stringify(copyCurrent);
@@ -123,12 +123,12 @@ const getUpdatedAnswers = (
   defaultAnswers: QuestionFormSchemaType["items"][number]["answers"],
   currentAnswers: QuestionFormSchemaType["items"][number]["answers"]
 ) => {
-  return defaultAnswers.filter((item) => {
-    const currentItem = currentAnswers.find(
-      (currentItem) => currentItem.id === item.id
+  return currentAnswers.filter((item) => {
+    const defaultItem = defaultAnswers.find(
+      (defaultItem) => defaultItem.id === item.id
     );
 
-    if (!currentItem) return false;
+    if (!defaultItem) return false;
 
     const copyDefault = {
       text: item.text,
@@ -136,9 +136,9 @@ const getUpdatedAnswers = (
       number: item.number,
     };
     const copyCurrent = {
-      text: currentItem.text,
-      correct: currentItem.correct,
-      number: currentItem.number,
+      text: defaultItem.text,
+      correct: defaultItem.correct,
+      number: defaultItem.number,
     };
 
     return JSON.stringify(copyDefault) !== JSON.stringify(copyCurrent);
@@ -166,10 +166,9 @@ export const getUpdatedQuestionsAndAnswers = (
         ?.answers ?? [];
     return getUpdatedAnswers(defaultAnswers, currentItem.answers).map(
       (answer) => ({
-        ...answer,
+        id: answer.id,
         questionId: currentItem.id,
         number: answer.number,
-        id: answer.id,
         text: answer.text,
         isCorrect: answer.correct,
       })
