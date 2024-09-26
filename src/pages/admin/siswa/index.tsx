@@ -2,15 +2,20 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React from "react";
 
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/common/components/ui/pagination";
 import { Progress } from "@/common/components/ui/progress";
 import {
   Table,
@@ -20,6 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/common/components/ui/table";
+import usePagination from "@/modules/admin/hooks/usePagination";
 import useStudentList, {
   StudentDataType,
 } from "@/modules/admin/hooks/useStudentList";
@@ -32,7 +38,14 @@ export const columns = [
   columnHelper.display({
     id: "number",
     header: () => <div className="text-center">Nomor</div>,
-    cell: (info) => <div className="text-center">{info.row.index + 1}</div>,
+    cell: (info) => (
+      <div className="text-center">
+        {info.table.getState().pagination.pageIndex *
+          info.table.getState().pagination.pageSize +
+          info.row.index +
+          1}
+      </div>
+    ),
     size: 20,
   }),
   columnHelper.accessor("name", {
@@ -65,16 +78,19 @@ export const columns = [
 ];
 
 const StudentPage: NextPageWithLayout = () => {
-  const { studentList, loadingStudentList } = useStudentList();
+  const { limit, onPaginationChange, skip, pagination } = usePagination();
+
+  const { loadingStudentList, studentList } = useStudentList({ skip, limit });
 
   const router = useRouter();
+
   const table = useReactTable({
     data: studentList,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
+    manualPagination: true,
+    onPaginationChange,
+    state: { pagination },
   });
 
   return (
@@ -161,6 +177,44 @@ const StudentPage: NextPageWithLayout = () => {
               ) : null}
             </TableBody>
           </Table>
+
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href=""
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (table.getState().pagination.pageIndex === 0) return;
+                    table.setPageIndex(
+                      table.getState().pagination.pageIndex - 1
+                    );
+                  }}
+                />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink
+                  href=""
+                  onClick={(e) => {
+                    e.preventDefault();
+                  }}
+                >
+                  {table.getState().pagination.pageIndex + 1}
+                </PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext
+                  href=""
+                  onClick={(e) => {
+                    e.preventDefault();
+                    table.setPageIndex(
+                      table.getState().pagination.pageIndex + 1
+                    );
+                  }}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </div>
       </div>
     </>

@@ -77,116 +77,142 @@ export const questionRouter = router({
         items,
       };
     }),
-  bulk: adminProcedure
+
+  addBulkQuestion: adminProcedure
     .input(
       z.object({
         lessonId: z.string().uuid(),
-        items: z.array(
+        questions: z.array(
           z.object({
-            id: z.string().uuid(),
+            id: z.string().uuid().optional(),
             number: z.number().min(1),
             question: z.string(),
-            answers: z.array(
-              z.object({
-                id: z.string().uuid(),
-                number: z.number().min(1),
-                text: z.string(),
-                correct: z.boolean(),
-              })
-            ),
           })
         ),
       })
     )
     .mutation(async ({ input }) => {
-      // get all questions
-      const questions = await prisma.question.findMany({
-        where: {
+      const questions = await prisma.question.createMany({
+        data: input.questions.map((question) => ({
+          id: question.id,
+          number: question.number,
+          question: question.question,
           lessonId: input.lessonId,
-        },
+        })),
       });
 
-      // check if existing question not in items then delete
-      const deleteQuestionsId: string[] = [];
-      for (const question of questions) {
-        if (!input.items.some((item) => item.id === question.id)) {
-          deleteQuestionsId.push(question.id);
-        }
-      }
+      return questions;
+    }),
+  addBulkAnswer: adminProcedure
+    .input(
+      z.object({
+        answers: z.array(
+          z.object({
+            id: z.string().uuid().optional(),
+            number: z.number().min(1),
+            text: z.string(),
+            isCorrect: z.boolean(),
+            questionId: z.string().uuid(),
+          })
+        ),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const answers = await prisma.answer.createMany({
+        data: input.answers.map((answer) => ({
+          id: answer.id,
+          number: answer.number,
+          answer: answer.text,
+          isCorrect: answer.isCorrect,
+          questionId: answer.questionId,
+        })),
+      });
+
+      return answers;
+    }),
+  deleteBulkQuestion: adminProcedure
+    .input(
+      z.object({
+        questions: z.array(z.object({ id: z.string().uuid() })),
+      })
+    )
+    .mutation(async ({ input }) => {
       await prisma.question.deleteMany({
         where: {
           id: {
-            in: deleteQuestionsId,
+            in: input.questions.map((question) => question.id),
           },
         },
       });
-
-      // check if existing answer not in items then delete
-      const answers = await prisma.answer.findMany({
-        where: {
-          question: {
-            lessonId: input.lessonId,
-          },
-        },
-      });
-      const deleteAnswersId: string[] = [];
-      const flattenAnswers = input.items.flatMap((item) => item.answers);
-      for (const answer of answers) {
-        if (!flattenAnswers.some((item) => item.id === answer.id)) {
-          deleteAnswersId.push(answer.id);
-        }
-      }
+    }),
+  deleteBulkAnswer: adminProcedure
+    .input(
+      z.object({
+        answers: z.array(z.object({ id: z.string().uuid() })),
+      })
+    )
+    .mutation(async ({ input }) => {
       await prisma.answer.deleteMany({
         where: {
           id: {
-            in: deleteAnswersId,
+            in: input.answers.map((answer) => answer.id),
           },
         },
       });
-
-      // create or update questions
-      for (const item of input.items) {
-        await prisma.question.upsert({
+    }),
+  updateBulkQuestion: adminProcedure
+    .input(
+      z.object({
+        lessonId: z.string().uuid(),
+        questions: z.array(
+          z.object({
+            id: z.string().uuid().optional(),
+            number: z.number().min(1),
+            question: z.string(),
+          })
+        ),
+      })
+    )
+    .mutation(async ({ input }) => {
+      for (const question of input.questions) {
+        await prisma.question.update({
           where: {
-            id: item.id,
+            id: question.id,
           },
-          update: {
-            number: item.number,
-            question: item.question,
-          },
-          create: {
-            id: item.id,
-            number: item.number,
-            question: item.question,
-            lesson: {
-              connect: {
-                id: input.lessonId,
-              },
-            },
+          data: {
+            number: question.number,
+            question: question.question,
           },
         });
-
-        // create or update answers
-        for (const answer of item.answers) {
-          await prisma.answer.upsert({
-            where: {
-              id: answer.id,
-            },
-            update: {
-              answer: answer.text,
-              isCorrect: answer.correct,
-              number: answer.number,
-            },
-            create: {
-              answer: answer.text,
-              isCorrect: answer.correct,
-              number: answer.number,
-              questionId: item.id,
-            },
-          });
-        }
       }
-
-      return {};
+    }),
+  updateBulkAnswer: adminProcedure
+    .input(
+      z.object({
+        answers: z.array(
+          z.object({
+            id: z.string().uuid().optional(),
+            number: z.number().min(1),
+            text: z.string(),
+            isCorrect: z.boolean(),
+            questionId: z.string().uuid(),
+          })
+        ),
+      })
+    )
+    .mutation(async ({ input }) => {
+      for (const answer of input.answers) {
+        await prisma.answer.update({
+          where: {
+            id: answer.id,
+          },
+          data: {
+            number: answer.number,
+            answer: answer.text,
+            isCorrect: answer.isCorrect,
+            questionId: answer.questionId,
+          },
+        });
+      }
     }),
 });

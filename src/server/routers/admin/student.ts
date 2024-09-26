@@ -36,8 +36,15 @@ type SubBabDataType = {
 };
 
 export const studentRouter = router({
-  list: adminProcedure.input(z.object({})).query(async () => {
-    const rawResult = await prisma.$queryRaw<ListDataType[]>`
+  list: adminProcedure
+    .input(
+      z.object({
+        limit: z.number().optional(),
+        offset: z.number().optional(),
+      })
+    )
+    .query(async ({ input }) => {
+      const rawResult = await prisma.$queryRaw<ListDataType[]>`
         SELECT 
             s.id, 
             u.name,
@@ -52,24 +59,26 @@ export const studentRouter = router({
         FROM "Student" AS s
         LEFT JOIN "users" AS u  ON s."userId" = u."id"
         ORDER BY score DESC
+        LIMIT ${input.limit ?? 10}
+        OFFSET ${input.offset ?? 0}
     `;
 
-    const totalLesson = await prisma.lesson.count();
+      const totalLesson = await prisma.lesson.count();
 
-    const docs = rawResult.map((item) => {
+      const docs = rawResult.map((item) => {
+        return {
+          id: item.id,
+          name: item.name,
+          score: Number(item.score ?? 0),
+          myLesson: Number(item.progress ?? 0),
+          totalLesson: Number(totalLesson ?? 0),
+        };
+      });
+
       return {
-        id: item.id,
-        name: item.name,
-        score: Number(item.score ?? 0),
-        myLesson: Number(item.progress ?? 0),
-        totalLesson: Number(totalLesson ?? 0),
+        docs,
       };
-    });
-
-    return {
-      docs,
-    };
-  }),
+    }),
   detail: adminProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ input }) => {
