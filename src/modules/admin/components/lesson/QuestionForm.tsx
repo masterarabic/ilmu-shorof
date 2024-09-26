@@ -109,7 +109,6 @@ const useSaveForm = ({ lessonId }: { lessonId: string }) => {
     }
 
     await Promise.all(promises);
-    toast.success("Berhasil menyimpan");
   };
 
   return {
