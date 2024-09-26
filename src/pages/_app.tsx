@@ -8,8 +8,7 @@ import { ReactElement, ReactNode, useEffect } from "react";
 
 import "@/styles/globals.css";
 
-import { Toaster as SonnerToaster } from "@/common/components/ui/sonner";
-import { Toaster } from "@/common/components/ui/toaster";
+import { Toaster } from "@/common/components/ui/sonner";
 import useStudent from "@/modules/client/hooks/useStudent";
 import { trpc } from "@/utils/trpc";
 
@@ -40,7 +39,6 @@ const Content: React.FC<{
     <main className={nunito.className}>
       {getLayout(<Component {...pageProps} />)}
       <Toaster />
-      <SonnerToaster />
     </main>
   );
 };
