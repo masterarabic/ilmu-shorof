@@ -47,7 +47,9 @@ const subBabColumns = [
         <span className="text-xs text-muted-foreground">
           {info.getValue()}/{info.row.original.maxProgress}
         </span>
-        <Progress value={info.getValue()} />
+        <Progress
+          value={(info.getValue() / info.row.original.maxProgress) * 100}
+        />
       </div>
     ),
   }),
