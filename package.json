@@ -11,7 +11,7 @@
     "migrate:dev": "npx dotenv -e .env.local -- prisma migrate dev",
     "prisma:studio": "npx dotenv -e .env.local -- prisma studio",
     "check-types": "tsc --noEmit",
-    "vercel-build": "prisma generate && prisma migrate deploy && next build && data-migration:add-score",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build && yarn data-migration:add-score",
     "prisma:generate": "prisma generate",
     "local-data-migration:add-score": "npx dotenv -e .env.local -- tsx ./prisma/migrations/20240928125737_add_score_to_student/data-migration.ts",
     "data-migration:add-score": "tsx ./prisma/migrations/20240928125737_add_score_to_student/data-migration.ts"
