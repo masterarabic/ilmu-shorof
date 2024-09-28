@@ -7,6 +7,7 @@ import {
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React from "react";
+import { toast } from "sonner";
 
 import {
   Pagination,
@@ -80,12 +81,18 @@ export const columns = [
 const StudentPage: NextPageWithLayout = () => {
   const { limit, onPaginationChange, skip, pagination } = usePagination();
 
-  const { loadingStudentList, studentList } = useStudentList({ skip, limit });
+  const { loadingStudentList, studentList } = useStudentList({
+    skip,
+    limit: limit + 1,
+  });
+
+  const data = studentList.slice(0, limit);
+  const hasNextPage = studentList.length > limit;
 
   const router = useRouter();
 
   const table = useReactTable({
-    data: studentList,
+    data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
@@ -185,7 +192,10 @@ const StudentPage: NextPageWithLayout = () => {
                   href=""
                   onClick={(e) => {
                     e.preventDefault();
-                    if (table.getState().pagination.pageIndex === 0) return;
+                    if (table.getState().pagination.pageIndex === 0) {
+                      toast.warning("Tidak ada halaman sebelumnya");
+                      return;
+                    }
                     table.setPageIndex(
                       table.getState().pagination.pageIndex - 1
                     );
@@ -207,6 +217,10 @@ const StudentPage: NextPageWithLayout = () => {
                   href=""
                   onClick={(e) => {
                     e.preventDefault();
+                    if (!hasNextPage) {
+                      toast.warning("Tidak ada halaman selanjutnya");
+                      return;
+                    }
                     table.setPageIndex(
                       table.getState().pagination.pageIndex + 1
                     );

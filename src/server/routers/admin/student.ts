@@ -48,10 +48,7 @@ export const studentRouter = router({
         SELECT 
             s.id, 
             u.name,
-            COALESCE((
-                SELECT SUM(score) FROM "StudentLessonResult" AS slr
-                WHERE slr."studentId" = s."id"
-            ),0) AS score,
+            s.score,
             (
                 SELECT COUNT(DISTINCT slr."lessonId") FROM "StudentLessonResult" AS slr
                 WHERE slr."studentId" = s."id"
@@ -83,28 +80,31 @@ export const studentRouter = router({
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ input }) => {
       const { id } = input;
-      const rawResult = await prisma.$queryRaw<DetailDataType[]>`
-        SELECT 
-            s.id,
-            u.name,
-            u.image,
-            u.email,
-            COALESCE((
-                SELECT SUM(score) FROM "StudentLessonResult" AS slr
-                WHERE slr."studentId" = s."id"
-            ),0) AS score
-        FROM "Student" AS s
-        LEFT JOIN users AS u ON s."userId" = u."id"
-        WHERE s."id" = ${id}
-      `;
+      const result = await prisma.student.findFirst({
+        select: {
+          id: true,
+          score: true,
+          user: {
+            select: {
+              name: true,
+              email: true,
+              image: true,
+            },
+          },
+        },
+        where: {
+          id,
+        },
+      });
 
-      const data = rawResult[0];
-
-      if (!data) throw new Error("Student not found");
+      if (!result) throw new Error("Student not found");
 
       const doc: DetailDataType = {
-        ...data,
-        score: Number(data.score ?? 0),
+        id: result.id,
+        email: result?.user?.email ?? "",
+        image: result?.user?.image ?? "",
+        name: result?.user?.name ?? "",
+        score: result.score ?? 0,
       };
 
       return {
