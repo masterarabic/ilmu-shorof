@@ -5,11 +5,11 @@ import React from "react";
 import { Skeleton } from "@/common/components/ui/skeleton";
 import ScoreIcon from "@/common/icons/Score";
 
-import useScore from "../../hooks/useStudentScore";
+import useStudent from "../../hooks/useStudent";
 
 const ProfileSection = () => {
   const { data, status } = useSession();
-  const { score, loadingScore } = useScore();
+  const { student, loadingStudent } = useStudent();
 
   return (
     <div className="flex items-center justify-between text-neutral-500">
@@ -34,11 +34,11 @@ const ProfileSection = () => {
       </div>
 
       <div className="flex items-center gap-2 leading-none">
-        {loadingScore ? (
+        {loadingStudent ? (
           <Skeleton className="w-7 h-6" />
         ) : (
           <>
-            <span>{score}</span>
+            <span>{student?.score ?? 0}</span>
             <ScoreIcon className="size-6" />
           </>
         )}

@@ -67,6 +67,8 @@ const LeaderBoardPage: NextPageWithLayout = () => {
                       <div className="flex flex-1 items-center justify-between pr-4 py-1 text-white">
                         <div className="flex items-center">
                           <Image
+                            width={32}
+                            height={32}
                             src={item?.image ?? ""}
                             alt="Profile"
                             className="size-16 border rounded-full"

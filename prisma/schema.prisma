@@ -84,6 +84,7 @@ model Student {
   latestBabId         String?
   latestBab           Bab?                  @relation(fields: [latestBabId], references: [id])
   studentLessonResult StudentLessonResult[]
+  score               Int                   @default(0)
 }
 
 model Account {

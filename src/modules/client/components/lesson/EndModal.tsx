@@ -1,9 +1,12 @@
+import { ReloadIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/router";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 
 import { Button } from "@/common/components/ui/button";
 import { Dialog, DialogContent } from "@/common/components/ui/dialog";
+import { trpc } from "@/utils/trpc";
 
+import useStudent from "../../hooks/useStudent";
 import StarIcon from "../../icons/Star";
 
 const EndModal: FC<{
@@ -13,6 +16,26 @@ const EndModal: FC<{
   star: number;
 }> = ({ open, score, star, onOpenChange }) => {
   const router = useRouter();
+  const { student } = useStudent();
+  const { mutate: updateScore, isPending: updateScorePending } =
+    trpc.student.self.updateScore.useMutation();
+  const trpcUtils = trpc.useUtils();
+
+  useEffect(() => {
+    if (!open || !student?.id || !star) return;
+
+    updateScore(
+      {
+        studentId: student.id,
+      },
+      {
+        onSuccess: () => {
+          trpcUtils.student.self.student.invalidate();
+        },
+      }
+    );
+  }, [open, star, student?.id]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -37,6 +60,7 @@ const EndModal: FC<{
             onClick={() => {
               window.location.reload();
             }}
+            disabled={updateScorePending}
           >
             Ulangi
           </Button>
@@ -47,7 +71,11 @@ const EndModal: FC<{
             onClick={() => {
               router.push("/belajar");
             }}
+            disabled={updateScorePending}
           >
+            {updateScorePending ? (
+              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+            ) : null}
             Kembali
           </Button>
         </div>

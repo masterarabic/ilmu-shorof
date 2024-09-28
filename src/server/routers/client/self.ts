@@ -47,14 +47,15 @@ export const selfRoute = router({
       student,
     };
   }),
-  score: studentProcedure
+  updateScore: studentProcedure
     .input(
       z.object({
         studentId: z.string(),
       })
     )
-    .query(async ({ input }) => {
-      const result = await prisma.studentLessonResult.aggregate({
+    .mutation(async ({ input }) => {
+      const lessonResults = await prisma.studentLessonResult.groupBy({
+        by: ["studentId"],
         _sum: {
           score: true,
         },
@@ -63,8 +64,20 @@ export const selfRoute = router({
         },
       });
 
+      const score = lessonResults?.[0]?._sum?.score ?? 0;
+      if (!score) return;
+
+      const student = await prisma.student.update({
+        where: {
+          id: input.studentId,
+        },
+        data: {
+          score,
+        },
+      });
+
       return {
-        score: result?._sum?.score ?? 0,
+        student,
       };
     }),
   progress: studentProcedure
