@@ -1,20 +1,19 @@
 {
   "name": "belajar-bahasa-arab",
-  "version": "0.1.0",
+  "version": "0.3.1",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
+    "prebuild": "biome check ./src",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "lint:fix": "next lint --fix",
+    "lint": "biome check --write ./src",
     "migrate:dev": "npx dotenv -e .env.local -- prisma migrate dev",
     "prisma:studio": "npx dotenv -e .env.local -- prisma studio",
     "check-types": "tsc --noEmit",
-    "vercel-build": "prisma generate && prisma migrate deploy && next build && yarn data-migration:add-score",
+    "vercel-build": "prisma generate && prisma migrate deploy && biome check ./src && next build",
     "prisma:generate": "prisma generate",
-    "local-data-migration:add-score": "npx dotenv -e .env.local -- tsx ./prisma/migrations/20240928125737_add_score_to_student/data-migration.ts",
-    "data-migration:add-score": "tsx ./prisma/migrations/20240928125737_add_score_to_student/data-migration.ts"
+    "release": "release-it"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.4.2",
@@ -29,6 +28,7 @@
     "@radix-ui/react-popover": "^1.1.1",
     "@radix-ui/react-progress": "^1.1.0",
     "@radix-ui/react-radio-group": "^1.2.0",
+    "@radix-ui/react-select": "^2.2.5",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-switch": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.0",
@@ -46,12 +46,13 @@
     "html-to-image": "^1.11.11",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.420.0",
-    "next": "14.2.5",
+    "minimatch": "^10.0.3",
+    "next": "15.4.2",
     "next-auth": "^4.24.7",
     "next-pwa": "^5.6.0",
     "next-themes": "^0.3.0",
-    "react": "^18",
-    "react-dom": "^18",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "react-hook-form": "^7.52.1",
     "react-qr-code": "^2.0.15",
     "react-share": "^5.1.0",
@@ -64,26 +65,25 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.1.2",
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react": "19.1.8",
+    "@types/react-dom": "19.1.6",
     "@types/uuid": "^10.0.0",
-    "@typescript-eslint/eslint-plugin": "^7.17.0",
-    "@typescript-eslint/parser": "^7.17.0",
     "dotenv-cli": "^7.4.2",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.5",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-simple-import-sort": "^12.1.1",
-    "eslint-plugin-unused-imports": "^4.0.1",
     "postcss": "^8",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.5",
     "prisma": "^5.17.0",
     "tailwindcss": "^3.4.1",
     "tsx": "^4.19.1",
-    "typescript": "^5"
+    "typescript": "^5",
+    "release-it": "^19.0.0"
+  },
+  "overrides": {
+    "@types/react": "19.1.8",
+    "@types/react-dom": "19.1.6"
   }
 }
