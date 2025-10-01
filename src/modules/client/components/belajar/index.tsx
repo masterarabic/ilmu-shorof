@@ -40,7 +40,10 @@ const Bab = (props: BabProps) => {
 					<div className="hidden lg:block">
 						<ShareSection url={window?.location?.href ?? ""} />
 					</div>
-					<div className="text-xs text-neutral-500 hidden lg:block">
+					<div
+						data-tut="reactour__credits"
+						className="text-xs text-neutral-500 hidden lg:block"
+					>
 						<div>Disusun oleh:</div>
 						<div>Abdul Ghofur, S.Pd.I., M.Pd.</div>
 						<div>Siti Durotun Naseha, M.Pd</div>
